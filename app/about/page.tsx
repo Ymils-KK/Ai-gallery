@@ -2,7 +2,7 @@ import { Globe, Link2, ExternalLink } from "lucide-react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "关于我",
+  title: "KK",
   description: "了解更多关于我和我的 AI 创作之旅",
 };
 
@@ -11,20 +11,18 @@ export const metadata: Metadata = {
 // ============================================
 
 const profile = {
-  name: "创作者",
-  tagline: "AI 创意探索者",
+  name: "KK",
+  tagline: "AI尝试中",
   bio: [
-    "你好！我是一名 AI 创作爱好者，热衷于用各种 AI 工具探索视觉艺术的边界。",
-    "从 AI 绘画到视频生成，我不断尝试新的技术和工具，将脑海中的想象变为现实。这个网站就是我分享这些作品的地方。",
-    "我相信 AI 不是要取代人类的创造力，而是为创意打开一扇新的窗户。希望你喜欢我的作品！",
+    "尝试不同的AI,制作一堆赛博垃圾。",
+    "个人网站，随便丢点。0.0",
+    "希望里面的东西会越来越多",
   ],
   tools: [
-    "Midjourney",
-    "Stable Diffusion",
-    "DALL-E",
-    "Runway",
-    "Pika Labs",
-    "ComfyUI",
+    "Claude Code",
+    "CODEX",
+    "CHATGPT",
+    "SEEDDANCE",
   ],
   socialLinks: [
     {
