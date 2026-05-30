@@ -12,7 +12,7 @@ export default function NotFound() {
       <p className="mt-4 text-lg text-muted">抱歉，页面不存在</p>
       <Link
         href="/"
-        className="mt-8 inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-3 text-sm font-medium text-white shadow-lg shadow-accent/25 transition-all hover:bg-accent/90"
+        className="mt-8 inline-flex items-center gap-2 rounded-lg bg-white/10 px-6 py-3 text-sm font-medium text-white shadow-lg  transition-all hover:bg-white/20"
       >
         返回首页
       </Link>

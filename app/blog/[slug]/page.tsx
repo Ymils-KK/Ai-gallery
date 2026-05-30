@@ -33,18 +33,21 @@ export default async function BlogPostPage({ params }: Props) {
   if (!post) notFound();
 
   return (
-    <div className="mx-auto max-w-3xl px-6 py-16 sm:py-24">
+    <div className="relative z-10 mx-auto max-w-3xl px-6 py-16 sm:py-24">
       {/* 返回链接 */}
       <Link
         href="/blog"
-        className="inline-flex items-center gap-2 text-sm text-muted hover:text-foreground transition-colors"
+        className="inline-flex items-center gap-2 text-sm text-white/60 hover:text-white transition-colors"
       >
         <ArrowLeft className="h-4 w-4" />
         返回博客列表
       </Link>
 
+      {/* 文章卡片 */}
+      <div className="mt-6 rounded-2xl bg-black/40 backdrop-blur-xl border border-white/[0.06] p-8 sm:p-10">
+
       {/* 文章头部 */}
-      <header className="mt-8">
+      <header>
         <h1 className="text-3xl font-bold sm:text-4xl">{post.title}</h1>
         <div className="mt-4 flex items-center gap-6 text-sm text-muted">
           <span className="flex items-center gap-1.5">
@@ -96,7 +99,7 @@ export default async function BlogPostPage({ params }: Props) {
             a: ({ children, href, ...props }) => (
               <a
                 href={href}
-                className="text-accent underline underline-offset-4 hover:text-accent-blue transition-colors"
+                className="text-white/80 underline underline-offset-4 hover:text-white transition-colors"
                 target="_blank"
                 rel="noopener noreferrer"
                 {...props}
@@ -122,7 +125,7 @@ export default async function BlogPostPage({ params }: Props) {
             ),
             blockquote: ({ children, ...props }) => (
               <blockquote
-                className="my-6 border-l-2 border-accent pl-4 italic text-muted"
+                className="my-6 border-l-2 border-white/15 pl-4 italic text-muted"
                 {...props}
               >
                 {children}
@@ -175,7 +178,7 @@ export default async function BlogPostPage({ params }: Props) {
               if (inline) {
                 return (
                   <code
-                    className="rounded bg-white/[0.06] px-1.5 py-0.5 text-sm text-accent"
+                    className="rounded bg-white/[0.06] px-1.5 py-0.5 text-sm text-white/80"
                     {...props}
                   >
                     {children}
@@ -206,6 +209,7 @@ export default async function BlogPostPage({ params }: Props) {
           {post.content}
         </Markdown>
       </article>
+      </div>
     </div>
   );
 }

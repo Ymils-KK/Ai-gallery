@@ -11,11 +11,12 @@ export default function BlogPage() {
   const posts = getAllPosts();
 
   return (
-    <div className="mx-auto max-w-3xl px-6 py-16 sm:py-24">
+    <div className="relative z-10 mx-auto max-w-3xl px-6 py-16 sm:py-24">
+      <div className="rounded-2xl bg-black/40 backdrop-blur-xl border border-white/[0.06] p-8 sm:p-10">
       <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
         <span className="text-gradient">博客</span>
       </h1>
-      <p className="mt-4 text-lg text-muted leading-relaxed">
+      <p className="mt-4 text-lg text-white/60 leading-relaxed">
         AI 创作心得、教程和思考。
       </p>
 
@@ -31,6 +32,7 @@ export default function BlogPage() {
           ))}
         </div>
       )}
+      </div>
     </div>
   );
 }

@@ -13,7 +13,7 @@ export default function BlogCard({ post }: { post: BlogPost }) {
         <time>{post.date}</time>
       </div>
 
-      <h3 className="mt-3 text-xl font-semibold text-foreground group-hover:text-accent transition-colors duration-200">
+      <h3 className="mt-3 text-xl font-semibold text-foreground group-hover:text-white/80 transition-colors duration-200">
         {post.title}
       </h3>
 

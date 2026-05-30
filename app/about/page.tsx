@@ -53,7 +53,8 @@ const iconMap: Record<string, React.ReactNode> = {
 
 export default function AboutPage() {
   return (
-    <div className="mx-auto max-w-3xl px-6 py-16 sm:py-24">
+    <div className="relative z-10 mx-auto max-w-3xl px-6 py-16 sm:py-24">
+      <div className="rounded-2xl bg-black/40 backdrop-blur-xl border border-white/[0.06] p-8 sm:p-10">
       {/* 头像 & 名字 */}
       <div className="flex flex-col items-center text-center sm:flex-row sm:text-left sm:gap-8">
         {/* 头像占位 */}
@@ -87,7 +88,7 @@ export default function AboutPage() {
           {profile.tools.map((tool) => (
             <span
               key={tool}
-              className="rounded-full border border-accent/30 bg-accent/5 px-4 py-2 text-sm text-accent transition-all hover:border-accent/60 hover:bg-accent/10"
+              className="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm text-white/80 transition-all hover:border-white/15/60 hover:bg-white/5"
             >
               {tool}
             </span>
@@ -112,6 +113,7 @@ export default function AboutPage() {
             </a>
           ))}
         </div>
+      </div>
       </div>
     </div>
   );

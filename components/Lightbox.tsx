@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { createPortal } from "react-dom";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import type { Work } from "@/content/works";
 
@@ -15,7 +16,9 @@ export default function Lightbox({
   initialIndex,
   onClose,
 }: LightboxProps) {
+  const [mounted, setMounted] = useState(false);
   const [index, setIndex] = useState(initialIndex);
+  useEffect(() => setMounted(true), []);
   const current = works[index];
 
   const goNext = useCallback(() => {
@@ -40,9 +43,9 @@ export default function Lightbox({
     };
   }, [onClose, goNext, goPrev]);
 
-  if (!current) return null;
+  if (!current || !mounted) return null;
 
-  return (
+  return createPortal(
     <div
       className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-sm"
       onClick={onClose}
@@ -121,6 +124,7 @@ export default function Lightbox({
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

@@ -1,0 +1,24 @@
+import { NextResponse } from "next/server";
+import fs from "fs";
+import path from "path";
+
+const dataPath = path.join(process.cwd(), "content", "site-config.json");
+
+export async function GET() {
+  try {
+    if (!fs.existsSync(dataPath)) return NextResponse.json({});
+    return NextResponse.json(JSON.parse(fs.readFileSync(dataPath, "utf-8")));
+  } catch {
+    return NextResponse.json({ error: "读取失败" }, { status: 500 });
+  }
+}
+
+export async function POST(request: Request) {
+  try {
+    const config = await request.json();
+    fs.writeFileSync(dataPath, JSON.stringify(config, null, 2), "utf-8");
+    return NextResponse.json({ success: true });
+  } catch {
+    return NextResponse.json({ error: "保存失败" }, { status: 500 });
+  }
+}

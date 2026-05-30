@@ -1,41 +1,75 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-background: #0a0a0f;
-  --color-foreground: #e4e4e7;
-  --color-muted: #a1a1aa;
-  --color-card: #14141f;
-  --color-border: rgba(255, 255, 255, 0.06);
-  --color-accent: #a855f7;
-  --color-accent-blue: #3b82f6;
-  --color-accent-cyan: #06b6d4;
+  --color-background: transparent;
+  --color-foreground: #f0f0f0;
+  --color-muted: #999;
+  --color-card: rgba(255, 255, 255, 0.06);
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-accent: #ffffff;
+  --color-accent-blue: #e0e0e0;
+  --color-accent-cyan: #c0c0c0;
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+  scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
 }
 
 body {
   background: var(--color-background);
   color: var(--color-foreground);
-  font-family: var(--font-sans), system-ui, sans-serif;
+  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  letter-spacing: -0.01em;
+  line-height: 1.6;
 }
 
-/* 渐变文字工具类 */
+/* 渐变文字 */
 .text-gradient {
-  background: linear-gradient(135deg, #a855f7, #3b82f6, #06b6d4);
+  background: linear-gradient(135deg, #ffffff, #e0e0e0, #c0c0c0);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-/* 卡片悬停辉光 */
+/* 卡片 */
+.card-glow {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
 .card-glow:hover {
-  border-color: rgba(168, 85, 247, 0.3);
-  box-shadow: 0 0 30px rgba(168, 85, 247, 0.08), 0 0 60px rgba(59, 130, 246, 0.04);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255,255,255,0.06);
+  transform: translateY(-2px);
+}
+
+/* Section 标题 */
+.section-heading {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  text-align: center;
+}
+@media (min-width: 640px) {
+  .section-heading { font-size: 2.25rem; }
+}
+@media (min-width: 1024px) {
+  .section-heading { font-size: 2.75rem; }
+}
+
+/* Section 分隔线 */
+.section-divider {
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.1), transparent);
+  margin: 0 auto;
+  max-width: 72rem;
+}
+
+/* 导航栏下阴影 — 极淡 */
+.nav-shadow {
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.04);
 }
 
 /* 小宠物动画 */
@@ -49,11 +83,3 @@ body {
 }
 .animate-fade-in  { animation: fade-in 0.25s ease-out both; }
 .animate-float-up { animation: float-up 0.7s ease-out both; }
-
-/* 网格背景纹理 */
-.bg-grid {
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-  background-size: 60px 60px;
-}
