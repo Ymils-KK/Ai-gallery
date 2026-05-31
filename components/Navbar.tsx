@@ -35,24 +35,24 @@ export default function Navbar({ logo = "KK🐱" }: { logo?: string }) {
       { threshold: [0.1, 0.3, 0.5], rootMargin: "-80px 0px -40% 0px" }
     );
 
-    const sections = document.querySelectorAll("section[id]");
+    const sections = document.querySelectorAll("#hero, #gallery, #about, #blog");
     sections.forEach((s) => observer.observe(s));
 
     return () => observer.disconnect();
   }, [pathname]);
 
   function handleClick(e: React.MouseEvent<HTMLAnchorElement>, href: string) {
-    // 如果在其他页面（如 /blog/[slug]），让浏览器正常跳转回首页
-    if (pathname !== "/") {
-      return; // 用默认行为，跳回首页再锚点
-    }
-    e.preventDefault();
-    const id = href.replace("/#", "#");
-    const el = document.querySelector(id);
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth" });
-    }
     setOpen(false);
+    // 如果不在首页，让浏览器正常跳转
+    if (pathname !== "/") {
+      return;
+    }
+    // 在首页 — 通过 hash 切换 PageSlider 页面
+    e.preventDefault();
+    const hash = href.replace("/#", "#");
+    if (window.location.hash !== hash) {
+      window.location.hash = hash;
+    }
   }
 
   return (

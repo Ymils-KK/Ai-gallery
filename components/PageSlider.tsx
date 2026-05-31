@@ -3,22 +3,54 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
+const pageIds = ["hero", "gallery", "about", "blog"];
+
 interface PageSliderProps {
   children: React.ReactNode[];
 }
 
 export default function PageSlider({ children }: PageSliderProps) {
   const [page, setPage] = useState(0);
+  const [ready, setReady] = useState(false);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const total = children.length;
 
+  // 客户端挂载后，读取 URL hash 设置初始页码
+  useEffect(() => {
+    const hash = window.location.hash.replace("#", "");
+    const idx = pageIds.indexOf(hash);
+    if (idx >= 0) setPage(idx);
+    setReady(true);
+  }, []);
+
   const goTo = useCallback(
     (idx: number) => {
-      setPage(((idx % total) + total) % total);
+      const newPage = ((idx % total) + total) % total;
+      setPage(newPage);
+      // 同步 URL hash
+      if (typeof window !== "undefined") {
+        const id = pageIds[newPage];
+        if (id && window.location.hash !== `#${id}`) {
+          window.history.replaceState(null, "", `/#${id}`);
+        }
+      }
     },
     [total]
   );
+
+  // 监听 hash 变化（用户点导航栏链接）
+  useEffect(() => {
+    const onHashChange = () => {
+      const hash = window.location.hash.replace("#", "");
+      const idx = pageIds.indexOf(hash);
+      if (idx >= 0 && idx !== page) {
+        setPage(idx);
+      }
+    };
+    window.addEventListener("hashchange", onHashChange);
+    return () => window.removeEventListener("hashchange", onHashChange);
+  }, [page]);
 
   // 键盘
   useEffect(() => {
@@ -71,7 +103,7 @@ export default function PageSlider({ children }: PageSliderProps) {
     >
       {/* 页面滑动容器 */}
       <div
-        className="flex h-full transition-transform duration-600 ease-[cubic-bezier(0.32,0.72,0,1)]"
+        className={`flex h-full ease-[cubic-bezier(0.32,0.72,0,1)] ${ready ? "transition-transform duration-600" : ""}`}
         style={{
           width: `${total * 100}vw`,
           transform: `translateX(-${page * 100}vw)`,
