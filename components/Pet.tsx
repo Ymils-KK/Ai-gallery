@@ -29,6 +29,7 @@ export default function Pet() {
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [idleOffset, setIdleOffset] = useState(0);
   const petRef = useRef<HTMLDivElement>(null);
+  const imgRef = useRef<HTMLImageElement>(null);
   const bubbleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // ---- 空闲浮动 ----
@@ -58,8 +59,38 @@ export default function Pet() {
     return () => clearInterval(interval);
   }, []);
 
-  // ---- 拖拽 ----
+  // ---- 拖拽（仅响应非透明像素） ----
+  const isTransparentAt = (img: HTMLImageElement, x: number, y: number): boolean => {
+    try {
+      const canvas = document.createElement("canvas");
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return true;
+      ctx.drawImage(img, 0, 0);
+      // 将点击坐标映射到图片原始分辨率
+      const scaleX = img.naturalWidth / img.clientWidth;
+      const scaleY = img.naturalHeight / img.clientHeight;
+      const px = Math.floor(x * scaleX);
+      const py = Math.floor(y * scaleY);
+      if (px < 0 || py < 0 || px >= canvas.width || py >= canvas.height) return true;
+      const alpha = ctx.getImageData(px, py, 1, 1).data[3];
+      return alpha < 10; // alpha 低于 10 视为透明
+    } catch {
+      return false; // 出错时允许拖拽
+    }
+  };
+
   const handleMouseDown = (e: React.MouseEvent) => {
+    const img = imgRef.current;
+    if (!img) return;
+    const rect = img.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const clickY = e.clientY - rect.top;
+    // 点在透明区域 → 不触发拖拽/点击
+    if (isTransparentAt(img, clickX, clickY)) return;
+
+    e.preventDefault();
     setDragging(true);
     setDragStart({ x: e.clientX - position.x, y: e.clientY - position.y });
     setBubble(null);
@@ -134,6 +165,7 @@ export default function Pet() {
       {/* 洛克希 — 图片即为可拖拽元素 */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
+        ref={imgRef}
         src="/images/KK.png"
         alt="洛克希"
         className={`transition-all duration-300 drop-shadow-[0_0_30px_rgba(168,85,247,0.2)] ${dragging ? "cursor-grabbing" : "cursor-pointer"}`}
