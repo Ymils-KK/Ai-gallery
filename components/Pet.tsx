@@ -131,27 +131,22 @@ export default function Pet() {
       {/* 脚下辉光 */}
       <div className="absolute bottom-0 left-1/2 -translate-x-1/2 h-5 w-[150px] rounded-full bg-gradient-to-r from-accent/25 via-accent-blue/15 to-accent-cyan/25 blur-xl pointer-events-none" />
 
-      {/* 洛克希 — 透明背景，只有图片区域可拖拽和点击 */}
-      <div
-        className={`relative transition-all duration-300 ${dragging ? "cursor-grabbing" : "cursor-pointer"}`}
+      {/* 洛克希 — 图片即为可拖拽元素 */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/images/KK.png"
+        alt="洛克希"
+        className={`transition-all duration-300 drop-shadow-[0_0_30px_rgba(168,85,247,0.2)] ${dragging ? "cursor-grabbing" : "cursor-pointer"}`}
         style={{
-          width: 420,
-          height: 230,
+          width: 320,
           transform: bouncing
             ? `scale(1.08) rotate(${tilting}deg)`
             : `scale(1) rotate(${tilting}deg)`,
         }}
+        draggable={false}
         onMouseDown={handleMouseDown}
         onClick={handleClick}
-      >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/images/KK.png"
-          alt="洛克希"
-          className="h-full w-full object-contain drop-shadow-[0_0_30px_rgba(168,85,247,0.2)]"
-          draggable={false}
-        />
-      </div>
+      />
     </div>
   );
 }
