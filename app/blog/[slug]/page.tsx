@@ -35,13 +35,13 @@ export default async function BlogPostPage({ params }: Props) {
   return (
     <div className="relative z-10 mx-auto max-w-3xl px-6 py-16 sm:py-24">
       {/* 返回链接 */}
-      <Link
+      <a
         href="/#blog"
         className="inline-flex items-center gap-2 text-sm text-white/60 hover:text-white transition-colors"
       >
         <ArrowLeft className="h-4 w-4" />
         返回博客列表
-      </Link>
+      </a>
 
       {/* 文章卡片 */}
       <div className="mt-6 rounded-2xl bg-black/40 backdrop-blur-xl border border-white/[0.06] p-8 sm:p-10">
