@@ -71,7 +71,7 @@ export default async function HomePage() {
         </div>
         {/* 底部播放器 */}
         <div className="absolute bottom-28 left-1/2 -translate-x-1/2 z-10">
-          <HeroPlayer neteaseId="1393412185" title="Maybe" artist="" />
+          <HeroPlayer src="/maybe.mp3" title="Maybe" />
         </div>
       </div>
 

@@ -4,12 +4,12 @@ import { useState, useRef, useEffect } from "react";
 import { Play, Pause, Volume2, Volume1, VolumeX } from "lucide-react";
 
 interface Props {
-  neteaseId?: string;
+  src?: string;
   title?: string;
   artist?: string;
 }
 
-export default function HeroPlayer({ neteaseId = "1393412185", title, artist }: Props) {
+export default function HeroPlayer({ src = "/maybe.mp3", title, artist }: Props) {
   const [playing, setPlaying] = useState(false);
   const [volume, setVolume] = useState(0.5);
   const [showVol, setShowVol] = useState(false);
@@ -36,7 +36,7 @@ export default function HeroPlayer({ neteaseId = "1393412185", title, artist }: 
     <div className="flex items-center gap-3 rounded-full bg-white/5 backdrop-blur-xl border border-white/[0.06] pl-4 pr-2 py-2 select-none transition-all hover:bg-white/[0.08]">
       <audio
         ref={audioRef}
-        src={`/api/music-proxy?id=${neteaseId}`}
+        src={src}
         loop
         onPlay={() => setPlaying(true)}
         onPause={() => setPlaying(false)}
