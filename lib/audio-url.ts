@@ -5,7 +5,7 @@ interface SongLike {
 
 export function getAudioUrl(song: SongLike): string {
   if (song.neteaseId) {
-    return `https://music.163.com/song/media/outer/url?id=${song.neteaseId}.mp3`;
+    return `/api/music-proxy?id=${song.neteaseId}`;
   }
   return song.src || "";
 }

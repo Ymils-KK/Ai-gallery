@@ -146,7 +146,7 @@ export default function Pet() {
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/images/KK.PNG"
+          src="/images/KK.png"
           alt="洛克希"
           className="h-full w-full object-contain drop-shadow-[0_0_30px_rgba(168,85,247,0.2)]"
           draggable={false}
