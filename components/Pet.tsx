@@ -101,14 +101,12 @@ export default function Pet() {
   return (
     <div
       ref={petRef}
-      className={`fixed z-[80] select-none ${dragging ? "cursor-grabbing" : "cursor-pointer"}`}
+      className="fixed z-[80] select-none"
       style={{
         right: 24 - position.x,
         bottom: 0 - position.y,
         transform: `translateY(${idleOffset}px)`,
       }}
-      onMouseDown={handleMouseDown}
-      onClick={handleClick}
     >
       {/* 说话气泡 */}
       {bubble && (
@@ -131,11 +129,11 @@ export default function Pet() {
       )}
 
       {/* 脚下辉光 */}
-      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 h-5 w-[150px] rounded-full bg-gradient-to-r from-accent/25 via-accent-blue/15 to-accent-cyan/25 blur-xl" />
+      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 h-5 w-[150px] rounded-full bg-gradient-to-r from-accent/25 via-accent-blue/15 to-accent-cyan/25 blur-xl pointer-events-none" />
 
-      {/* 洛克希 — 透明背景 */}
+      {/* 洛克希 — 透明背景，只有图片区域可拖拽和点击 */}
       <div
-        className="relative transition-all duration-300"
+        className={`relative transition-all duration-300 ${dragging ? "cursor-grabbing" : "cursor-pointer"}`}
         style={{
           width: 420,
           height: 230,
@@ -143,6 +141,8 @@ export default function Pet() {
             ? `scale(1.08) rotate(${tilting}deg)`
             : `scale(1) rotate(${tilting}deg)`,
         }}
+        onMouseDown={handleMouseDown}
+        onClick={handleClick}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img

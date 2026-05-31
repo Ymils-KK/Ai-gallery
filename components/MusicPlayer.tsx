@@ -22,6 +22,10 @@ export default function MusicPlayer() {
   const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(0.7);
   const [expanded, setExpanded] = useState(false);
+  const [pos, setPos] = useState({ x: 0, y: 0 });
+  const [dragging, setDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const movedRef = useRef(false);
   const audioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
@@ -64,10 +68,34 @@ export default function MusicPlayer() {
     return `${m}:${sec.toString().padStart(2, "0")}`;
   };
 
+  // 拖拽
+  const handleDragStart = (e: React.MouseEvent) => {
+    movedRef.current = false;
+    setDragging(true);
+    setDragStart({ x: e.clientX - pos.x, y: e.clientY - pos.y });
+  };
+  useEffect(() => {
+    if (!dragging) return;
+    const onMove = (e: MouseEvent) => {
+      movedRef.current = true;
+      setPos({ x: e.clientX - dragStart.x, y: e.clientY - dragStart.y });
+    };
+    const onUp = () => setDragging(false);
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseup", onUp);
+    return () => {
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mouseup", onUp);
+    };
+  }, [dragging, dragStart]);
+
   if (songs.length === 0) return null;
 
   return (
-    <div className="fixed right-6 bottom-36 z-[70] flex flex-col items-end gap-2">
+    <div
+      className="fixed z-[70] flex flex-col items-end gap-2"
+      style={{ right: 24 - pos.x, bottom: 144 - pos.y }}
+    >
       {/* 隐藏的音频元素 */}
       <audio
         ref={audioRef}
@@ -181,8 +209,9 @@ export default function MusicPlayer() {
 
       {/* 圆形开关按钮 */}
       <button
-        onClick={() => setExpanded(!expanded)}
-        className={`flex h-11 w-11 items-center justify-center rounded-full shadow-lg transition-all duration-300 ${
+        onMouseDown={handleDragStart}
+        onClick={() => { if (!movedRef.current) setExpanded(!expanded); }}
+        className={`flex h-11 w-11 items-center justify-center rounded-full shadow-lg transition-all duration-300 cursor-grab active:cursor-grabbing ${
           playing
             ? "bg-white/10 text-white"
             : "bg-card border border-border text-muted hover:text-foreground hover:scale-105"
