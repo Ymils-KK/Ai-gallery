@@ -16,12 +16,16 @@ export default function PageSlider({ children }: PageSliderProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const total = children.length;
 
-  // 客户端挂载后，读取 URL hash 设置初始页码
+  // 客户端挂载后，读取 URL hash，瞬间跳到正确页，再启用过渡动画
   useEffect(() => {
     const hash = window.location.hash.replace("#", "");
     const idx = pageIds.indexOf(hash);
     if (idx >= 0) setPage(idx);
-    setReady(true);
+    // 延迟启用 transition，避免初始跳转时的动画
+    const frame = requestAnimationFrame(() => {
+      requestAnimationFrame(() => setReady(true));
+    });
+    return () => cancelAnimationFrame(frame);
   }, []);
 
   const goTo = useCallback(
