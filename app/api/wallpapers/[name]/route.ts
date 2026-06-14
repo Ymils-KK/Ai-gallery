@@ -2,7 +2,10 @@ import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
 
-const wallpaperDir = "C:\\Users\\Administrator\\Desktop\\壁纸";
+// 本地桌面壁纸文件夹（仅开发环境存在）
+const localDir = "C:\\Users\\Administrator\\Desktop\\壁纸";
+// 项目内置壁纸文件夹（本地和 Vercel 都可用）
+const publicDir = path.join(process.cwd(), "public", "wallpapers");
 
 const mimeMap: Record<string, string> = {
   ".png": "image/png",
@@ -12,6 +15,18 @@ const mimeMap: Record<string, string> = {
   ".bmp": "image/bmp",
   ".gif": "image/gif",
 };
+
+function findFile(name: string): string | null {
+  // 优先从 public/wallpapers 读取
+  const publicPath = path.join(publicDir, name);
+  if (fs.existsSync(publicPath)) return publicPath;
+
+  // 其次从桌面壁纸文件夹读取
+  const localPath = path.join(localDir, name);
+  if (fs.existsSync(localPath)) return localPath;
+
+  return null;
+}
 
 export async function GET(
   _request: Request,
@@ -24,9 +39,9 @@ export async function GET(
     return new NextResponse("Forbidden", { status: 403 });
   }
 
-  const filePath = path.join(wallpaperDir, name);
+  const filePath = findFile(name);
 
-  if (!fs.existsSync(filePath)) {
+  if (!filePath) {
     return new NextResponse("Not Found", { status: 404 });
   }
 
