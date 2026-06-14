@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { X, Plus, Trash2, Check, Loader2 } from "lucide-react";
+import { X, Plus, Trash2, Check } from "lucide-react";
 
 interface Note {
   id: string;
@@ -15,62 +15,72 @@ interface NotebookProps {
   onClose: () => void;
 }
 
+const STORAGE_KEY = "kk_notebook_notes";
+
+function loadNotes(): Note[] {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveNotes(notes: Note[]) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
+  } catch {}
+}
+
+function formatDate(): string {
+  const now = new Date();
+  const m = String(now.getMonth() + 1).padStart(2, "0");
+  const d = String(now.getDate()).padStart(2, "0");
+  const h = String(now.getHours()).padStart(2, "0");
+  const min = String(now.getMinutes()).padStart(2, "0");
+  return `${m}/${d} ${h}:${min}`;
+}
+
 export default function Notebook({ open, onClose }: NotebookProps) {
   const [notes, setNotes] = useState<Note[]>([]);
   const [newText, setNewText] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [saving, setSaving] = useState(false);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
+  // 每次打开时重新加载
   useEffect(() => {
     if (open) {
-      loadNotes();
+      setNotes(loadNotes());
+      // 自动聚焦输入框
+      setTimeout(() => inputRef.current?.focus(), 100);
     }
   }, [open]);
 
-  async function loadNotes() {
-    setLoading(true);
-    try {
-      const res = await fetch("/api/notes");
-      if (res.ok) setNotes(await res.json());
-    } catch {}
-    setLoading(false);
+  function addNote() {
+    if (!newText.trim()) return;
+    const note: Note = {
+      id: "note_" + Date.now().toString(36),
+      text: newText.trim(),
+      done: false,
+      createdAt: formatDate(),
+    };
+    const updated = [note, ...notes];
+    setNotes(updated);
+    saveNotes(updated);
+    setNewText("");
   }
 
-  async function addNote() {
-    if (!newText.trim() || saving) return;
-    setSaving(true);
-    try {
-      const res = await fetch("/api/notes", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: newText.trim() }),
-      });
-      if (res.ok) {
-        const { note } = await res.json();
-        setNotes((prev) => [note, ...prev]);
-        setNewText("");
-      }
-    } catch {}
-    setSaving(false);
+  function toggleDone(id: string) {
+    const updated = notes.map((n) =>
+      n.id === id ? { ...n, done: !n.done } : n
+    );
+    setNotes(updated);
+    saveNotes(updated);
   }
 
-  async function toggleDone(id: string) {
-    const note = notes.find((n) => n.id === id);
-    if (!note) return;
-    const newDone = !note.done;
-    // 乐观更新
-    setNotes((prev) => prev.map((n) => (n.id === id ? { ...n, done: newDone } : n)));
-    await fetch("/api/notes", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id, done: newDone }),
-    });
-  }
-
-  async function deleteNote(id: string) {
-    setNotes((prev) => prev.filter((n) => n.id !== id));
-    await fetch(`/api/notes?id=${id}`, { method: "DELETE" });
+  function deleteNote(id: string) {
+    const updated = notes.filter((n) => n.id !== id);
+    setNotes(updated);
+    saveNotes(updated);
   }
 
   if (!open) return null;
@@ -119,25 +129,17 @@ export default function Notebook({ open, onClose }: NotebookProps) {
             />
             <button
               onClick={addNote}
-              disabled={!newText.trim() || saving}
+              disabled={!newText.trim()}
               className="shrink-0 rounded-lg bg-white/[0.08] p-2 text-white/50 hover:text-white hover:bg-white/[0.12] transition-all disabled:opacity-30"
             >
-              {saving ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <Plus className="h-4 w-4" />
-              )}
+              <Plus className="h-4 w-4" />
             </button>
           </div>
         </div>
 
         {/* 列表 */}
         <div className="flex-1 overflow-y-auto px-4 py-2">
-          {loading ? (
-            <div className="flex items-center justify-center py-8">
-              <Loader2 className="h-5 w-5 animate-spin text-white/20" />
-            </div>
-          ) : notes.length === 0 ? (
+          {notes.length === 0 ? (
             <div className="py-8 text-center">
               <p className="text-3xl mb-2">🐱</p>
               <p className="text-xs text-white/25">还没有记录，写点什么吧~</p>
@@ -193,7 +195,7 @@ export default function Notebook({ open, onClose }: NotebookProps) {
         {/* 底部提示 */}
         <div className="px-4 py-2 border-t border-white/[0.06]">
           <p className="text-[10px] text-white/15 text-center">
-            Enter 发送 · 点击左侧圆圈标记完成
+            Enter 发送 · 数据存于浏览器本地
           </p>
         </div>
       </div>

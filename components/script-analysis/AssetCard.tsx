@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Copy, Check, Sparkles, Loader2 } from "lucide-react";
+import { Copy, Check, Sparkles, Loader2, ChevronDown } from "lucide-react";
 import ImageUploadSlot from "./ImageUploadSlot";
 import PromptChat from "./PromptChat";
 
@@ -37,6 +37,7 @@ export default function AssetCard({
   const [copied, setCopied] = useState(false);
   const [showCn, setShowCn] = useState(false);
   const [generating, setGenerating] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
 
   async function handleCopy() {
     const text = showCn && asset.imagePromptCn ? asset.imagePromptCn : asset.imagePrompt;
@@ -142,7 +143,10 @@ export default function AssetCard({
                 assetName={asset.name}
                 assetType={categoryLabel}
                 currentPrompt={asset.imagePrompt}
-                onPromptUpdate={(newPrompt) => onPromptUpdate(asset.id, newPrompt)}
+                onPromptUpdate={(newPrompt) => {
+                  setCollapsed(false); // 修改后自动展开
+                  onPromptUpdate(asset.id, newPrompt);
+                }}
               />
               {/* 复制按钮 */}
               <button
@@ -164,9 +168,24 @@ export default function AssetCard({
               </button>
             </div>
           </div>
-          <p className="text-sm text-white/60 leading-relaxed break-words font-mono">
-            {displayPrompt}
-          </p>
+
+          {/* 提示词内容（折叠/展开） */}
+          <div>
+            <p className="text-sm text-white/60 leading-relaxed break-words font-mono">
+              {collapsed && displayPrompt.length > 200
+                ? displayPrompt.slice(0, 200) + "…"
+                : displayPrompt}
+            </p>
+            {displayPrompt.length > 200 && (
+              <button
+                onClick={() => setCollapsed(!collapsed)}
+                className="mt-1 flex items-center gap-1 text-xs text-white/30 hover:text-white/60 transition-colors"
+              >
+                <span>{collapsed ? "展开全部" : "收起"}</span>
+                <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-200 ${collapsed ? "" : "rotate-180"}`} />
+              </button>
+            )}
+          </div>
         </div>
       )}
     </div>

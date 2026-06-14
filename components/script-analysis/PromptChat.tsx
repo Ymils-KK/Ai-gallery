@@ -52,12 +52,10 @@ export default function PromptChat({
 
       const result = await res.json();
       if (result.success) {
-        const aiMsg: ChatMessage = {
-          role: "assistant",
-          content: result.prompt,
-        };
-        setMessages([...newMessages, aiMsg]);
+        // 直接替换原提示词，关闭对话
         onPromptUpdate(result.prompt);
+        setMessages([]);
+        setOpen(false);
       } else {
         setMessages([
           ...newMessages,
