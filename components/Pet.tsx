@@ -19,7 +19,11 @@ const messages = [
 
 const emotes = ["💖", "✨", "🌟", "💫", "🎨", "🔥", "💜", "🫧"];
 
-export default function Pet() {
+interface PetProps {
+  onNotebookToggle?: () => void;
+}
+
+export default function Pet({ onNotebookToggle }: PetProps) {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [bubble, setBubble] = useState<string | null>(null);
   const [emote, setEmote] = useState<string | null>(null);
@@ -127,6 +131,9 @@ export default function Pet() {
     setBubble(msg);
     if (bubbleTimer.current) clearTimeout(bubbleTimer.current);
     bubbleTimer.current = setTimeout(() => setBubble(null), 2500);
+
+    // 打开/关闭记录本
+    onNotebookToggle?.();
   };
 
   return (

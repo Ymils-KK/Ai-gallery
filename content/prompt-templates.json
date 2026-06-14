@@ -1,0 +1,17 @@
+[
+  {
+    "id": "tpl_default",
+    "name": "通用默认",
+    "instructions": "标准漫剧风格，无明显偏好偏向。"
+  },
+  {
+    "id": "tpl_eu_female",
+    "name": "欧美女频爽文 人物",
+    "instructions": "欧美女频爽文短剧风格。男性人物：八头身完美比例，十分帅气，脸上不要出现雀斑细纹。女性人物：脸上不要出现雀斑和细纹，九头身超模比例，梦幻般的美丽，身材比例极佳，服装华丽切突出人物身材，抹胸装。人物不要出现动物的一些特征。"
+  },
+  {
+    "id": "tpl_hasselblad",
+    "name": "哈苏真人摄影",
+    "instructions": "所有人物提示词必须严格按以下格式生成，固定前缀不可省略。每条人物提示词格式为：Hasselblad X2D 100C, 85mm standard prime lens, 32K ultra HD, HDR10+ high dynamic range, cinematic color grading, IMAX quality, 100mm f/2.8 macro lens, ISO 100, shutter speed 1/125s, RAW format output, visible skin texture with pores and capillaries, individual hair strands clearly visible, rich light and shadow layers, fine grain texture, no props, standard front standing pose, nine-head golden body proportion, full body to feet no cropping, looking directly at camera, clean white seamless background, 16:9 aspect ratio, [接着写该角色的具体外貌服装描述，不要省略任何固定前缀]"
+  }
+]

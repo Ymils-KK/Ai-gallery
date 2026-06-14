@@ -9,6 +9,7 @@ const links = [
   { href: "/#gallery", label: "作品" },
   { href: "/#about", label: "关于" },
   { href: "/#blog", label: "博客" },
+  { href: "/script-analysis", label: "剧本分析" },
 ];
 
 export default function Navbar({ logo = "KK🐱" }: { logo?: string }) {
@@ -43,6 +44,10 @@ export default function Navbar({ logo = "KK🐱" }: { logo?: string }) {
 
   function handleClick(e: React.MouseEvent<HTMLAnchorElement>, href: string) {
     setOpen(false);
+    // 非 hash 链接（如 /script-analysis），让浏览器正常跳转
+    if (!href.includes("#")) {
+      return;
+    }
     // 如果不在首页，让浏览器正常跳转
     if (pathname !== "/") {
       return;
@@ -71,7 +76,11 @@ export default function Navbar({ logo = "KK🐱" }: { logo?: string }) {
         <div className="hidden items-center gap-1 md:flex">
           {links.map((link) => {
             const isActive =
-              pathname === "/" && activeSection === link.href.replace("/", "");
+              (pathname === "/" &&
+                activeSection === link.href.replace("/", "")) ||
+              (link.href.startsWith("/") &&
+                !link.href.includes("#") &&
+                pathname === link.href);
             return (
               <a
                 key={link.href}

@@ -5,9 +5,9 @@ import { Geist, Geist_Mono } from "next/font/google";
 import Navbar from "@/components/Navbar";
 
 import Pet from "@/components/Pet";
-import PixelPet from "@/components/PixelPet";
 import MusicPlayer from "@/components/MusicPlayer";
 import VideoBg from "@/components/VideoBg";
+import PetWithNotebook from "@/components/PetWithNotebook";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -53,7 +53,7 @@ export default function RootLayout({
         <Navbar logo={config.navbar?.logo || "KK🐱"} />
         <main className="flex-1 pt-14">{children}</main>
         <MusicPlayer />
-        <Pet />
+        <PetWithNotebook />
       </body>
     </html>
   );

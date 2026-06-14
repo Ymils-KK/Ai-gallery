@@ -45,7 +45,7 @@ export default function AdminPage() {
   const [tagInput, setTagInput] = useState("");
   const [uploading, setUploading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
-  const [tab, setTab] = useState<"works" | "collections" | "site" | "music">("works");
+  const [tab, setTab] = useState<"works" | "collections" | "site" | "music" | "api">("works");
 
   // ---- 合集状态 ----
   const [collections, setCollections] = useState<Collection[]>([]);
@@ -120,12 +120,37 @@ export default function AdminPage() {
     setShowSongForm(false); setEditSong(null);
   };
 
+  // ---- API 配置 ----
+  const [apiKey, setApiKey] = useState("");
+  const [apiBaseURL, setApiBaseURL] = useState("https://api.deepseek.com/v1");
+  const [apiMsg, setApiMsg] = useState("");
+
+  const loadApiConfig = useCallback(async () => {
+    const res = await fetch("/api/script-analysis/settings");
+    if (res.ok) {
+      const data = await res.json();
+      setApiKey(data.apiKey || "");
+      setApiBaseURL(data.baseURL || "https://api.deepseek.com/v1");
+    }
+  }, []);
+
+  const saveApiConfig = async () => {
+    const res = await fetch("/api/script-analysis/settings", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ apiKey: apiKey.trim(), baseURL: apiBaseURL.trim() }),
+    });
+    setApiMsg(res.ok ? "API 配置已保存！" : "保存失败");
+    setTimeout(() => setApiMsg(""), 2500);
+  };
+
   useEffect(() => {
     loadWorks();
     loadCollections();
     loadConfig();
     loadSongs();
-  }, [loadWorks, loadCollections, loadConfig, loadSongs]);
+    loadApiConfig();
+  }, [loadWorks, loadCollections, loadConfig, loadSongs, loadApiConfig]);
 
   // ---- 合集 CRUD ----
   const saveCollections = async (updated: Collection[]) => {
@@ -345,6 +370,16 @@ export default function AdminPage() {
           }`}
         >
           音乐 ({songs.length})
+        </button>
+        <button
+          onClick={() => setTab("api")}
+          className={`rounded-lg px-5 py-2.5 text-sm font-medium transition-all ${
+            tab === "api"
+              ? "bg-white/10 text-white"
+              : "text-muted border border-border hover:text-foreground"
+          }`}
+        >
+          API 配置
         </button>
       </div>
 
@@ -1175,6 +1210,63 @@ export default function AdminPage() {
             </div>
           )}
         </>
+      )}
+
+      {/* ===== API 配置标签页 ===== */}
+      {tab === "api" && (
+        <div className="max-w-xl space-y-6">
+          {apiMsg && (
+            <div className="rounded-lg border border-white/15 bg-white/5 px-4 py-3 text-sm text-white/80">
+              {apiMsg}
+            </div>
+          )}
+
+          <div className="rounded-xl border border-border bg-card p-6">
+            <h3 className="text-sm font-semibold text-foreground mb-1">DeepSeek API 密钥</h3>
+            <p className="text-xs text-muted mb-3">
+              剧本分析功能所需的 AI 接口密钥。
+              <a
+                href="https://platform.deepseek.com/api_keys"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="ml-1 text-white/40 hover:text-white/60 underline"
+              >
+                获取 API Key →
+              </a>
+            </p>
+            <input
+              type="password"
+              value={apiKey}
+              onChange={(e) => setApiKey(e.target.value)}
+              placeholder="sk-..."
+              className="w-full rounded-lg border border-border bg-background px-3 py-2.5 text-sm text-foreground focus:border-white/15 focus:outline-none font-mono"
+            />
+          </div>
+
+          <div className="rounded-xl border border-border bg-card p-6">
+            <h3 className="text-sm font-semibold text-foreground mb-1">API 地址</h3>
+            <p className="text-xs text-muted mb-3">
+              一般不需要改，除非使用中转服务。
+            </p>
+            <input
+              type="text"
+              value={apiBaseURL}
+              onChange={(e) => setApiBaseURL(e.target.value)}
+              placeholder="https://api.deepseek.com/v1"
+              className="w-full rounded-lg border border-border bg-background px-3 py-2.5 text-sm text-foreground focus:border-white/15 focus:outline-none font-mono"
+            />
+            <p className="text-xs text-muted mt-2">
+              官方默认：https://api.deepseek.com/v1
+            </p>
+          </div>
+
+          <button
+            onClick={saveApiConfig}
+            className="flex items-center gap-2 rounded-lg bg-white/10 px-5 py-2.5 text-sm font-medium text-white hover:bg-white/20 transition-all"
+          >
+            <Save className="h-4 w-4" /> 保存配置
+          </button>
+        </div>
       )}
     </div>
   );
