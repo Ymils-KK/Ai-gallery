@@ -277,6 +277,146 @@ export default function ScriptAnalysisPage() {
     await saveProject({ id: activeId, script, synopsis, synopsisEn, targetAudience, style, characters: nc, scenes: ns, props: np });
   }
 
+  // ---- 服装操作 ----
+
+  // 手动添加服装
+  async function handleAddOutfit(charId: string, name: string, desc: string) {
+    if (!activeId) return;
+    const updater = (items: AssetItem[]) =>
+      items.map((item) => {
+        if (item.id !== charId) return item;
+        const outfit = {
+          id: `outfit_${Date.now()}`,
+          name,
+          description: desc,
+          imagePrompt: "",
+          imagePromptCn: "",
+          imageUrl: "",
+        };
+        return { ...item, outfits: [...(item.outfits || []), outfit] };
+      });
+
+    const nc = updater(characters);
+    setCharacters(nc);
+    await saveProject({ id: activeId, script, synopsis, synopsisEn, targetAudience, style, characters: nc, scenes, props });
+  }
+
+  // 上传服装图片
+  async function handleOutfitImageUpload(charId: string, outfitId: string, file: File) {
+    if (!activeId) return;
+    const fd = new FormData(); fd.append("file", file);
+    const res = await fetch("/api/upload", { method: "POST", body: fd });
+    const result = await res.json();
+    if (!result.success) throw new Error(result.error || "上传失败");
+
+    const imageUrl = result.path;
+    const updater = (items: AssetItem[]) =>
+      items.map((item) => {
+        if (item.id !== charId || !item.outfits) return item;
+        return {
+          ...item,
+          outfits: item.outfits.map((o) => (o.id === outfitId ? { ...o, imageUrl } : o)),
+        };
+      });
+
+    const nc = updater(characters);
+    setCharacters(nc);
+    await saveProject({ id: activeId, script, synopsis, synopsisEn, targetAudience, style, characters: nc, scenes, props });
+  }
+
+  // 删除服装图片
+  async function handleOutfitImageRemove(charId: string, outfitId: string) {
+    if (!activeId) return;
+    const updater = (items: AssetItem[]) =>
+      items.map((item) => {
+        if (item.id !== charId || !item.outfits) return item;
+        return {
+          ...item,
+          outfits: item.outfits.map((o) => (o.id === outfitId ? { ...o, imageUrl: "" } : o)),
+        };
+      });
+
+    const nc = updater(characters);
+    setCharacters(nc);
+    await saveProject({ id: activeId, script, synopsis, synopsisEn, targetAudience, style, characters: nc, scenes, props });
+  }
+
+  // 更新服装提示词
+  async function handleOutfitPromptUpdate(charId: string, outfitId: string, newPrompt: string, newPromptCn?: string) {
+    if (!activeId) return;
+    const updater = (items: AssetItem[]) =>
+      items.map((item) => {
+        if (item.id !== charId || !item.outfits) return item;
+        return {
+          ...item,
+          outfits: item.outfits.map((o) =>
+            o.id === outfitId
+              ? { ...o, imagePrompt: newPrompt, ...(newPromptCn ? { imagePromptCn: newPromptCn } : {}) }
+              : o
+          ),
+        };
+      });
+
+    const nc = updater(characters);
+    setCharacters(nc);
+    await saveProject({ id: activeId, script, synopsis, synopsisEn, targetAudience, style, characters: nc, scenes, props });
+  }
+
+  // AI 生成服装提示词
+  async function handleGenerateOutfitPrompt(charId: string, outfitId: string) {
+    if (!activeId) return;
+
+    const character = characters.find((c) => c.id === charId);
+    const outfit = character?.outfits?.find((o) => o.id === outfitId);
+    if (!character || !outfit) return;
+
+    const res = await fetch(`/api/projects/${activeId}/generate-prompt`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        assetName: `${character.name} - ${outfit.name}`,
+        assetType: "outfit",
+        description: `角色：${character.name}（${character.description}）\n服装：${outfit.name}（${outfit.description}）`,
+        style,
+        templateIds,
+      }),
+    });
+
+    const result = await res.json();
+    if (!result.success) throw new Error(result.error || "生成失败");
+
+    const updater = (items: AssetItem[]) =>
+      items.map((item) => {
+        if (item.id !== charId || !item.outfits) return item;
+        return {
+          ...item,
+          outfits: item.outfits.map((o) =>
+            o.id === outfitId
+              ? { ...o, imagePrompt: result.imagePrompt, imagePromptCn: result.imagePromptCn }
+              : o
+          ),
+        };
+      });
+
+    const nc = updater(characters);
+    setCharacters(nc);
+    await saveProject({ id: activeId, script, synopsis, synopsisEn, targetAudience, style, characters: nc, scenes, props });
+  }
+
+  // 删除服装
+  async function handleDeleteOutfit(charId: string, outfitId: string) {
+    if (!activeId) return;
+    const updater = (items: AssetItem[]) =>
+      items.map((item) => {
+        if (item.id !== charId || !item.outfits) return item;
+        return { ...item, outfits: item.outfits.filter((o) => o.id !== outfitId) };
+      });
+
+    const nc = updater(characters);
+    setCharacters(nc);
+    await saveProject({ id: activeId, script, synopsis, synopsisEn, targetAudience, style, characters: nc, scenes, props });
+  }
+
   // 为次要资产生成提示词
   async function handleGeneratePrompt(category: string, assetId: string) {
     if (!activeId) return;
@@ -442,6 +582,12 @@ export default function ScriptAnalysisPage() {
                     onPromptUpdate={handlePromptUpdate}
                     onGeneratePrompt={handleGeneratePrompt}
                     onAddAsset={handleAddAsset}
+                    onAddOutfit={handleAddOutfit}
+                    onOutfitImageUpload={handleOutfitImageUpload}
+                    onOutfitImageRemove={handleOutfitImageRemove}
+                    onOutfitPromptUpdate={handleOutfitPromptUpdate}
+                    onGenerateOutfitPrompt={handleGenerateOutfitPrompt}
+                    onDeleteOutfit={handleDeleteOutfit}
                   />
                 </div>
               )}

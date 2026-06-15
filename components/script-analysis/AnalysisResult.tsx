@@ -19,6 +19,13 @@ interface AnalysisResultProps {
   onPromptUpdate: (category: string, assetId: string, newPrompt: string, newPromptCn?: string) => void;
   onGeneratePrompt: (category: string, assetId: string) => Promise<void>;
   onAddAsset: (category: string, name: string, description: string, tier: "major" | "minor") => void;
+  // 服装
+  onAddOutfit?: (charId: string, name: string, desc: string) => void;
+  onOutfitImageUpload?: (charId: string, outfitId: string, file: File) => Promise<void>;
+  onOutfitImageRemove?: (charId: string, outfitId: string) => void;
+  onOutfitPromptUpdate?: (charId: string, outfitId: string, newPrompt: string, newPromptCn?: string) => void;
+  onGenerateOutfitPrompt?: (charId: string, outfitId: string) => Promise<void>;
+  onDeleteOutfit?: (charId: string, outfitId: string) => void;
 }
 
 const sections = [
@@ -35,6 +42,12 @@ export default function AnalysisResult({
   onPromptUpdate,
   onGeneratePrompt,
   onAddAsset,
+  onAddOutfit,
+  onOutfitImageUpload,
+  onOutfitImageRemove,
+  onOutfitPromptUpdate,
+  onGenerateOutfitPrompt,
+  onDeleteOutfit,
 }: AnalysisResultProps) {
   const firstOpen =
     data.characters.length > 0 ? "characters"
@@ -175,6 +188,12 @@ export default function AnalysisResult({
                         onImageRemove={(assetId) => onImageRemove(section.key, assetId)}
                         onPromptUpdate={(assetId, newPrompt, newPromptCn) => onPromptUpdate(section.key, assetId, newPrompt, newPromptCn)}
                         onGeneratePrompt={(assetId) => onGeneratePrompt(section.key, assetId)}
+                        onAddOutfit={onAddOutfit}
+                        onOutfitImageUpload={onOutfitImageUpload}
+                        onOutfitImageRemove={onOutfitImageRemove}
+                        onOutfitPromptUpdate={onOutfitPromptUpdate}
+                        onGenerateOutfitPrompt={onGenerateOutfitPrompt}
+                        onDeleteOutfit={onDeleteOutfit}
                       />
                     ))}
                   </div>

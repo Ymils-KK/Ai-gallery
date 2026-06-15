@@ -56,11 +56,25 @@ export async function POST(
     };
     const tags = styleMap[style] || styleMap.anime;
 
-    const typeLabel = assetType === "characters" ? "人物" : assetType === "scenes" ? "场景" : "道具";
+    const isOutfit = assetType === "outfit";
+    const typeLabel = isOutfit ? "服装" : assetType === "characters" ? "人物" : assetType === "scenes" ? "场景" : "道具";
 
     const client = new OpenAI({ apiKey, baseURL });
 
-    const systemPrompt = `你是一个 AI 图像生成提示词专家。为以下${typeLabel}生成生图提示词。
+    const systemPrompt = isOutfit
+      ? `你是一个 AI 图像生成提示词专家。为以下角色服装生成生图提示词。
+
+剧本背景：${projectContext || "未提供"}
+${templateInstructions ? `风格要求：\n${templateInstructions}\n` : ""}
+风格标签：${tags}
+
+重要：这是服装提示词，聚焦于服装的款式、材质、颜色、细节、穿着效果。不需要描述角色面部或体型。
+
+输出 JSON 格式：
+{"imagePrompt":"英文提示词","imagePromptCn":"中文提示词"}
+
+提示词要求：详细描述服装款式、剪裁、面料、颜色、纹理、装饰细节，末尾加风格标签。`
+      : `你是一个 AI 图像生成提示词专家。为以下${typeLabel}生成生图提示词。
 
 剧本背景：${projectContext || "未提供"}
 ${templateInstructions ? `风格要求：\n${templateInstructions}\n` : ""}

@@ -56,6 +56,13 @@ function buildAssetPrompt(style: string): string {
 - description: 详细的中文角色概述，包含外貌特征、气质、服装风格、角色定位（不要限制字数，写出所有可用信息）
 - imagePrompt: 英文生图提示词（仅 major）
 - imagePromptCn: 中文生图提示词（仅 major，与英文内容对应）
+- outfits: 服装列表数组（仅 important 人物需要，minor 人物留空数组 []）。每件服装包含：
+  - name: 服装场景标签（如"日常""宴会""战斗""睡衣""外出"等）
+  - description: 1-2句中文服装描述
+  - imagePrompt: 英文服装生图提示词（留空 ""，后续由单独 API 生成）
+  - imagePromptCn: 中文服装生图提示词（留空 ""，后续由单独 API 生成）
+
+注意：imagePrompt 是角色基础形象（面部+三视图），不要包含具体服装。服装的提示词放在 outfits 数组里。
 
 ### 重要人物的 imagePrompt 必须覆盖以下全部维度（逐项写，不可省略）：
 
@@ -73,6 +80,15 @@ function buildAssetPrompt(style: string): string {
 右侧：人物全身三视图 1×3 网格（full body turnaround: front view | side view | back view, horizontal 1x3 grid）
 
 【画质要求】character design sheet, turnaround reference, detailed face, clean lines, neutral expression
+
+### 服装提取规则（outfits 数组）
+从剧本中识别角色的不同场景服装变化，每一套不同的服装提取为一个 outfit：
+- 仔细阅读剧本，找出角色在不同场景/情境下的服装变化
+- 每套服装用简短的场景标签命名（如"日常""宴会""战斗""睡衣""婚礼""葬礼""运动"等）
+- 如果剧本提到角色换衣服/穿什么出场，就提取出来
+- 如果剧本只描述了一套服装或没有明确服装变化，至少提取一套"日常"服装
+- description 写 1-2 句服装外观描述
+- imagePrompt 和 imagePromptCn 留空字符串，后续手动触发生成
 
 ### 人物提示词质量参考（你的输出应该达到这个详细程度）：
 "European short drama style. Body: 6'2" (188cm), broad shoulders, lean athletic V-shaped torso, narrow waist, long legs, 1:8.5 head-to-body ratio. Face: Sharp square jaw with light designer stubble, high cheekbones, straight nose, deep-set intense dark brown eyes with heavy lids and long lashes, full lips, slightly tousled thick dark brown hair with natural wave — short sides, longer top with soft fringe falling across forehead. Expression: Smoldering calm confidence, looking naturally at camera, neutral but present. Outfit: Dark charcoal grey fitted linen-blend shirt, top two buttons undone, sleeves rolled to mid-forearm revealing muscular veiny forearms, thin black wool open-front vest, dark charcoal slim-fit tailored trousers, simple black leather boots, thin silver chain with wolf-tooth pendant. Lighting: Warm amber candlelight from stone hearth, casting soft shadows, low saturation, film grain, 50mm lens, shallow depth of field, realistic skin texture. Mainstream Western romantic fantasy TV drama aesthetic."
@@ -232,7 +248,7 @@ export async function POST(
     }
 
     let result: {
-      characters?: (Omit<AssetItem, "id" | "imageUrl"> & { tier?: string; imagePromptCn?: string })[];
+      characters?: (Omit<AssetItem, "id" | "imageUrl"> & { tier?: string; imagePromptCn?: string; outfits?: { name: string; description: string; imagePrompt?: string; imagePromptCn?: string }[] })[];
       scenes?: (Omit<AssetItem, "id" | "imageUrl"> & { tier?: string; imagePromptCn?: string })[];
       props?: (Omit<AssetItem, "id" | "imageUrl"> & { tier?: string; imagePromptCn?: string })[];
     };
@@ -253,6 +269,16 @@ export async function POST(
         imagePromptCn: item.imagePromptCn || "",
         imageUrl: "",
         tier: item.tier || undefined,
+        outfits: Array.isArray(item.outfits)
+          ? item.outfits.map((o: any, j: number) => ({
+              id: `${prefix}_${i + 1}_outfit_${j + 1}`,
+              name: o.name || "未命名",
+              description: o.description || "",
+              imagePrompt: o.imagePrompt || "",
+              imagePromptCn: o.imagePromptCn || "",
+              imageUrl: "",
+            }))
+          : undefined,
       }));
     };
 
