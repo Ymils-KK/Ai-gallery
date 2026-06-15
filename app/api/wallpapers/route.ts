@@ -23,16 +23,16 @@ export async function GET() {
   const seen = new Set<string>();
   const images: { name: string; source: "local" | "public" }[] = [];
 
-  for (const f of listDir(publicDir)) {
-    if (!seen.has(f)) {
-      seen.add(f);
-      images.push({ name: f, source: "public" });
-    }
-  }
   for (const f of listDir(localDir)) {
     if (!seen.has(f)) {
       seen.add(f);
       images.push({ name: f, source: "local" });
+    }
+  }
+  for (const f of listDir(publicDir)) {
+    if (!seen.has(f)) {
+      seen.add(f);
+      images.push({ name: f, source: "public" });
     }
   }
 

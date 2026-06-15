@@ -22,6 +22,7 @@ export default function WallpaperBackground() {
           const list = await res.json();
           if (list.length > 0) {
             setWallpapers(list);
+            setCurrent(Math.floor(Math.random() * list.length));
           }
         }
       } catch {}
