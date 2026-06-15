@@ -64,7 +64,13 @@ function buildAssetPrompt(style: string): string {
 
 注意：imagePrompt 是角色基础形象（面部+三视图），不要包含具体服装。服装的提示词放在 outfits 数组里。
 
-### 重要人物的 imagePrompt 必须覆盖以下全部维度（逐项写，不可省略）：
+### 重要人物的 imagePrompt 必须强制以以下前缀开头，不可省略：
+```
+Hasselblad X2D 100C, 85mm standard prime lens, 32K ultra HD, HDR10+ high dynamic range, cinematic color grading, IMAX quality, 100mm f/2.8 macro lens, ISO 100, shutter speed 1/125s, RAW format output, visible skin texture with pores and capillaries, individual hair strands clearly visible, rich light and shadow layers, fine grain texture, no props, standard front standing pose, nine-head golden body proportion, full body to feet no cropping, looking directly at camera, clean white seamless background, 16:9 aspect ratio,
+```
+然后接角色具体描述（必须保留上述全部前缀）
+
+然后覆盖以下全部维度（逐项写，不可省略）：
 
 【Body】精确的身高（英尺+厘米）、体型（瘦削/健壮/丰满等）、肩宽、腰身、腿长、头身比（如 1:8.5）、肤色、体态特征
 【Face】脸型（方下巴/瓜子脸/圆脸等）、颧骨高低、鼻型、眉形、眼睛（颜色、形状、眼窝深浅、睫毛、眼睑）、嘴唇（厚薄、形状、颜色）、皮肤质感（毛孔/雀斑/光滑等）、下颌线条

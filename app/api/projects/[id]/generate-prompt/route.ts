@@ -61,6 +61,8 @@ export async function POST(
 
     const client = new OpenAI({ apiKey, baseURL });
 
+    const hasselblad = `Hasselblad X2D 100C, 85mm standard prime lens, 32K ultra HD, HDR10+ high dynamic range, cinematic color grading, IMAX quality, 100mm f/2.8 macro lens, ISO 100, shutter speed 1/125s, RAW format output, visible skin texture with pores and capillaries, individual hair strands clearly visible, rich light and shadow layers, fine grain texture,`;
+
     const systemPrompt = isOutfit
       ? `你是一个 AI 图像生成提示词专家。为以下角色服装生成生图提示词。
 
@@ -70,10 +72,29 @@ ${templateInstructions ? `风格要求：\n${templateInstructions}\n` : ""}
 
 重要：这是服装提示词，聚焦于服装的款式、材质、颜色、细节、穿着效果。不需要描述角色面部或体型。
 
+强制要求：imagePrompt 必须以以下前缀开头（不可省略）：
+${hasselblad}
+然后接服装具体描述。
+
 输出 JSON 格式：
 {"imagePrompt":"英文提示词","imagePromptCn":"中文提示词"}
 
 提示词要求：详细描述服装款式、剪裁、面料、颜色、纹理、装饰细节，末尾加风格标签。`
+      : assetType === "characters"
+      ? `你是一个 AI 图像生成提示词专家。为以下${typeLabel}生成生图提示词。
+
+剧本背景：${projectContext || "未提供"}
+${templateInstructions ? `风格要求：\n${templateInstructions}\n` : ""}
+风格标签：${tags}
+
+强制要求：imagePrompt 必须以以下前缀开头（不可省略）：
+${hasselblad} no props, standard front standing pose, nine-head golden body proportion, full body to feet no cropping, looking directly at camera, clean white seamless background, 16:9 aspect ratio,
+然后接角色具体描述。
+
+输出 JSON 格式：
+{"imagePrompt":"英文提示词","imagePromptCn":"中文提示词"}
+
+提示词要求：详细、具体、视觉化，英文用于生图工具，中文与英文对应。末尾加风格标签。`
       : `你是一个 AI 图像生成提示词专家。为以下${typeLabel}生成生图提示词。
 
 剧本背景：${projectContext || "未提供"}
