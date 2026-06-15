@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, Trash2, FileText, Edit3, Check, X } from "lucide-react";
+import { Plus, Trash2, FileText, Edit3, Check, X, AlertTriangle } from "lucide-react";
 
 interface ProjectMeta {
   id: string;
@@ -31,6 +31,7 @@ export default function ProjectSidebar({
   const [renamingId, setRenamingId] = useState<string | null>(null);
   const [renameValue, setRenameValue] = useState("");
   const [renaming, setRenaming] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   async function handleCreate() {
     if (!newName.trim()) return;
@@ -153,9 +154,7 @@ export default function ProjectSidebar({
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          if (confirm(`确定删除项目「${p.name}」？`)) {
-                            onDelete(p.id);
-                          }
+                          setDeletingId(p.id);
                         }}
                         className="shrink-0 rounded p-0.5 text-white/20 hover:text-red-400"
                         title="删除"
@@ -170,6 +169,36 @@ export default function ProjectSidebar({
           })
         )}
       </div>
+
+      {/* 删除确认弹窗 */}
+      {deletingId && (
+        <div className="shrink-0 rounded-xl bg-red-500/10 border border-red-500/20 p-3 flex flex-col gap-2">
+          <div className="flex items-center gap-2">
+            <AlertTriangle className="h-4 w-4 text-red-400 shrink-0" />
+            <p className="text-xs text-red-300 font-medium">
+              确定删除「{projects.find((p) => p.id === deletingId)?.name}」？
+            </p>
+          </div>
+          <p className="text-[10px] text-red-400/60">项目内所有分析数据将被永久删除</p>
+          <div className="flex gap-2">
+            <button
+              onClick={() => {
+                onDelete(deletingId);
+                setDeletingId(null);
+              }}
+              className="flex-1 rounded-md bg-red-500/20 px-3 py-1.5 text-xs font-medium text-red-300 hover:bg-red-500/30 transition-all"
+            >
+              确认删除
+            </button>
+            <button
+              onClick={() => setDeletingId(null)}
+              className="flex-1 rounded-md bg-white/[0.06] px-3 py-1.5 text-xs text-white/50 hover:text-white hover:bg-white/[0.10] transition-all"
+            >
+              取消
+            </button>
+          </div>
+        </div>
+      )}
     </aside>
   );
 }
