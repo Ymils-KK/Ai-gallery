@@ -56,6 +56,34 @@ export async function PUT(
   }
 }
 
+// PATCH 重命名项目
+export async function PATCH(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    const { name } = await request.json();
+
+    if (!name || !name.trim()) {
+      return NextResponse.json({ error: "名称不能为空" }, { status: 400 });
+    }
+
+    // 更新索引中的名称
+    if (fs.existsSync(indexPath)) {
+      const list = JSON.parse(fs.readFileSync(indexPath, "utf-8"));
+      const updated = list.map((p: { id: string; name: string; createdAt: string }) =>
+        p.id === id ? { ...p, name: name.trim() } : p
+      );
+      fs.writeFileSync(indexPath, JSON.stringify(updated, null, 2), "utf-8");
+    }
+
+    return NextResponse.json({ success: true, name: name.trim() });
+  } catch {
+    return NextResponse.json({ error: "重命名失败" }, { status: 500 });
+  }
+}
+
 // DELETE 删除项目
 export async function DELETE(
   request: Request,

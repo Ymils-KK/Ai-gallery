@@ -130,6 +130,16 @@ export default function ScriptAnalysisPage() {
     }
   }
 
+  // 重命名项目
+  async function handleRenameProject(id: string, name: string) {
+    await fetch(`/api/projects/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name }),
+    });
+    await loadProjects();
+  }
+
   // 删除项目
   async function handleDeleteProject(id: string) {
     await fetch(`/api/projects/${id}`, { method: "DELETE" });
@@ -337,6 +347,7 @@ export default function ScriptAnalysisPage() {
         onSelect={setActiveId}
         onCreate={handleCreateProject}
         onDelete={handleDeleteProject}
+        onRename={handleRenameProject}
       />
 
       {/* 主内容区（左边距留给固定侧边栏） */}

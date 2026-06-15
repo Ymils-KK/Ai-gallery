@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, Trash2, FileText } from "lucide-react";
+import { Plus, Trash2, FileText, Edit3, Check, X } from "lucide-react";
 
 interface ProjectMeta {
   id: string;
@@ -15,6 +15,7 @@ interface ProjectSidebarProps {
   onSelect: (id: string) => void;
   onCreate: (name: string) => Promise<void>;
   onDelete: (id: string) => void;
+  onRename: (id: string, name: string) => Promise<void>;
 }
 
 export default function ProjectSidebar({
@@ -23,9 +24,13 @@ export default function ProjectSidebar({
   onSelect,
   onCreate,
   onDelete,
+  onRename,
 }: ProjectSidebarProps) {
   const [newName, setNewName] = useState("");
   const [creating, setCreating] = useState(false);
+  const [renamingId, setRenamingId] = useState<string | null>(null);
+  const [renameValue, setRenameValue] = useState("");
+  const [renaming, setRenaming] = useState(false);
 
   async function handleCreate() {
     if (!newName.trim()) return;
@@ -35,6 +40,22 @@ export default function ProjectSidebar({
       setNewName("");
     } finally {
       setCreating(false);
+    }
+  }
+
+  function startRename(id: string, name: string) {
+    setRenamingId(id);
+    setRenameValue(name);
+  }
+
+  async function handleRename() {
+    if (!renamingId || !renameValue.trim() || renaming) return;
+    setRenaming(true);
+    try {
+      await onRename(renamingId, renameValue.trim());
+      setRenamingId(null);
+    } finally {
+      setRenaming(false);
     }
   }
 
@@ -73,6 +94,8 @@ export default function ProjectSidebar({
         ) : (
           projects.map((p) => {
             const isActive = p.id === activeId;
+            const isRenaming = renamingId === p.id;
+
             return (
               <div
                 key={p.id}
@@ -81,24 +104,67 @@ export default function ProjectSidebar({
                     ? "bg-white/[0.10] text-white"
                     : "text-white/50 hover:text-white hover:bg-white/[0.04]"
                 }`}
-                onClick={() => onSelect(p.id)}
+                onClick={() => {
+                  if (!isRenaming) onSelect(p.id);
+                }}
               >
                 <FileText className="h-4 w-4 shrink-0" />
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium truncate">{p.name}</p>
-                  <p className="text-xs text-white/25">{p.createdAt}</p>
-                </div>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (confirm(`确定删除项目「${p.name}」？`)) {
-                      onDelete(p.id);
-                    }
-                  }}
-                  className="shrink-0 rounded p-0.5 text-white/20 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all"
-                >
-                  <Trash2 className="h-3.5 w-3.5" />
-                </button>
+
+                {isRenaming ? (
+                  /* 重命名输入框 */
+                  <div className="flex-1 min-w-0 flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+                    <input
+                      type="text"
+                      value={renameValue}
+                      onChange={(e) => setRenameValue(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") handleRename();
+                        if (e.key === "Escape") setRenamingId(null);
+                      }}
+                      maxLength={30}
+                      autoFocus
+                      className="flex-1 min-w-0 rounded bg-white/[0.08] border border-white/[0.12] px-2 py-1 text-xs text-white focus:outline-none"
+                    />
+                    <button onClick={handleRename} disabled={renaming} className="shrink-0 rounded p-0.5 text-green-400 hover:text-green-300">
+                      <Check className="h-3.5 w-3.5" />
+                    </button>
+                    <button onClick={() => setRenamingId(null)} className="shrink-0 rounded p-0.5 text-white/30 hover:text-white">
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                ) : (
+                  /* 正常显示 */
+                  <>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">{p.name}</p>
+                      <p className="text-xs text-white/25">{p.createdAt}</p>
+                    </div>
+                    <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          startRename(p.id, p.name);
+                        }}
+                        className="shrink-0 rounded p-0.5 text-white/20 hover:text-white/60"
+                        title="重命名"
+                      >
+                        <Edit3 className="h-3.5 w-3.5" />
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (confirm(`确定删除项目「${p.name}」？`)) {
+                            onDelete(p.id);
+                          }
+                        }}
+                        className="shrink-0 rounded p-0.5 text-white/20 hover:text-red-400"
+                        title="删除"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  </>
+                )}
               </div>
             );
           })
