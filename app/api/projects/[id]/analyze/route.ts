@@ -219,7 +219,7 @@ export async function POST(
       model: "deepseek-chat",
       messages: [
         { role: "system", content: assetSystemPrompt },
-        { role: "user", content: `完整剧本：\n${script.trim()}\n\n剧本简介（仅供参考）：\n${synopsis}\n\n目标受众：${targetAudience?.trim() || "一般观众"}\n\n请根据完整剧本生成虚拟资产提示词，从原文中提取所有可用的人物外貌、场景氛围、道具细节，每条提示词要有足够的信息密度。` },
+        { role: "user", content: `完整剧本：\n${script.trim()}\n\n剧本简介（仅供参考）：\n${synopsis}\n\n用户分析要求：${targetAudience?.trim() || "无特殊要求"}\n\n请根据完整剧本和用户的分析要求生成虚拟资产提示词，从原文中提取所有可用的人物外貌、场景氛围、道具细节，每条提示词要有足够的信息密度。严格遵守用户的分析要求（如目标受众、风格偏好、长度限制等）。` },
       ],
       response_format: { type: "json_object" },
       max_tokens: 16384,

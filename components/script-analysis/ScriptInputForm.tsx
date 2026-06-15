@@ -172,19 +172,19 @@ export default function ScriptInputForm({
         </p>
       </div>
 
-      {/* 目标受众 */}
+      {/* 分析要求 */}
       <div className="flex flex-col gap-2.5">
         <label className="text-base font-medium text-white/70">
-          👥 目标受众
+          📋 分析要求
         </label>
-        <input
-          type="text"
+        <textarea
           value={targetAudience}
           onChange={(e) => setTargetAudience(e.target.value)}
-          placeholder="例如：青少年、都市白领、奇幻爱好者..."
-          maxLength={200}
+          placeholder="告诉 AI 你的分析要求，例如：&#10;· 目标受众：20-35岁欧美女性观众&#10;· 核心要求：突出霸道总裁人设，场景要有奢华感&#10;· 角色形象参考吸血鬼日记风格&#10;· 提示词不要太长，控制在200词以内"
+          rows={4}
+          maxLength={1000}
           disabled={loading}
-          className="w-full rounded-xl bg-white/[0.04] border border-white/[0.08] px-5 py-4 text-base text-white placeholder:text-white/20 focus:outline-none focus:border-white/20 focus:bg-white/[0.06] transition-all disabled:opacity-50"
+          className="w-full rounded-xl bg-white/[0.04] border border-white/[0.08] px-5 py-4 text-base text-white placeholder:text-white/20 focus:outline-none focus:border-white/20 focus:bg-white/[0.06] transition-all resize-none disabled:opacity-50"
         />
       </div>
 
