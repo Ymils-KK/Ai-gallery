@@ -86,13 +86,27 @@ Hasselblad X2D 100C, 85mm standard prime lens, 32K ultra HD, HDR10+ high dynamic
 【画质要求】character design sheet, turnaround reference, detailed face, clean lines, neutral expression
 
 ### 服装提取规则（outfits 数组）
+⚠️ 重要：每个重要人物（tier: "major"）都必须有 outfits 数组，至少包含一套服装。
 从剧本中识别角色的不同场景服装变化，每一套不同的服装提取为一个 outfit：
 - 仔细阅读剧本，找出角色在不同场景/情境下的服装变化
 - 每套服装用简短的场景标签命名（如"日常""宴会""战斗""睡衣""婚礼""葬礼""运动"等）
 - 如果剧本提到角色换衣服/穿什么出场，就提取出来
 - 如果剧本只描述了一套服装或没有明确服装变化，至少提取一套"日常"服装
-- description 写 1-2 句服装外观描述
-- imagePrompt 和 imagePromptCn 留空字符串，后续手动触发生成
+- description 写 1-2 句中文服装外观描述
+- imagePrompt 和 imagePromptCn 都留空字符串 ""，后续手动触发生成
+
+JSON 输出示例（人物）：
+{
+  "name": "角色名",
+  "tier": "major",
+  "description": "角色概述...",
+  "imagePrompt": "Hasselblad X2D 100C...角色具体描述...",
+  "imagePromptCn": "中文提示词...",
+  "outfits": [
+    { "name": "日常", "description": "深灰衬衫配黑马甲", "imagePrompt": "", "imagePromptCn": "" },
+    { "name": "宴会", "description": "黑色天鹅绒礼服", "imagePrompt": "", "imagePromptCn": "" }
+  ]
+}
 
 ### 人物提示词质量参考（你的输出应该达到这个详细程度）：
 "European short drama style. Body: 6'2" (188cm), broad shoulders, lean athletic V-shaped torso, narrow waist, long legs, 1:8.5 head-to-body ratio. Face: Sharp square jaw with light designer stubble, high cheekbones, straight nose, deep-set intense dark brown eyes with heavy lids and long lashes, full lips, slightly tousled thick dark brown hair with natural wave — short sides, longer top with soft fringe falling across forehead. Expression: Smoldering calm confidence, looking naturally at camera, neutral but present. Outfit: Dark charcoal grey fitted linen-blend shirt, top two buttons undone, sleeves rolled to mid-forearm revealing muscular veiny forearms, thin black wool open-front vest, dark charcoal slim-fit tailored trousers, simple black leather boots, thin silver chain with wolf-tooth pendant. Lighting: Warm amber candlelight from stone hearth, casting soft shadows, low saturation, film grain, 50mm lens, shallow depth of field, realistic skin texture. Mainstream Western romantic fantasy TV drama aesthetic."
@@ -149,6 +163,7 @@ Hasselblad X2D 100C, 85mm standard prime lens, 32K ultra HD, HDR10+ high dynamic
 - 中国风/东方玄幻题材额外加入 "eastern fantasy art"
 - 西方/欧美题材加入对应的美学参考
 - 所有 imagePrompt 和 imagePromptCn 末尾统一加风格标签
+- ⚠️ 所有重要人物（tier: "major"）必须有 outfits 数组，至少包含 1 套服装。次要人物 outfits 留空数组 []
 - 严格 JSON 格式输出，不要任何其他内容`;
 }
 
