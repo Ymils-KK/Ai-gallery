@@ -55,20 +55,49 @@ ${style ? `画风：${style}` : ""}
 
 布局要求：
 - 横向 16:9，2×2 网格，白色细线分隔
-- 四个格分别放四位 18-22 岁绝美白人女性，每人只占一格
+- 四个格分别放四位 18-22 岁绝美白人女性，每人只占一格，adult woman
 - 顺序：左上B1、右上B2、左下B3、右下B4
 - 图内不得有文字、标签、字母、数字
-- 四人都是角色「${characterName}」的可能版本
 
-人物要求：
-- B1（左上）：柔和圆鹅蛋脸，圆润轮廓，宽大温暖的棕色眼睛，焦糖色卷发，温柔中藏隐痛
-- B2（右上）：贵族窄长脸，纤长轮廓，深邃蓝灰眼睛，深灰棕波浪发，冷静高贵
-- B3（左下）：小巧短脸，精致小下巴，清澈蓝绿小鹿眼，浅栗金色蓬松卷发，脆弱但坚韧
-- B4（右下）：柔和方鹅蛋脸，宽颧骨，拉长的灰绿色眼睛，黑咖啡色光泽波浪发，强大未来女王气
-- 四人颅面结构必须明显不同，不得同质化
-- 统一穿月光蓝宝石色维多利亚风格长裙领口
+⚠️ 长发强制要求：四人必须全部都是长发，发长至少过胸或到腰。绝对禁止短发、齐肩发、丸子头、盘发、马尾。
+
+四个候选人是同一套规则下的不同组合——四个人都极美但美的方向不同，通过脸型、发色、气质形成差异：
+
+B1（左上）冷艳女王：
+- 银灰色长发（silver-gray long straight hair to waist）
+- 五官锐利精致，高颧骨，狭长眼型，冰蓝色眼眸（icy blue eyes, cold and deep）
+- 妆容冷艳，气场强势神秘充满压迫感，domineering queenly presence
+- 脸型偏窄长椭圆，下颌线条锋利（narrow elongated oval face, sharp jawline）
+- 气质：高冷、权势、让人不敢靠近
+
+B2（右上）甜美千金：
+- 金色大波浪长发（golden blonde voluminous waves to lower back）
+- 圆润鹅蛋脸（soft round-oval face），大而圆的清澈蓝眼（large round clear blue eyes）
+- 甜美明艳，贵族千金气质，温柔但有致命吸引力（warm but captivating）
+- 妆容精致温暖，嘴唇自然红润
+- 气质：甜美、贵气、温柔但有吸引力
+
+B3（左下）成熟御姐：
+- 深棕色或黑色长直发（dark brown or black long sleek straight hair to waist）
+- 杏仁眼型（almond eyes），眼神深邃危险、有故事感（dangerous elegance, mysterious）
+- 脸型偏菱形或瓜子脸，颧骨立体（diamond or heart-shaped face, prominent cheekbones）
+- 嘴唇丰润饱满，妆容成熟大气（full lips, mature refined makeup）
+- 气质：性感、危险、优雅、阅历丰富
+
+B4（右下）清冷破碎感女主：
+- 浅棕色或玫瑰金色长软波浪发（light brown or rose-gold long soft waves to waist）
+- 脸型小巧精致（petite delicate face），眼神清澈带淡淡忧伤（clear eyes with subtle sadness）
+- 肤色白皙透亮（translucent fair skin），妆容淡雅自然
+- fragile-looking but exquisitely delicate beauty
+- 气质：柔弱、破碎感、精致、适合女频虐恋女主
+
+共同要求：
+- 四个人都必须是 adult woman，极美，高颜值，适合欧美女频 AI 短剧角色资产库
+- 四人颅面结构、脸型、眼神、发色、气质必须明显不同，绝不是同一个人换发色
+- 严禁短发作为差异点，严禁动漫脸、娃娃脸、幼态脸、整容脸
+- 统一穿月光蓝宝石色维多利亚风格长裙领口（deep moonlit sapphire late-Victorian day gown neckline）
 - 正面头肩特写，脸居中，平视，直视镜头，双唇闭合
-- 无皱纹、无雀斑、无痣、无瑕疵、无整容感
+- 无皱纹、无雀斑、无痣、无瑕疵
 - 哈苏 X2D 100C，100mm f/2.8 微距镜头，ISO 100，快门 1/125s，32K，HDR10+
 
 输出 JSON：
