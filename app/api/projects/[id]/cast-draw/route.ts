@@ -68,26 +68,71 @@ B4（右下）破碎感虐恋女主：
 }
 
 function buildFemaleVillainPrompt(): string {
-  return `你是一个顶尖的影视选角导演和 AI 图像生成提示词专家。为欧美女频短剧「女反派」生成一个 2×2 选角联系人表的生图提示词。
+  return `你是一个顶尖的影视选角导演和 AI 图像生成提示词专家。为欧美女频短剧「女反派」生成一个 2×2 选角联系人表（casting contact sheet）的生图提示词。
 
-女反派人设：欧美女频短剧中的女性反派——不是单纯的恶人，而是有魅力、有深度、让人又恨又爱的复杂女性。可以是情敌、商业对手、家族仇敌、因爱生恨的悲剧角色。
+核心原则：反派不是丑角，而是"精致、危险、有压迫感、有嫉妒心、有阶级感"的高颜值女性角色。所有候选人都必须是 adult woman、长发、极美、真实剧照感。
 
-⚠️ 长发强制要求：四人必须全部都是长发。绝对禁止短发。
+严格按以下格式生成 imagePrompt（英文）和 imagePromptCn（中文）：
 
-四个候选人美型方向（不同恶女类型）：
-B1（左上）：冷艳女王型——银灰色长发，冰蓝色眼眸，高贵冷傲，权势感强，精明深沉
-B2（右上）：蛇蝎美人型——深红棕色长发，绿眼睛，妩媚危险，笑容迷人但暗藏杀机
-B3（左下）：悲剧恶女型——黑色长发，深棕色眼睛，眼神有伤痛和仇恨，优雅但破碎
-B4（右下）：贵族恶女型——铂金色长发，蓝灰色眼睛，高傲不屑，精致贵气但自私冷酷
+布局要求：
+- 横向 16:9，2×2 网格，白色细线分隔
+- 四个格分别放四位 18-35 岁绝美白人女性反派，每人只占一格，adult woman
+- 顺序：左上V1、右上V2、左下V3、右下V4
+- 图内不得有文字、标签、字母、数字
 
-共同要求：
-- 四人都是 adult woman，极美但各有不同的"恶"感
-- 豪华服装（深红、黑、墨绿、紫色系），维多利亚晚礼服领口
-- 正面头肩特写，妆容精致但不过度
-- 哈苏 X2D 100C，100mm f/2.8 微距镜头
-- 严禁：幼态脸、动漫脸、过度性感、狰狞表情
+⚠️ 长发强制要求：四人必须全部都是长发，发长至少过胸或到腰。绝对禁止短发、齐肩发、丸子头、盘发。
 
-输出 JSON。`;
+四个反派候选人模板（四种不同类型的恶女）：
+
+V1（左上）豪门恶毒千金：
+- 长金发或蜜金色大波浪长发（long golden or honey-blonde voluminous waves to lower back）
+- 精致鹅蛋脸（refined oval face），浅色眼睛（pale blue or gray eyes），妆容高级精致
+- 表情：微笑里带轻蔑，像在羞辱女主（subtle condescending smirk, like looking down on the heroine）
+- 气质：傲慢、贵气、嫉妒、控制欲强（arrogant, noble, jealous, controlling）
+- 适合剧情：订婚宴羞辱女主、抢男主、家族压迫
+- 服装：白色或浅金色高定礼服领口
+
+V2（右上）冷艳继姐/假千金：
+- 深棕或黑色长发，顺直或大波浪（dark brown or black long hair, sleek or loose waves to waist）
+- 五官锐利精致但不能男性化，脸型偏窄椭圆，眼神冰冷（sharp refined features, narrow oval face, cold gaze）
+- 表情：克制但嘴角轻微冷笑（restrained expression with a subtle cold smirk）
+- 气质：聪明、阴险、算计、表面优雅（intelligent, scheming, calculating, outwardly elegant）
+- 适合剧情：陷害女主、伪装受害者、身份争夺
+- 服装：黑色或深紫礼服领口
+
+V3（左下）成熟豪门夫人/继母型反派：
+- 深栗色或暗红棕长发（rich chestnut or dark auburn long hair to waist），优雅成熟
+- 更成熟但保持极高颜值，不是老态而是雍容华贵（mature but stunningly beautiful, regal not aged）
+- 表情：端庄、冷漠、压迫感强（dignified, cold, intense oppressive gaze）
+- 气质：权力感、阶级压迫、操控家庭（power, class oppression, family manipulation）
+- 适合剧情：逼迫分手、家族交易、威胁女主
+- 服装：深红或墨绿华贵礼服领口
+
+V4（右下）白莲花情敌：
+- 浅棕或柔金长发（light brown or soft golden long hair to waist），外表温柔无害
+- 柔和心形脸（soft heart-shaped face），大眼睛（large innocent-looking eyes），清纯妆容
+- 表情：楚楚可怜但眼神里藏恶意（vulnerable pitiful expression with hidden malice in the eyes）
+- 气质：伪善、装可怜、嫉妒、情绪操控（hypocritical, playing victim, jealous, emotionally manipulative）
+- 适合剧情：假装受伤、栽赃女主、博取男主同情
+- 服装：浅粉或白色柔美裙装领口
+
+共同要求（必须全部满足）：
+- 四个反派都必须是长发，发长过胸
+- 四个人都要极美，但不是女主的观众缘美，而是带危险感、压迫感或伪善感的美
+- 必须像真实欧美短剧演员剧照，不要像游戏角色、动漫角色、AI娃娃
+- 脸型可以更锐利，但不要方下颌、男性化、老气
+- 妆容可以比女主更精致、更强势，但不要夜店网红风
+- 服装：黑色礼服、白色高定裙、深红礼服、豪门宴会装
+- 表情要有戏：轻蔑笑、冷笑、伪善微笑、压迫凝视
+- 四人脸型、发色、眼神、气质必须明显不同
+
+严禁生成（negative prompt）：
+ugly villain, monster, witch-like, old hag, masculine jaw, square jaw, harsh wrinkles, cartoon evil smile, exaggerated evil face, anime, game character, fantasy NPC, plastic doll face, influencer nightclub makeup, overly sexy, cheap seductive look, distorted face, crossed eyes, asymmetrical eyes, short hair, bob cut, pixie cut
+
+哈苏 X2D 100C，100mm f/2.8 微距镜头，ISO 100，快门 1/125s，32K，HDR10+，正面头肩特写，脸居中，平视，白色无缝背景。
+
+输出 JSON：
+{"imagePrompt":"英文提示词","imagePromptCn":"中文提示词"}`;
 }
 
 function buildMaleLeadPrompt(): string {
