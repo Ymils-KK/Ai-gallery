@@ -59,7 +59,8 @@ B4（右下）破碎感虐恋女主：
 - 严禁：短发、盘发、银发老气感、强攻击性眼神、反派脸、女巫感
 - 严禁：动漫脸、娃娃脸、幼态脸、整容脸、成熟妈妈感
 - 统一穿月光蓝宝石色维多利亚风格长裙领口
-- 正面头肩特写，脸居中，平视，直视镜头，双唇闭合
+- 正面头肩特写，脸居中，平视，直视镜头，双唇闭合，无表情无动作无手势（no pose, no action, no hand gestures）
+- 纯白色无缝背景（clean white seamless background），不要任何场景、道具、建筑
 - 无皱纹、无雀斑、无痣、无瑕疵
 - 哈苏 X2D 100C，100mm f/2.8 微距镜头，ISO 100，快门 1/125s，32K，HDR10+
 
@@ -129,7 +130,7 @@ V4（右下）白莲花情敌：
 严禁生成（negative prompt）：
 ugly villain, monster, witch-like, old hag, masculine jaw, square jaw, harsh wrinkles, cartoon evil smile, exaggerated evil face, anime, game character, fantasy NPC, plastic doll face, influencer nightclub makeup, overly sexy, cheap seductive look, distorted face, crossed eyes, asymmetrical eyes, short hair, bob cut, pixie cut
 
-哈苏 X2D 100C，100mm f/2.8 微距镜头，ISO 100，快门 1/125s，32K，HDR10+，正面头肩特写，脸居中，平视，白色无缝背景。
+哈苏 X2D 100C，100mm f/2.8 微距镜头，ISO 100，快门 1/125s，32K，HDR10+，正面头肩特写，脸居中，平视，无表情无动作无手势，纯白色无缝背景。
 
 输出 JSON：
 {"imagePrompt":"英文提示词","imagePromptCn":"中文提示词"}`;
@@ -148,7 +149,9 @@ function buildMaleLeadPrompt(): string {
 - 顺序：左上M1、右上M2、左下M3、右下M4
 - 图内不得有文字、标签、字母、数字
 - 画面风格：cinematic romance drama still / luxury romance poster，不是白底证件照
-- 可加入轻微电影光影、浅景深、豪宅/办公室/宴会背景氛围
+- 纯白色无缝背景（clean white seamless background），不要任何场景、建筑、道具
+- 正面头肩特写，脸居中，平视，直视镜头，双唇闭合，无表情无动作无手势（standard front-facing head-and-shoulders portrait, no pose, no action, no hand gestures）
+- 哈苏 X2D 100C 摄影质感，100mm f/2.8 微距镜头，ISO 100，快门 1/125s，32K，HDR10+
 
 四个男主候选人模板：
 
@@ -197,8 +200,6 @@ M4（右下）温柔救赎型男主：
 
 严禁生成（negative prompt）：
 average businessman, corporate headshot, passport photo, plain office portrait, middle-aged CEO, old man, tired face, rough skin, receding hairline, thin hair, heavy wrinkles, dull eyes, boring face, ordinary man, uncle vibe, greasy face, excessive stubble, heavy beard, bodybuilder, cheap suit, villain thug, criminal face, harsh ugly face, anime, game character, plastic skin, wax figure, gym model, influencer, nightclub style, feminine face, weak jaw, distorted eyes, bad hands, long hair past shoulders
-
-哈苏 X2D 100C，100mm f/2.8 微距镜头，ISO 100，快门 1/125s，32K，HDR10+。可用轻微电影光影、浅景深、豪宅/办公室/宴会氛围背景，避免纯白证件照背景。
 
 输出 JSON：
 {"imagePrompt":"英文提示词","imagePromptCn":"中文提示词"}`;
@@ -258,7 +259,8 @@ A4（右下）优雅操控者/家族长子型反派：
 - 服装：黑色西装、深色衬衫、贵族风大衣、商务权力套装
 - 表情要有戏：虚伪微笑、轻蔑冷笑、威胁凝视、冷静算计
 - 四人通过反派类型区分：背叛型、权力型、暴力型、操控型
-- 脸居中，平视，直视镜头
+- 脸居中，平视，直视镜头，无表情无动作无手势（no pose, no action, no hand gestures）
+- 纯白色无缝背景（clean white seamless background），不要任何场景
 
 严禁生成（negative prompt）：
 ugly villain, monster, scarred monster face, old greasy man, exaggerated evil grin, cartoon villain, anime, game character, fantasy NPC, plastic skin, wax figure, bodybuilder, huge muscles, heavy beard, dirty face, nightclub style, distorted face, crossed eyes, bad teeth, long hair, bald, eyepatch, facial scars
