@@ -24,6 +24,7 @@ const roleTypes = [
   { key: "female_villain", label: "女反派", icon: "🐍" },
   { key: "male_lead", label: "男主", icon: "🤴" },
   { key: "male_villain", label: "男反派", icon: "🦹" },
+  { key: "medieval_costume", label: "中世纪服装", icon: "👗" },
 ] as const;
 
 const STORAGE_KEY = "kk_cast_draw_history";

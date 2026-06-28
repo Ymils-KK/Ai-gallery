@@ -271,11 +271,72 @@ ugly villain, monster, scarred monster face, old greasy man, exaggerated evil gr
 {"imagePrompt":"英文提示词","imagePromptCn":"中文提示词"}`;
 }
 
+function buildMedievalCostumePrompt(): string {
+  return `你是一个顶尖的影视服装设计师和 AI 图像生成提示词专家。为欧美女频中世纪幻想短剧生成一个 2×2 服装展示表（costume showcase sheet）的生图提示词。
+
+核心原则：华丽宫廷服装——中世纪幻想、贵族宫廷、狼人/吸血鬼/王族题材、女频小说封面感。服装要华丽精致有身份感，但保持真实影视服装质感。
+
+严格按以下格式生成 imagePrompt（英文）和 imagePromptCn（中文）：
+
+布局要求：
+- 横向 16:9，2×2 网格，白色细线分隔
+- 同一个角色（同脸、同身材、同发色），四格只换服装和妆容
+- 顺序：C1左上、C2右上、C3左下、C4右下
+- 图内不得有文字、标签、字母、数字
+- 纯白色无缝背景，无动作无手势，正面站姿
+- 全身展示（full body），从头到脚，不裁剪
+
+角色要求（四格共用同一人）：
+- 18-22 岁绝美白人女性，九头身超模身材
+- 长发（silver-blonde or golden hair at waist length）
+- 面容统一：柔和心形脸，浅色眼睛，无雀斑细纹
+
+四套服装：
+
+C1（左上）白月光王族新娘：
+- 服装名：白月光王族新娘（Ivory Royal Bride）
+- 象牙白/珍珠白宫廷长裙（ivory pearl-white court gown），蕾丝袖口（lace sleeves），珍珠头饰（pearl headpiece），轻薄头纱（sheer veil）
+- 气质：纯净、破碎、贵族感、命运感
+- 剧情用途：政治联姻、逃婚、被迫嫁给狼王/公爵、婚礼羞辱
+- 关键词：ivory royal bridal gown, pearl veil, lace sleeves, tragic princess, noble innocence, long flowing train
+
+C2（右上）暗黑狼族王后：
+- 服装名：暗黑狼族王后（Dark Werewolf Queen）
+- 黑色丝绒长裙（black velvet gown），银线刺绣（silver embroidery），深色披风（dramatic dark cape），暗银项链（dark silver necklace），腰线明显
+- 气质：冷艳、神秘、压迫感、女王感
+- 剧情用途：狼族宫廷、身份觉醒、王后登场、权力对峙
+- 关键词：black velvet medieval queen gown, silver embroidery, dramatic cape, gothic luxury, werewolf queen
+
+C3（左下）血色复仇公爵夫人：
+- 服装名：血色复仇公爵夫人（Crimson Revenge Duchess）
+- 深红/酒红色缎面长裙（burgundy satin gown），黑色蕾丝（black lace trim），宝石项链（jeweled necklace），修身束腰（fitted corset waist）
+- 气质：复仇、危险、艳丽、高贵
+- 剧情用途：复仇归来、宴会打脸、揭露身份、反派对峙
+- 关键词：burgundy duchess gown, black lace, jeweled corset, revenge heroine, noble drama, dramatic silhouette
+
+C4（右下）金色加冕公主：
+- 服装名：金色加冕公主（Golden Coronation Princess）
+- 香槟金/古金色华丽宫廷裙（champagne gold court gown），金线刺绣（gold embroidery），王冠或发饰（delicate crown or tiara），长拖尾（long train）
+- 气质：明艳、尊贵、命定女主、被众人注视
+- 剧情用途：加冕、宴会惊艳、王族身份揭露、女主逆袭
+- 关键词：champagne gold royal coronation gown, gold embroidery, tiara, radiant princess, fantasy romance heroine
+
+共同要求：
+- 四套服装必须像真实影视服装（premium TV drama costume design），不是游戏装备、动漫Cosplay、廉价影楼装
+- 强调材质真实感：丝绒（velvet）、缎面（satin）、蕾丝（lace）、刺绣（embroidery）、薄纱（chiffon）、珍珠、宝石
+- 同一个角色脸和身材完全一致，只换服装、饰品、妆容强度
+- 哈苏 X2D 100C，85mm 定焦，全身展示，纯白无缝背景，无动作站姿
+
+输出 JSON：
+{"imagePrompt":"英文提示词","imagePromptCn":"中文提示词"}`;
+}
+
 const promptBuilders: Record<string, () => string> = {
   female_lead: buildFemaleLeadPrompt,
   female_villain: buildFemaleVillainPrompt,
   male_lead: buildMaleLeadPrompt,
   male_villain: buildMaleVillainPrompt,
+  medieval_costume: buildMedievalCostumePrompt,
 };
 
 export async function POST(
