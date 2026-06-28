@@ -65,12 +65,12 @@ export async function POST(
 
     const eraContext: Record<string, string> = {
       any: "",
-      modern: "时代背景：现代 21 世纪。服装为当代时装，场景为现代都市建筑。",
-      medieval: "时代背景：欧洲中世纪。服装为中世纪风格（束腰外衣、长袍、皮甲）。",
-      ancient_east: "时代背景：古代东方。服装为汉服、长袍、丝绸衣饰、武侠劲装。",
-      victorian: "时代背景：维多利亚时代（19世纪英国）。服装为紧身胸衣、燕尾服、蕾丝。",
-      fantasy: "时代背景：奇幻异世界。服装为魔法师长袍、精灵盔甲、宫廷礼服。",
-      cyberpunk: "时代背景：赛博朋克未来。服装为科技夹克、霓虹灯带、义体改装。",
+      modern: "时代背景：现代 21 世纪。所有人物穿现代时装。严禁古装。",
+      medieval: "时代背景：中世纪欧洲，绝对禁止现代服装！女性穿束腰长裙（kirtle/gown）、紧身胸衣；男性穿束腰外衣（tunic）、皮甲、马裤。严禁西装、T恤、高跟鞋等现代元素。",
+      ancient_east: "时代背景：古代东方，绝对禁止现代服装！女性穿汉服/齐胸襦裙/大袖衫；男性穿长袍/直裰。严禁现代元素。",
+      victorian: "时代背景：维多利亚时代，绝对禁止现代服装！女性穿紧身胸衣、裙撑、蕾丝；男性穿燕尾服、马甲。严禁现代元素。",
+      fantasy: "时代背景：奇幻异世界，绝对禁止现代服装！精灵穿银甲长袍；贵族穿华丽礼服；冒险者穿皮甲斗篷。严禁现代元素。",
+      cyberpunk: "时代背景：赛博朋克未来，绝对禁止传统服装！发光夹克、霓虹LED、义体机械臂、全息配饰。严禁传统面料。",
     };
     const eraDesc = eraContext[era || "any"] || "";
 
@@ -104,7 +104,7 @@ ${templateInstructions ? `风格要求：\n${templateInstructions}\n` : ""}
 ${hasselblad} no props, standard front standing pose, nine-head golden body proportion, full body to feet no cropping, looking directly at camera, clean white seamless background, 16:9 aspect ratio,
 然后接角色具体描述。
 
-如果是女性角色，必须加入：1:9 head-to-body ratio, supermodel physique, age 18-22, flawless porcelain skin with no freckles or fine lines, devastatingly beautiful face, large expressive eyes with long lashes, full lips, elegant and refined with a touch of cool allure.
+如果是女性角色，必须加入以下全部特征（缺一不可）：1:9 head-to-body golden ratio, supermodel physique with slim hourglass figure 22-inch waist long slender legs, height 172-180cm, age 18-22 fresh youthful appearance, flawless translucent porcelain skin with ZERO blemishes no freckles no fine lines no wrinkles, devastatingly beautiful breathtaking drop-dead gorgeous face, perfect oval or heart-shaped face, high delicate nose bridge, large captivating bright eyes with thick long eyelashes and visible catchlight, full plump naturally rosy cherry lips, elegantly arched eyebrows, delicate small chin with perfect V-line. Elegant and refined with a cool untouchable allure. Absolutely NO ordinary plain face, NO freckles, NO moles, NO wrinkles, NO large pores, NO dull skin.
 
 输出 JSON 格式：
 {"imagePrompt":"英文提示词","imagePromptCn":"中文提示词"}
