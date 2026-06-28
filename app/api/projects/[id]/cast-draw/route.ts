@@ -277,7 +277,7 @@ export async function POST(
 ) {
   try {
     const { id } = await params;
-    const { roleType } = await request.json();
+    const { roleType, customRequirement } = await request.json();
 
     const builder = promptBuilders[roleType];
     if (!builder) {
@@ -299,7 +299,9 @@ export async function POST(
     }
 
     const client = new OpenAI({ apiKey, baseURL });
-    const systemPrompt = builder();
+    const systemPrompt = builder() + (customRequirement ? `
+
+用户自定义要求（必须严格遵守）：${customRequirement}` : "");
 
     const completion = await client.chat.completions.create({
       model: "deepseek-chat",

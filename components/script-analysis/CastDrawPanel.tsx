@@ -57,6 +57,7 @@ function formatTime(): string {
 export default function CastDrawPanel({ projectId }: CastDrawPanelProps) {
   const [open, setOpen] = useState(false);
   const [selectedRole, setSelectedRole] = useState("");
+  const [customReq, setCustomReq] = useState("");
   const [loading, setLoading] = useState(false);
   const [prompt, setPrompt] = useState("");
   const [promptCn, setPromptCn] = useState("");
@@ -81,7 +82,7 @@ export default function CastDrawPanel({ projectId }: CastDrawPanelProps) {
       const res = await fetch(`/api/projects/${projectId}/cast-draw`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ roleType: selectedRole }),
+        body: JSON.stringify({ roleType: selectedRole, customRequirement: customReq.trim() }),
       });
       const result = await res.json();
       if (result.success) {
@@ -214,6 +215,20 @@ export default function CastDrawPanel({ projectId }: CastDrawPanelProps) {
                     </button>
                   ))}
                 </div>
+              </div>
+
+              {/* 自定义要求 */}
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs text-white/40">自定义要求（可选）</label>
+                <textarea
+                  value={customReq}
+                  onChange={(e) => setCustomReq(e.target.value)}
+                  placeholder="例如：银白色长发、20岁、蓝眼睛、甜美型..."
+                  rows={2}
+                  maxLength={300}
+                  disabled={loading}
+                  className="w-full rounded-lg bg-white/[0.04] border border-white/[0.08] px-3 py-2 text-xs text-white placeholder:text-white/15 focus:outline-none focus:border-white/20 resize-none disabled:opacity-50"
+                />
               </div>
 
               {/* 抽卡按钮 */}
