@@ -166,30 +166,38 @@ export default function CastDrawPanel({ projectId }: CastDrawPanelProps) {
         <div className="fixed right-0 top-14 bottom-0 w-80 z-40 bg-black/85 backdrop-blur-xl border-l border-white/[0.12] shadow-2xl flex flex-col overflow-hidden">
           {/* 头部 */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.08]">
-            <div className="flex items-center gap-2">
-              <h3 className="text-sm font-semibold text-white">🎴 角色抽卡</h3>
-            </div>
-            <div className="flex items-center gap-1">
-              <button
-                onClick={() => setTab("draw")}
-                className={`rounded px-2 py-1 text-[11px] transition-all ${tab === "draw" ? "bg-white/[0.10] text-white" : "text-white/30 hover:text-white"}`}
-              >
-                抽卡
-              </button>
-              <button
-                onClick={() => setTab("history")}
-                className={`rounded px-2 py-1 text-[11px] transition-all flex items-center gap-1 ${tab === "history" ? "bg-white/[0.10] text-white" : "text-white/30 hover:text-white"}`}
-              >
-                <History className="h-3 w-3" />
-                记录
-                {history.length > 0 && (
-                  <span className="text-[10px] text-white/40">({history.length})</span>
-                )}
-              </button>
-              <button onClick={() => setOpen(false)} className="rounded p-1 text-white/30 hover:text-white ml-1">
-                <ChevronRight className="h-4 w-4" />
-              </button>
-            </div>
+            <h3 className="text-sm font-semibold text-white">🎴 角色抽卡</h3>
+            <button onClick={() => setOpen(false)} className="rounded p-1 text-white/30 hover:text-white">
+              <ChevronRight className="h-4 w-4" />
+            </button>
+          </div>
+
+          {/* Tab 切换 */}
+          <div className="flex border-b border-white/[0.06]">
+            <button
+              onClick={() => setTab("draw")}
+              className={`flex-1 py-2.5 text-sm font-medium transition-all border-b-2 ${
+                tab === "draw"
+                  ? "border-white/30 text-white"
+                  : "border-transparent text-white/30 hover:text-white/60"
+              }`}
+            >
+              🎴 抽卡
+            </button>
+            <button
+              onClick={() => setTab("history")}
+              className={`flex-1 py-2.5 text-sm font-medium transition-all border-b-2 flex items-center justify-center gap-1.5 ${
+                tab === "history"
+                  ? "border-white/30 text-white"
+                  : "border-transparent text-white/30 hover:text-white/60"
+              }`}
+            >
+              <History className="h-4 w-4" />
+              记录
+              {history.length > 0 && (
+                <span className="rounded-full bg-white/[0.10] px-1.5 py-0.5 text-xs">{history.length}</span>
+              )}
+            </button>
           </div>
 
           {/* 抽卡 Tab */}
