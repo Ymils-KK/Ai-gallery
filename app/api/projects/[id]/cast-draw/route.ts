@@ -138,62 +138,67 @@ ugly villain, monster, witch-like, old hag, masculine jaw, square jaw, harsh wri
 function buildMaleLeadPrompt(): string {
   return `你是一个顶尖的影视选角导演和 AI 图像生成提示词专家。为欧美女频短剧「男主」生成一个 2×2 选角联系人表（casting contact sheet）的生图提示词。
 
-核心原则：男主不是普通帅哥，而是有权力感、保护欲、禁欲感、深情感和情绪张力的女频短剧核心男主。所有候选人都必须是 adult man（28-38岁）、高颜值、真实剧照感。
+核心原则：男主必须有"第一眼心动感"——不是普通商务头像，不是证件照，不是中年企业家。要像短剧封面男主、浪漫小说封面男主、豪门霸总剧男主。每位候选人都必须是 extremely handsome adult man（27-35岁），有权力感、保护欲、禁欲感、深情感。
 
 严格按以下格式生成 imagePrompt（英文）和 imagePromptCn（中文）：
 
 布局要求：
 - 横向 16:9，2×2 网格，白色细线分隔
-- 四个格分别放四位男性，每人只占一格，adult man, age 28-38
+- 四个格分别放四位男性，每人只占一格，extremely handsome adult man, age 27-35
 - 顺序：左上M1、右上M2、左下M3、右下M4
 - 图内不得有文字、标签、字母、数字
+- 画面风格：cinematic romance drama still / luxury romance poster，不是白底证件照
+- 可加入轻微电影光影、浅景深、豪宅/办公室/宴会背景氛围
 
 四个男主候选人模板：
 
-M1（左上）冷峻霸总/财阀继承人：
-- 深棕或黑色短发（dark brown or black short hair, clean and neat），干净利落
-- 高鼻梁（strong nose bridge），深邃眼窝（deep-set eyes），轮廓清晰但不过度粗犷
-- 深棕色或灰蓝色眼睛，眼神冷静克制有压迫感（calm restrained gaze with intensity）
-- 气质：权力感、禁欲、掌控、隐藏深情（power, self-restraint, control, hidden deep affection）
-- 适合剧情：办公室对峙、契约婚姻、豪门压迫、英雄救场
-- 服装：深色高级西装、白衬衫、精致领带，一丝不苟
+M1（左上）顶级冷峻霸总：
+- 28-34岁，黑色或深棕短发（dark brown or black short hair），浓密整洁有造型
+- 深邃眼睛（deep-set intense eyes, dark brown or steel blue），高鼻梁（high straight nose bridge），清晰下颌线（sculpted jawline），精致唇形
+- 宽肩挺拔，黑色高定西装（black bespoke suit），白衬衫（white dress shirt），气质禁欲贵气
+- 表情冷静克制，眼神有压迫感和隐藏深情（controlled intensity, hidden depth of emotion）
+- 气质：豪门继承人/财阀掌权者，令人心动的强大吸引力
+- 适合剧情：契约婚姻、办公室对峙、霸道救场、豪门压迫
 
-M2（右上）金发贵族继承人：
-- 深金或浅棕金短发/微卷发（dark golden or light brown-gold short hair, slight wave）
-- 蓝色或灰蓝眼睛（blue or gray-blue eyes），贵族感，干净精致（aristocratic, clean refined）
-- 柔和但疏离的五官，像表面优雅、内心复杂
-- 气质：old money、贵气、克制、绅士、危险的温柔（old money elegance, restrained, gentlemanly, dangerously tender）
+M2（右上）金发贵族男主：
+- 27-33岁，深金或浅棕金微卷短发（dark golden or light brown-gold short hair, slight elegant wave）
+- 蓝色或灰蓝眼睛（piercing blue or gray-blue eyes），精致贵族脸（aristocratic refined features），干净高级
+- 像 old money heir，气质绅士、贵气、克制，温柔但疏离，危险的温柔（dangerously tender）
 - 适合剧情：宴会、订婚、家族交易、温柔救赎
-- 服装：浅灰或深蓝高级西装，精致的袖扣和领带
+- 服装：浅灰或深蓝高级西装，精致袖扣和领带
 
 M3（左下）野性狼人/暗黑守护者：
-- 深色或银灰色中短发（dark or dark silver-gray medium-short hair），不要长发披肩
-- 眉骨强（strong brow ridge），眼神锐利（sharp intense eyes），身材高大强壮
-- 表情危险但保护欲强（dangerous yet fiercely protective）
-- 气质：野性、占有欲、守护、强张力（wild, possessive, protective, intense chemistry）
+- 28-36岁，深色或银灰中短发（dark or silver-gray medium-short hair），整洁有型
+- 轮廓强但依然英俊（strong yet undeniably handsome），宽肩高大
+- 眼神锐利危险但保护欲强（sharp intense eyes, dangerous yet fiercely protective）
+- 气质：野性、占有欲、禁忌恋男主魅力，不是反派大叔不是粗糙老气
 - 适合剧情：狼人题材、雨夜救人、战斗保护、禁忌恋
-- 服装：深色衬衫或皮夹克，随性但有力量感
+- 服装：深色敞领衬衫或高级皮夹克，随性但有力量感
 
-M4（右下）温柔医生/律师/旧爱型男主：
-- 棕色短发（brown short hair），柔和干净的五官（soft clean features），成熟稳重
-- 深棕色或灰色眼睛，眼神温柔克制带一点伤感（warm restrained eyes with a hint of sadness）
-- 气质：可靠、深情、理性、隐忍（reliable, deeply affectionate, rational, enduring）
-- 适合剧情：医院、法庭、旧情复燃、默默守护
-- 服装：浅色衬衫或灰色大衣，干净斯文
+M4（右下）温柔救赎型男主：
+- 27-34岁，棕色短发（rich brown short hair），浓密干净
+- 精致柔和但男性化的五官（refined soft but masculine features），清澈深情的眼睛（clear warm eyes, deep with emotion）
+- 干净成熟，温柔可靠，但必须有足够的心动感，不是普通路人
+- 像医生/律师/旧爱男主，但极帅有张力
+- 适合剧情：医院守护、法庭辩护、旧情复燃、默默守护
+- 服装：浅色衬衫或高级羊绒大衣，干净斯文
 
 共同要求（必须全部满足）：
-- 四个男主都必须是 adult man，年龄感 28-38 岁
-- 都要极帅，但不是网红脸、不是男模硬照、不是游戏角色
-- 必须像真实欧美短剧演员剧照
-- 身材高大挺拔，宽肩，穿西装/衬衫/风衣/高级休闲装
-- 眼神要有情绪张力：克制、深情、压迫、保护欲
-- 四个人要通过发色、职业感、气质和眼神区分，不要只是同一张脸换衣服
-- 脸居中，平视，直视镜头，双唇闭合或微张
+- 每位候选人都必须是 extremely handsome adult man，第一眼心动
+- 必须像欧美女频短剧男主、浪漫小说封面男主，不是商务头像不是证件照
+- 年龄感 27-35岁，年轻成熟，不要中年感、不要沧桑大叔
+- 头发浓密、干净、有造型，不要发际线后退、不要稀少
+- 五官精致立体但真实：高鼻梁、深邃眼窝、清晰下颌线、好看唇形
+- 皮肤状态好但真实，不要油腻、粗糙、老态
+- 身材气质：宽肩、挺拔、禁欲、贵气、保护欲
+- 眼神必须有情绪张力：深情、克制、占有欲、压迫感、危险的温柔
+- 服装高级：黑色西装、白衬衫、敞领衬衫、羊绒大衣、暗色礼服
+- 四个人通过发色、气质和眼神区分，不要同一张脸换衣服
 
 严禁生成（negative prompt）：
-teen boy, boyish face, old man, oily face, influencer model, gym bodybuilder, exaggerated muscles, heavy beard, unkempt beard, anime, game character, fantasy NPC, plastic skin, wax figure, overly perfect symmetry, cheap nightclub style, feminine face, weak jaw, distorted eyes, bad hands, long hair past shoulders, ponytail, man bun
+average businessman, corporate headshot, passport photo, plain office portrait, middle-aged CEO, old man, tired face, rough skin, receding hairline, thin hair, heavy wrinkles, dull eyes, boring face, ordinary man, uncle vibe, greasy face, excessive stubble, heavy beard, bodybuilder, cheap suit, villain thug, criminal face, harsh ugly face, anime, game character, plastic skin, wax figure, gym model, influencer, nightclub style, feminine face, weak jaw, distorted eyes, bad hands, long hair past shoulders
 
-哈苏 X2D 100C，100mm f/2.8 微距镜头，ISO 100，快门 1/125s，32K，HDR10+，正面头肩特写，白色无缝背景。
+哈苏 X2D 100C，100mm f/2.8 微距镜头，ISO 100，快门 1/125s，32K，HDR10+。可用轻微电影光影、浅景深、豪宅/办公室/宴会氛围背景，避免纯白证件照背景。
 
 输出 JSON：
 {"imagePrompt":"英文提示词","imagePromptCn":"中文提示词"}`;
