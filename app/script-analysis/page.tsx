@@ -6,6 +6,7 @@ import ProjectSidebar from "@/components/script-analysis/ProjectSidebar";
 import ScriptInputForm from "@/components/script-analysis/ScriptInputForm";
 import AnalysisResult from "@/components/script-analysis/AnalysisResult";
 import CastDrawPanel from "@/components/script-analysis/CastDrawPanel";
+import EpisodeAnalysis from "@/components/script-analysis/EpisodeAnalysis";
 import WallpaperBackground from "@/components/script-analysis/WallpaperBackground";
 import type { AssetItem } from "@/components/script-analysis/AssetCard";
 
@@ -50,6 +51,8 @@ export default function ScriptAnalysisPage() {
   const abortRef = useRef<AbortController | null>(null);
   const [pageError, setPageError] = useState("");
   const [pageLoading, setPageLoading] = useState(false);
+  const [episodeData, setEpisodeData] = useState<any>(null);
+  const [episodeLoading, setEpisodeLoading] = useState(false);
   const [apiConfigured, setApiConfigured] = useState(true);
 
   // 加载项目列表
@@ -219,6 +222,27 @@ export default function ScriptAnalysisPage() {
     } finally {
       setLoading(false);
       abortRef.current = null;
+    }
+  }
+
+  // 集数分析
+  async function handleEpisodeAnalyze(scriptText: string) {
+    if (!activeId) return;
+    setEpisodeLoading(true);
+    setEpisodeData(null);
+    try {
+      const res = await fetch(`/api/projects/${activeId}/episode-analysis`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ script: scriptText }),
+      });
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.error || "分析失败");
+      setEpisodeData(result);
+    } catch (err: any) {
+      setPageError(err.message || "集数分析失败");
+    } finally {
+      setEpisodeLoading(false);
     }
   }
 
@@ -557,8 +581,10 @@ export default function ScriptAnalysisPage() {
                     initialTemplateIds={templateIds}
                     hasResults={hasResults}
                     onAnalyze={handleAnalyze}
+                    onEpisodeAnalyze={handleEpisodeAnalyze}
                     onCancel={handleCancel}
                     loading={loading}
+                    episodeLoading={episodeLoading}
                   />
                 </div>
                 {pageError && (
@@ -585,6 +611,10 @@ export default function ScriptAnalysisPage() {
                       )}
                     </div>
                   )}
+                  {episodeData && episodeData.episodes && (
+                    <EpisodeAnalysis data={episodeData} />
+                  )}
+
                   <AnalysisResult
                     projectId={activeId}
                     data={{ characters, scenes, props }}
