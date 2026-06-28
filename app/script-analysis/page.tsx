@@ -609,7 +609,7 @@ export default function ScriptAnalysisPage() {
 
       {/* 抽卡面板 */}
       {activeId && (
-        <CastDrawPanel projectId={activeId} characters={characters} />
+        <CastDrawPanel projectId={activeId} />
       )}
     </div>
   );

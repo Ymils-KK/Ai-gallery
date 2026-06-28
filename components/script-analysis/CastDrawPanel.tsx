@@ -3,16 +3,21 @@
 import { useState } from "react";
 import { ChevronLeft, ChevronRight, Sparkles, Copy, Check, Loader2 } from "lucide-react";
 import ImageUploadSlot from "./ImageUploadSlot";
-import type { AssetItem } from "./AssetCard";
 
 interface CastDrawPanelProps {
   projectId: string;
-  characters: AssetItem[];
 }
 
-export default function CastDrawPanel({ projectId, characters }: CastDrawPanelProps) {
+const roleTypes = [
+  { key: "female_lead", label: "女主", icon: "👸" },
+  { key: "female_villain", label: "女反派", icon: "🐍" },
+  { key: "male_lead", label: "男主", icon: "🤴" },
+  { key: "male_villain", label: "男反派", icon: "🦹" },
+] as const;
+
+export default function CastDrawPanel({ projectId }: CastDrawPanelProps) {
   const [open, setOpen] = useState(false);
-  const [selectedCharId, setSelectedCharId] = useState("");
+  const [selectedRole, setSelectedRole] = useState("");
   const [loading, setLoading] = useState(false);
   const [prompt, setPrompt] = useState("");
   const [promptCn, setPromptCn] = useState("");
@@ -20,26 +25,17 @@ export default function CastDrawPanel({ projectId, characters }: CastDrawPanelPr
   const [copied, setCopied] = useState(false);
   const [showCn, setShowCn] = useState(false);
 
-  // 筛选女性角色（名字含"女"或description含"女"的，或全部major角色供选择）
-  const femaleChars = characters.filter((c) => c.tier === "major");
-
   async function handleDraw() {
-    if (!selectedCharId || loading) return;
+    if (!selectedRole || loading) return;
     setLoading(true);
     setPrompt("");
     setPromptCn("");
-
-    const char = characters.find((c) => c.id === selectedCharId);
-    if (!char) { setLoading(false); return; }
 
     try {
       const res = await fetch(`/api/projects/${projectId}/cast-draw`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          characterName: char.name,
-          characterDescription: char.description,
-        }),
+        body: JSON.stringify({ roleType: selectedRole }),
       });
       const result = await res.json();
       if (result.success) {
@@ -91,25 +87,32 @@ export default function CastDrawPanel({ projectId, characters }: CastDrawPanelPr
           </div>
 
           <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-4">
-            {/* 角色选择 */}
+            {/* 角色类型选择 */}
             <div className="flex flex-col gap-2">
-              <label className="text-xs text-white/40">选择角色</label>
-              <select
-                value={selectedCharId}
-                onChange={(e) => setSelectedCharId(e.target.value)}
-                className="w-full rounded-lg bg-white/[0.04] border border-white/[0.08] px-3 py-2 text-sm text-white focus:outline-none focus:border-white/20"
-              >
-                <option value="">-- 选择角色 --</option>
-                {femaleChars.map((c) => (
-                  <option key={c.id} value={c.id}>{c.name}</option>
+              <label className="text-xs text-white/40">角色类型</label>
+              <div className="grid grid-cols-2 gap-2">
+                {roleTypes.map((r) => (
+                  <button
+                    key={r.key}
+                    type="button"
+                    onClick={() => setSelectedRole(r.key)}
+                    className={`rounded-lg border px-3 py-2.5 text-center text-sm transition-all ${
+                      selectedRole === r.key
+                        ? "bg-white/[0.12] border-white/20 text-white"
+                        : "bg-white/[0.03] border-white/[0.06] text-white/50 hover:border-white/15 hover:text-white/80"
+                    }`}
+                  >
+                    <span className="mr-1">{r.icon}</span>
+                    {r.label}
+                  </button>
                 ))}
-              </select>
+              </div>
             </div>
 
             {/* 抽卡按钮 */}
             <button
               onClick={handleDraw}
-              disabled={!selectedCharId || loading}
+              disabled={!selectedRole || loading}
               className="flex items-center justify-center gap-2 rounded-full bg-white/[0.10] border border-white/[0.08] px-4 py-3 text-sm font-medium text-white hover:bg-white/[0.15] disabled:opacity-30 transition-all"
             >
               {loading ? (
@@ -128,14 +131,12 @@ export default function CastDrawPanel({ projectId, characters }: CastDrawPanelPr
             {/* 结果 */}
             {prompt && (
               <>
-                {/* 图片上传 */}
                 <ImageUploadSlot
                   imageUrl={imageUrl}
                   onUpload={handleUpload}
                   onRemove={() => setImageUrl("")}
                 />
 
-                {/* 提示词 */}
                 <div className="rounded-lg bg-white/[0.03] border border-white/[0.04] p-3">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-xs text-white/30">🪄 抽卡提示词</span>
