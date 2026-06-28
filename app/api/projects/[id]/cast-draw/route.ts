@@ -320,12 +320,89 @@ real person, human face, hair, makeup, portrait, character face, anime, cosplay,
 {"imagePrompt":"英文提示词","imagePromptCn":"中文提示词"}`;
 }
 
+function buildMedievalMaleCostumePrompt(): string {
+  return `你是一个顶级高定男装设计师和 AI 图像生成提示词专家。每次从动态设计变量池中随机组合四套中世纪女频文风男主服装，像"高定秀场 + 中世纪女频宫廷剧 + 吸血鬼/狼人贵族题材"。不是固定模板，每次都是全新设计。
+
+核心：纯服装设计展示，使用白色半透明无脸男性模特（white translucent faceless male mannequin, no human face, no hair, no real person）。
+
+展示格式：
+- 横向 16:9，2×2 网格，白色细线分隔
+- 白色半透明无脸男性模特，纯白无缝背景，中性站姿，全身正面从头到脚
+- 顺序：M1左上、M2右上、M3左下、M4右下
+- 图内不得有任何文字、标签、数字
+- 哈苏 X2D 100C，85mm 定焦镜头，柔和影棚灯光
+- 设计方向：宽肩窄腰长腿、强轮廓、高领、披风、皮革、丝绒、银线刺绣、禁欲危险
+
+设计变量池（每套服装从各池中选取1项，四套之间不重复）：
+
+【剧情身份池】(10选4，不重复)
+wolf king / vampire prince / cold duke / cursed knight / royal heir / exiled prince / templar inquisitor / dark regent / war hero general / forbidden guardian
+
+【剧情场景池】(10选4，不重复)
+coronation / masquerade ball / post-war return / royal trial / secret pact / wedding rescue / rain rescue / throne confrontation / family judgment / identity reveal
+
+【主轮廓池】(8选4，不重复)
+long noble coat / high-collar prince coat / military ceremonial coat / fitted leather coat / layered cloak outfit / embroidered court suit / knight-inspired formalwear / asymmetrical cape coat
+
+【领口结构池】(8选4，不重复)
+high standing collar / open collar with cravat / jeweled collar / fur-trimmed collar / armored collar detail / deep V inner shirt / structured mandarin collar / silver chain collar
+
+【肩部设计池】(8选4，不重复)
+broad structured shoulders / cape shoulders / fur shoulder mantle / leather shoulder guards / jeweled shoulder chain / military epaulettes / asymmetrical shoulder cape / wolf-fur mantle
+
+【下装结构池】(8选4，不重复)
+tailored dark trousers with high boots / ceremonial riding pants / leather trousers with silver buckle / layered waist sash / embroidered belt structure / asymmetrical waist drape / long split coat hem / gothic high boots
+
+【披风/外套结构池】(8选4，不重复)
+floor-length heavy cloak / half cape / asymmetrical cloak / heavy velvet cape / fur-lined mantle / split back coat / layered battle cloak / detachable royal cape
+
+【纹样符号池】(10选4，不重复)
+wolf crest / vampire sigil / black rose / silver thorns / royal lion / moon phase / raven feather / blood ruby clasp / sacred cross / serpent chain
+
+【材质色彩池】(每套选1-2主色，四套覆盖至少4种不同主色调)
+black velvet / dark leather / midnight blue brocade / burgundy satin lining / silver embroidery / charcoal wool / smoky gray silk / deep emerald velvet / antique gold trim / blood red inner lining / shadow navy wool / onyx black silk / deep wine leather / icy silver brocade
+
+差异评分机制（必须遵守）：
+满分10分。任意两套在主轮廓、领口结构、肩部设计、披风结构中有3项以上相同→差异分<6→重新组合。目标≥8分。
+
+重复惩罚机制：
+不要每次都出黑色狼王披风+吸血鬼王子礼服+骑士战袍+金边公爵外套。每次从身份池和轮廓池选全新组合。
+
+每套服装输出格式：
+M1（左上）：[身份] + [场景]
+- 概念：[一句话设计概念]
+- 轮廓：[从轮廓池选]
+- 领口：[从领口池选]
+- 肩部：[从肩部池选]
+- 下装：[从下装池选]
+- 披风：[从披风池选]
+- 纹样：[从纹样池选]
+- 记忆点：[1个强视觉记忆点，如超长黑披风/狼毛肩披/血红内衬/银链胸饰/徽章扣]
+- 色彩：[主色+辅色]
+- 关键词：[英文关键词串]
+
+M2-M4同样格式，四套身份/轮廓/领口/肩部/披风/纹样各不同。
+
+统一风格：
+高预算欧美中世纪奇幻剧真实影视戏服设计稿。华丽、强势、禁欲、贵气、危险、有保护欲。女频男主吸引力：宽肩窄腰长腿、高领披风、皮革丝绒、银线刺绣。
+
+禁止：
+现代商务西装、普通衬衫西裤、游戏重甲、动漫Cosplay、廉价王子装、海盗装、牛仔装、夜店风、裸露过度。
+
+Negative prompt:
+real person, human face, hair, makeup, portrait, character face, modern business suit, corporate suit, office suit, tuxedo, ordinary shirt, anime, cosplay, game armor, heavy armor, fantasy NPC, pirate costume, cowboy outfit, cheap costume, Halloween costume, plastic fabric, low quality, same outfit repeated, only color variation, modern casual clothes, sci-fi outfit, flat design, no structure, messy design, nightclub outfit, vulgar sexy, shirtless, bodybuilder, doll face, 3d character
+
+输出 JSON：
+{"imagePrompt":"英文提示词","imagePromptCn":"中文提示词"}`;
+}
+
 const promptBuilders: Record<string, () => string> = {
   female_lead: buildFemaleLeadPrompt,
   female_villain: buildFemaleVillainPrompt,
   male_lead: buildMaleLeadPrompt,
   male_villain: buildMaleVillainPrompt,
   medieval_costume: buildMedievalCostumePrompt,
+  medieval_male_costume: buildMedievalMaleCostumePrompt,
 };
 
 export async function POST(
