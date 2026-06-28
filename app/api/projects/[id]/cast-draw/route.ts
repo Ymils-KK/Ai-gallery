@@ -272,101 +272,93 @@ ugly villain, monster, scarred monster face, old greasy man, exaggerated evil gr
 }
 
 function buildMedievalCostumePrompt(): string {
-  return `你是一个顶尖的影视服装设计师和 AI 图像生成提示词专家。为欧美女频中世纪幻想短剧生成一个 2×2 服装设计展示表（costume design showcase sheet）的生图提示词。
+  return `你是一个顶级高定服装设计师和 AI 图像生成提示词专家。生成四套中世纪女频宫廷服装设计，像"高定秀场 + 中世纪女频宫廷剧 + 吸血鬼/狼人贵族题材"的服装设计稿。
 
-核心原则：这是服装设计展示，不是人物写真。使用白色半透明无脸人体模特（white translucent faceless mannequin）展示服装。
+⚠️ 最重要规则：这是纯服装设计展示，不是人物写真。使用白色半透明无脸人体模特展示。四套必须是结构完全不同的设计，不能只是换颜色。
 
-性感华丽方向（elegant sensual luxury）：
-- 允许并鼓励低胸、露肩、束腰、高开衩、贴身剪裁
-- 目标是"高贵性感、危险诱惑、宫廷欲感"（elegant sensual, seductive royal gown, gothic romance），不是廉价暴露
-- 胸口设计：sweetheart neckline、deep V neckline、off-shoulder neckline、corset bodice、lace bust detail
-- 腰线必须明显：tight corset waist、narrow waist silhouette、structured bodice、metal corset belt
-- 裙摆可高开衩：high slit skirt、asymmetrical overskirt、flowing train with slit
-- 材质更华丽：black velvet、burgundy satin、transparent black lace、silver embroidery、gemstone chains
-- 审美参考：高预算中世纪女频剧/吸血鬼宫廷剧的性感礼服（The Vampire Diaries ball scenes, gothic romance drama）
-
-四套服装必须从轮廓、领口、袖型、裙摆、披风、材质、纹样上明显不同，不能只是换颜色。
-
-严格按以下格式生成 imagePrompt（英文）和 imagePromptCn（中文）：
-
-展示要求：
+展示格式：
 - 横向 16:9，2×2 网格，白色细线分隔
-- 白色半透明无脸人体模特（white translucent faceless mannequin），无真人面孔、无头发、无妆容
+- 白色半透明无脸模特（white translucent faceless mannequin, no human face, no hair, no real person）
 - 顺序：D1左上、D2右上、D3左下、D4右下
-- 图内不得有文字、标签、字母、数字
-- 纯白色无缝背景，中性站姿，全身正面展示，从头到脚不裁剪
-- 哈苏 X2D 100C，85mm 定焦，柔和影棚灯光
+- 图内不得有任何文字、标签、数字
+- 纯白无缝背景，中性站姿，全身正面从头到脚
+- 哈苏 X2D 100C，85mm 定焦镜头，柔和影棚灯光
 
-⚠️ 去重规则（必须严格遵守）：
-如果四套服装只是颜色不同但轮廓/领口/袖型/裙摆/披风结构相似，判定为不合格。
-每套服装至少有一个强设计记忆点（signature design element），如：
-- 超长披风（dramatic floor-length cape）
-- 不对称外裙（asymmetrical overskirt）
-- 高领宝石项圈（high jeweled collar）
-- 透明蕾丝长袖（sheer lace bishop sleeves）
-- 金属雕花束腰（metal filigree corset belt）
-- 月亮/狼纹/荆棘/星冠专属纹样刺绣
-- 多层薄纱拖尾（layered chiffon train）
+性感方向（elegant sensual luxury）：
+允许低胸、露肩、束腰、高开衩、贴身剪裁。目标是"高贵性感、危险诱惑、宫廷欲感"。sweetheart neckline, deep V, off-shoulder, corset bodice, lace bust detail, tight corset waist, high slit skirt, asymmetrical overskirt。
+严禁: vulgar sexy, lingerie, bikini armor, nightclub dress, fetish wear, cheap costume, pornographic.
 
-四套服装设计（必须从结构上不同，且每套加入高贵性感元素）：
+四套服装设计（必须结构完全不同）：
 
-D1（左上）月光圣婚礼服（Moonlight Sacrificial Bride Gown）：
-- 轮廓：低胸心形领紧身束腰帝国裙（low-cut sweetheart neckline fitted empire waist gown），长拖尾
-- 领口：深陷心形领（deep sweetheart neckline），蕾丝边饰勾勒胸线（lace-trimmed bust detail），锁骨全露
-- 袖型：透明蕾丝紧身长袖（sheer lace fitted bishop sleeves），若隐若现肌肤，袖口微喇珍珠扣
-- 裙摆：多层象牙白半透明薄纱叠层（layered semi-sheer ivory chiffon），行走时若隐若现腿部
-- 材质：象牙白丝缎（ivory silk satin），尚蒂伊蕾丝（Chantilly lace），透明薄纱（sheer tulle）
-- 纹样：弯月与星辰银线刺绣（crescent moon and star embroidery in silver thread），珍珠缀满胸线
-- 设计记忆点：超长透明头纱披风（sheer floor-length veil cape）+ 胸线珍珠刺绣——性感但纯净神圣
-- 气质：神圣、纯净、被献祭的新娘感，elegant sensual
-- 关键词：low-cut sweetheart empire gown, sheer lace fitted bishop sleeves, lace-trimmed bust detail, moon embroidery, cathedral train, semi-sheer layered chiffon, pearl-studded veil cape, ethereal sensual bride
+D1（左上）月蚀献祭婚纱（Eclipse Sacrificial Bride）:
+设计概念：圣洁新娘 + 被献祭 + 月蚀仪式
+轮廓：高腰帝国裙（empire waist gown）+ 超长教堂拖尾（cathedral train）
+领口：低胸区域覆以半透明月牙形珠宝胸饰（translucent crescent moon jeweled bust covering），锁骨全露
+袖型：大面积透明蕾丝长袖（floor-length sheer lace bell sleeves），袖口展开如月光
+腰线：珍珠链与银线交织束腰（pearl chain and silver thread corset belt）
+裙摆：多层半透明薄纱（multi-layered semi-sheer tulle），外层月相刺绣（moon phase embroidery from new to full）
+披风/拖尾：背后可拆卸超长教堂式薄纱披帛（detachable cathedral-length sheer tulle cape），边缘珍珠缀饰
+记忆点：月牙形珠宝胸饰 + 月相刺绣裙摆 + 超长薄纱披帛
+颜色：珍珠白（pearl white）、冷银（cool silver）、淡蓝月光色（moonlight pale blue）
+关键词：eclipse sacrificial bride gown, crescent moon jeweled bust piece, floor-length sheer lace bell sleeves, moon phase embroidered tulle train, detachable cathedral veil cape, pearl and silver thread corset, ethereal lunar couture
 
-D2（右上）暗黑王后披风裙（Dark Queen Cloak Gown）：
-- 轮廓：极度紧身束腰鱼尾裙（ultra-fitted corset mermaid gown），宽肩披风，蜂腰轮廓
-- 领口：深 V 露肩设计（deep V off-shoulder neckline），黑色蕾丝镶边，锁骨肩线全露
-- 袖型：披风袖（detachable floor-length cape sleeves），肩部金属狼头扣，无内袖露肩
-- 裙摆：紧身鱼尾展开（fitted mermaid flare），紧贴身体曲线至膝下展开
-- 材质：黑色丝绒（black velvet），银线锦缎（silver brocade），暗色绸缎内衬
-- 纹样：银线狼纹族徽刺绣于胸下腰封（silver wolf crest embroidery on underbust corset），暗银金属雕花腰封
-- 设计记忆点：超宽及地披风（oversized floor-length cape）+ 露肩深V+金属束腰——高贵性感女王权力
-- 气质：权力、压迫、狼族王后、seductive royal power
-- 关键词：black velvet off-shoulder mermaid gown, deep V neckline, silver wolf crest underbust corset, oversized floor-length cape, metal wolf clasp, tight corset waist, gothic queen sensual luxury
+D2（右上）狼族黑曜王后裙（Wolf Obsidian Queen Gown）:
+设计概念：狼族王后 + 黑曜石权力 + 暗黑王座
+轮廓：结构化紧身束腰裙（structured corset gown）+ 尖肩披风 + 不对称裙摆
+领口：深 V 露肩（deep V off-shoulder），锁骨肩线全露，黑色蕾丝镶边
+肩部：尖肩披风结构（sharp shoulder cape structure），像狼耳/王冠形肩线，金属狼头扣
+袖型：无内袖，披风从肩部垂至地面（floor-length cape sleeves from shoulders）
+腰线：金属狼纹雕花腰封（metal wolf crest filigree corset belt），极度束腰蜂腰
+裙摆：前短后长不对称裙（asymmetrical high-low skirt），前露腿后重拖尾，暗色衬里展开
+披风：披风内侧银色狼群刺绣（silver wolf pack embroidery inside cape lining）
+记忆点：尖肩狼冠披风 + 金属狼纹腰封 + 前短后长不对称裙 + 狼群内衬
+颜色：黑色丝绒（black velvet）、暗银（dark silver）、冷灰宝石（cool gray gemstone）
+关键词：black velvet structured corset gown, sharp shoulder wolf-crown cape, deep V off-shoulder neckline, metal wolf crest corset belt, asymmetrical high-low skirt, silver wolf pack embroidery inside cape, obsidian queen couture
 
-D3（左下）血蔷薇复仇裙（Blood Rose Revenge Gown）：
-- 轮廓：极致紧身不对称鱼尾裙（ultra-fitted asymmetrical mermaid gown），右侧高开衩至大腿上部
-- 领口：深低胸心形领覆以透明黑蕾丝（deep low-cut sweetheart neckline with sheer black lace illusion panel），胸线明显
-- 袖型：分离式黑色透明蕾丝歌剧长手套袖（detached sheer black lace opera-length glove sleeves），从肘垂落
-- 裙摆：不对称外裙（asymmetrical overskirt），右侧高开衩露腿，左侧层叠荷叶边
-- 材质：酒红丝缎（burgundy silk satin），黑色尚蒂伊蕾丝（black Chantilly lace），透明黑蕾丝
-- 纹样：玫瑰荆棘黑丝刺绣从胸口盘旋至裙摆（rose and thorn embroidery），红宝石胸链垂于领口
-- 设计记忆点：高开衩+低胸蕾丝+红宝石胸链+黑蕾丝长手套——最性感的复仇女神裙
-- 气质：危险、艳丽、复仇、seductive noble vengeance
-- 关键词：ultra-fitted burgundy mermaid gown, deep sweetheart neckline with black lace illusion, high front slit to thigh, detached opera-length lace gloves, ruby body chain, rose thorn embroidery, seductive revenge heroine couture
+D3（左下）血蔷薇荆棘复仇裙（Blood Rose Thorn Revenge Gown）:
+设计概念：复仇公爵夫人 + 血蔷薇 + 危险诱惑
+轮廓：极致紧身鱼尾裙（ultra-fitted mermaid gown）+ 高开衩 + 雕塑感胸衣
+领口：深低胸用黑色透明蕾丝覆盖（deep low-cut covered with sheer black lace illusion panel），胸线勾勒明显
+身体：两侧荆棘状黑色刺绣从肋部向腰部收拢（black thorn embroidery converging from ribs to waist），视觉上极度束腰
+袖型：单侧肩部立体黑玫瑰装饰（3D black rose sculptural shoulder ornament），另一侧透明蕾丝长手套袖
+裙摆：高开衩鱼尾裙（high slit mermaid skirt），开衩边缘玫瑰花瓣层叠（rose petal layered slit edge）
+腰线：胸口到腰部红宝石链条（ruby body chain from bust to waist）
+记忆点：立体黑玫瑰肩饰 + 荆棘肋部刺绣 + 红宝石身体链 + 玫瑰花瓣开衩
+颜色：酒红丝缎（burgundy silk satin）、黑蕾丝（black lace）、红宝石（ruby）
+关键词：ultra-fitted burgundy mermaid gown, sheer black lace illusion plunge neckline, black thorn rib embroidery, 3D black rose shoulder ornament, ruby body chain, rose petal layered high slit, sculpted revenge heroine couture
 
-D4（右下）星冠加冕礼服（Star Crown Coronation Ball Gown）：
-- 轮廓：极度紧身束腰大裙摆舞会裙（ultra-tight corset ball gown），蜂腰轮廓，超大裙撑
-- 领口：露肩深心形珠宝领（off-shoulder deep sweetheart neckline with jeweled trim），胸前珠宝链饰
-- 袖型：透明薄纱短披肩袖（sheer tulle off-shoulder cap sleeves），镶星形珠宝，半透明露肩
-- 裙摆：巨大多层裙摆（voluminous multi-layered ball gown skirt），前开衩隐约露腿，长拖尾
-- 材质：香槟金丝缎（champagne gold silk satin），金线织锦（gold brocade），星芒亮片，透明薄纱
-- 纹样：星芒与皇冠纹样金线刺绣（star burst and crown pattern in gold embroidery），胸前星形珠宝链
-- 设计记忆点：极度束腰蜂腰+露肩深心形领+珠宝胸链+星形肩饰——命定女王的华丽性感
-- 气质：明艳、尊贵、命定女王、radiant sensual coronation
-- 关键词：ultra-tight corset ball gown, off-shoulder deep sweetheart neckline, jeweled bust chain, sheer tulle cap sleeves, star burst gold embroidery, grand voluminous skirt, wasp waist silhouette, radiant sensual princess
+D4（右下）星冠堕落加冕礼服（Fallen Star Coronation Gown）:
+设计概念：加冕女王 + 星冠 + 神圣堕落
+轮廓：结构化紧身束腰胸衣 + 半边大裙撑舞会裙 + 不对称外裙（half ball gown with asymmetrical overskirt）
+领口：露肩低胸金色束腰胸衣（off-shoulder low-cut gold corset bodice），胸前和肩部放射状星芒珠宝结构
+肩部：星芒状珠宝肩饰向外放射（radiating star burst jeweled shoulder ornaments），悬浮感皇冠式颈饰
+袖型：透明金纱短披袖（sheer gold tulle cap sleeves），从肩饰下延伸
+裙摆：不对称宫廷外裙（asymmetrical court overskirt），一侧露腿一侧大裙撑，多层透明金纱拖尾
+腰线：极度束腰蜂腰（ultra-tight wasp waist），金色雕花腰封
+记忆点：放射状星芒肩饰 + 半边大裙撑半边露腿 + 多层透明金纱拖尾 + 星芒珠宝胸衣
+颜色：香槟金（champagne gold）、古金（antique gold）、透明金纱（sheer gold tulle）
+关键词：structured corset half ball gown, off-shoulder low-cut gold bodice, radiating star burst jeweled shoulders, asymmetrical court overskirt, multi-layered sheer gold tulle train, wasp waist gold filigree corset, fallen star coronation couture
 
-性感过滤标准（sexy elegance filter）：
-合格方向（elegant sensual）: elegant sensual gown, seductive royal dress, gothic romance luxury, luxurious low-cut corset dress, high-end TV drama costume
-不合格方向（vulgar — 严禁）: vulgar sexy, lingerie, bikini armor, nightclub dress, pornographic outfit, cheap costume, latex, fetish wear, stripper dress, cheap sexy Halloween costume
+⚠️ 硬性去重规则：
+四套必须在以下7个维度都明显不同：
+1. 轮廓（empire vs corset vs mermaid vs half ball gown）
+2. 领口（jeweled bust vs deep V off-shoulder vs sheer lace plunge vs star burst off-shoulder）
+3. 袖型（sheer bell sleeves vs cape sleeves vs 3D rose + glove vs gold tulle cap sleeves）
+4. 裙摆（cathedral train vs high-low asymmetrical vs high slit mermaid vs half ball gown）
+5. 披风/拖尾（detachable veil cape vs wolf embroidery cape vs none vs gold tulle train）
+6. 纹样（moon phase vs wolf pack vs thorn rose vs star burst）
+7. 记忆点（各不相同——见每套的记忆点描述）
+严禁只换颜色、只换材质但轮廓相似的设计。
 
-共同要求：
-- 四套服装必须看起来像高预算欧美中世纪奇幻剧的真实影视戏服设计稿（premium TV costume design sketch）
-- 高贵性感：性感但优雅，诱惑但高级，像吸血鬼宫廷剧/中世纪女频剧的华丽礼服
-- 质感至上：丝绒、丝缎、蕾丝、薄纱、刺绣、金属雕花、珍珠、宝石
-- 展示在白色半透明无脸模特上（faceless translucent mannequin），无真人、无头发、无面孔
-- 柔光影棚灯光，纯白无缝背景，中性站姿
+统一风格：
+高预算欧美中世纪奇幻剧真实影视戏服设计稿，不是游戏皮肤、动漫Cosplay、廉价影楼装、万圣节服装。像 The Vampire Diaries 贵族舞会 + Game of Thrones 宫廷 + 高定秀场。
 
-Negative prompt（严禁生成）：
-real person, human face, hair, makeup, portrait, character face, anime, cosplay, game armor, fantasy NPC, cheap costume, Halloween costume, plastic fabric, low quality, same dress repeated, only color variation, modern dress, sci-fi outfit, bikini armor, messy design, flat design, doll face, 3d character, wig, visible head, visible skin, realistic human skin, eyebrows, eyes, lips, nose, lingerie, vulgar, cheap sexy, nightclub dress, stripper outfit, fetish wear, latex, pornographic
+性感过滤:
+允许: elegant sensual gown, seductive royal dress, gothic romance luxury, luxurious low-cut corset, high-end TV costume
+禁止: lingerie, bikini armor, nightclub dress, fetish wear, latex, stripper dress, cheap Halloween costume, pornographic
+
+Negative prompt（严禁）:
+real person, human face, hair, makeup, portrait, character face, anime, cosplay, game armor, fantasy NPC, cheap costume, Halloween costume, plastic fabric, low quality, same dress repeated, only color variation, modern dress, sci-fi outfit, bikini armor, messy design, flat design, doll face, 3d character, wig, visible head, visible skin, realistic human skin, eyebrows, eyes, lips, nose, lingerie, vulgar, cheap sexy, nightclub dress, stripper outfit, fetish wear, latex, pornographic, same silhouette, only color swap, empty background without dividers, text in image, labels, watermarks
 
 输出 JSON：
 {"imagePrompt":"英文提示词","imagePromptCn":"中文提示词"}`;
