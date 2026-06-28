@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Copy, Check, Sparkles, Loader2, ChevronDown, Plus, X, Trash2 } from "lucide-react";
+import { Copy, Check, Sparkles, Loader2, ChevronDown, Plus, X, Trash2, RefreshCw } from "lucide-react";
 import ImageUploadSlot from "./ImageUploadSlot";
 import PromptChat from "./PromptChat";
 
@@ -60,6 +60,7 @@ export default function AssetCard({
   const [copied, setCopied] = useState(false);
   const [showCn, setShowCn] = useState(false);
   const [generating, setGenerating] = useState(false);
+  const [regenerating, setRegenerating] = useState(false);
   const [collapsed, setCollapsed] = useState(true);
 
   // 服装区状态
@@ -168,6 +169,28 @@ export default function AssetCard({
                   {showCn ? "中" : "EN"}
                 </button>
               )}
+              {/* 重新生成按钮 */}
+              <button
+                type="button"
+                onClick={async () => {
+                  setRegenerating(true);
+                  try {
+                    await onGeneratePrompt(asset.id);
+                    setCollapsed(false);
+                  } finally {
+                    setRegenerating(false);
+                  }
+                }}
+                disabled={regenerating}
+                className="flex items-center gap-1 rounded-md px-2.5 py-1 text-sm text-white/30 hover:text-white hover:bg-white/[0.06] transition-all disabled:opacity-50"
+                title="重新生成提示词"
+              >
+                {regenerating ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <RefreshCw className="h-3.5 w-3.5" />
+                )}
+              </button>
               {/* 对话修改按钮 */}
               <PromptChat
                 projectId={projectId}
