@@ -11,13 +11,24 @@ const artStyles = [
   { key: "realistic", label: "真人", desc: "写实电影感" },
 ] as const;
 
+const eras = [
+  { key: "any", label: "不限", desc: "AI 自行判断" },
+  { key: "modern", label: "现代", desc: "21世纪都市" },
+  { key: "medieval", label: "中世纪", desc: "欧洲中世纪" },
+  { key: "ancient_east", label: "古代东方", desc: "古风仙侠" },
+  { key: "victorian", label: "维多利亚", desc: "19世纪英伦" },
+  { key: "fantasy", label: "奇幻", desc: "魔法异世界" },
+  { key: "cyberpunk", label: "赛博朋克", desc: "未来科技都市" },
+] as const;
+
 interface ScriptInputFormProps {
   initialScript?: string;
   initialAudience?: string;
   initialStyle?: string;
+  initialEra?: string;
   initialTemplateIds?: string[];
   hasResults?: boolean;
-  onAnalyze: (script: string, targetAudience: string, style: string, templateIds: string[]) => Promise<void>;
+  onAnalyze: (script: string, targetAudience: string, style: string, era: string, templateIds: string[]) => Promise<void>;
   onCancel?: () => void;
   loading: boolean;
 }
@@ -26,6 +37,7 @@ export default function ScriptInputForm({
   initialScript = "",
   initialAudience = "",
   initialStyle = "anime",
+  initialEra = "any",
   initialTemplateIds = [],
   hasResults = false,
   onAnalyze,
@@ -35,6 +47,7 @@ export default function ScriptInputForm({
   const [script, setScript] = useState(initialScript);
   const [targetAudience, setTargetAudience] = useState(initialAudience);
   const [style, setStyle] = useState(initialStyle);
+  const [era, setEra] = useState(initialEra);
   const [templateIds, setTemplateIds] = useState<string[]>(initialTemplateIds);
   const [error, setError] = useState("");
   const [docxUploading, setDocxUploading] = useState(false);
@@ -109,7 +122,7 @@ export default function ScriptInputForm({
     }
 
     try {
-      await onAnalyze(script.trim(), targetAudience.trim(), style, templateIds);
+      await onAnalyze(script.trim(), targetAudience.trim(), style, era, templateIds);
     } catch (err) {
       setError(err instanceof Error ? err.message : "分析失败，请稍后重试");
     }
@@ -208,6 +221,31 @@ export default function ScriptInputForm({
             >
               <div className="text-base font-medium">{s.label}</div>
               <div className="text-xs text-white/35 mt-0.5">{s.desc}</div>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* 时代背景 */}
+      <div className="flex flex-col gap-2.5">
+        <label className="text-base font-medium text-white/70">
+          📅 时代背景
+        </label>
+        <div className="grid grid-cols-4 sm:grid-cols-7 gap-2">
+          {eras.map((e) => (
+            <button
+              key={e.key}
+              type="button"
+              onClick={() => setEra(e.key)}
+              disabled={loading}
+              className={`rounded-xl border px-3 py-3 text-center transition-all disabled:opacity-50 ${
+                era === e.key
+                  ? "bg-white/[0.12] border-white/20 text-white"
+                  : "bg-white/[0.03] border-white/[0.06] text-white/50 hover:border-white/15 hover:text-white/80"
+              }`}
+            >
+              <div className="text-sm font-medium">{e.label}</div>
+              <div className="text-[10px] text-white/35 mt-0.5">{e.desc}</div>
             </button>
           ))}
         </div>

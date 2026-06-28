@@ -9,7 +9,7 @@ export async function POST(
 ) {
   try {
     const { id } = await params;
-    const { assetName, assetType, description, style, templateIds } = await request.json();
+    const { assetName, assetType, description, style, era, templateIds } = await request.json();
 
     if (!assetName || !assetType) {
       return NextResponse.json({ error: "缺少必要参数" }, { status: 400 });
@@ -63,9 +63,21 @@ export async function POST(
 
     const hasselblad = `Hasselblad X2D 100C, 85mm standard prime lens, 32K ultra HD, HDR10+ high dynamic range, cinematic color grading, IMAX quality, 100mm f/2.8 macro lens, ISO 100, shutter speed 1/125s, RAW format output, visible skin texture with pores and capillaries, individual hair strands clearly visible, rich light and shadow layers, fine grain texture,`;
 
+    const eraContext: Record<string, string> = {
+      any: "",
+      modern: "时代背景：现代 21 世纪。服装为当代时装，场景为现代都市建筑。",
+      medieval: "时代背景：欧洲中世纪。服装为中世纪风格（束腰外衣、长袍、皮甲）。",
+      ancient_east: "时代背景：古代东方。服装为汉服、长袍、丝绸衣饰、武侠劲装。",
+      victorian: "时代背景：维多利亚时代（19世纪英国）。服装为紧身胸衣、燕尾服、蕾丝。",
+      fantasy: "时代背景：奇幻异世界。服装为魔法师长袍、精灵盔甲、宫廷礼服。",
+      cyberpunk: "时代背景：赛博朋克未来。服装为科技夹克、霓虹灯带、义体改装。",
+    };
+    const eraDesc = eraContext[era || "any"] || "";
+
     const systemPrompt = isOutfit
       ? `你是一个 AI 图像生成提示词专家。为以下角色服装生成生图提示词。
 
+${eraDesc}
 剧本背景：${projectContext || "未提供"}
 ${templateInstructions ? `风格要求：\n${templateInstructions}\n` : ""}
 风格标签：${tags}
@@ -83,6 +95,7 @@ ${hasselblad}
       : assetType === "characters"
       ? `你是一个 AI 图像生成提示词专家。为以下${typeLabel}生成生图提示词。
 
+${eraDesc}
 剧本背景：${projectContext || "未提供"}
 ${templateInstructions ? `风格要求：\n${templateInstructions}\n` : ""}
 风格标签：${tags}
@@ -97,6 +110,7 @@ ${hasselblad} no props, standard front standing pose, nine-head golden body prop
 提示词要求：详细、具体、视觉化，英文用于生图工具，中文与英文对应。末尾加风格标签。`
       : `你是一个 AI 图像生成提示词专家。为以下${typeLabel}生成生图提示词。
 
+${eraDesc}
 剧本背景：${projectContext || "未提供"}
 ${templateInstructions ? `风格要求：\n${templateInstructions}\n` : ""}
 风格标签：${tags}

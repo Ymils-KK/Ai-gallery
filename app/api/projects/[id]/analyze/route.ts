@@ -21,13 +21,28 @@ const styleMap: Record<string, { name: string; tags: string }> = {
   realistic: { name: "真人", tags: "photorealistic, hyperrealistic, cinematic lighting, 8k, detailed skin texture, film grain" },
 };
 
-function buildAssetPrompt(style: string): string {
+function buildAssetPrompt(style: string, era: string): string {
   const selected = styleMap[style] || styleMap.anime;
   const tags = selected.tags;
+
+  const eraLabels: Record<string, string> = { any: "不限", modern: "现代", medieval: "中世纪", ancient_east: "古代东方", victorian: "维多利亚", fantasy: "奇幻", cyberpunk: "赛博朋克" };
+  const eraContext: Record<string, string> = {
+    any: "",
+    modern: "时代背景是现代 21 世纪。服装为当代时装，场景为现代都市建筑和室内设计。",
+    medieval: "时代背景是欧洲中世纪。服装为中世纪风格（束腰外衣、长袍、皮甲、盔甲），场景为石砌城堡、村庄、森林。",
+    ancient_east: "时代背景是古代东方。服装为汉服、长袍、丝绸衣饰、武侠劲装，场景为宫殿、园林、江湖、仙山。",
+    victorian: "时代背景是维多利亚时代（19世纪英国）。服装为紧身胸衣、燕尾服、高领衬衫、蕾丝、礼帽，场景为煤气灯街道、庄园、马车。",
+    fantasy: "时代背景是奇幻异世界。服装为魔法师长袍、精灵盔甲、华丽宫廷礼服、皮革冒险装，场景为魔法森林、浮空城、龙穴。",
+    cyberpunk: "时代背景是赛博朋克未来。服装为科技夹克、霓虹灯带、义体改装、全息投影配饰，场景为霓虹都市、贫民窟、高科技大厦。",
+  };
+  const eraDesc = eraContext[era] || "";
+  const eraLabel = eraLabels[era] || "不限";
 
   return `你是一个顶尖的影视概念艺术家和 AI 图像生成提示词专家。你的作品以极致细节、丰富视觉层次著称，每一条提示词都像一篇微型视觉散文。
 
 当前画风：${selected.name}
+时代背景：${eraLabel}
+${eraDesc ? `时代约束：${eraDesc}` : "无特定时代约束，请根据剧本自行判断时代背景。"}
 风格标签：${tags}
 
 ## 核心原则
@@ -173,7 +188,7 @@ export async function POST(
 ) {
   try {
     const { id } = await params;
-    const { script, targetAudience, style, templateIds } = await request.json();
+    const { script, targetAudience, style, era, templateIds } = await request.json();
 
     if (!script || script.trim().length < 50) {
       return NextResponse.json({ error: "剧本内容太少，至少需要 50 个字" }, { status: 400 });
@@ -245,7 +260,7 @@ export async function POST(
     }
 
     // 第二步：生成资产
-    const assetSystemPrompt = buildAssetPrompt(style || "anime")
+    const assetSystemPrompt = buildAssetPrompt(style || "anime", era || "any")
       + (templateInstructions
         ? `\n\n## 用户自定义风格要求（可组合叠加）\n${templateInstructions}\n\n请严格遵循以上所有风格要求生成提示词，如果有冲突以后面的为准。`
         : "");
@@ -316,6 +331,7 @@ export async function POST(
       synopsisEn,
       targetAudience: targetAudience?.trim() || "",
       style: style || "anime",
+      era: era || "any",
       ...data,
     };
     fs.writeFileSync(projectPath, JSON.stringify(projectData, null, 2), "utf-8");

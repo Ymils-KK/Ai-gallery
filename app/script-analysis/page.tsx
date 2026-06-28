@@ -21,6 +21,7 @@ interface ProjectData {
   synopsisEn?: string;
   targetAudience: string;
   style: string;
+  era: string;
   characters: AssetItem[];
   scenes: AssetItem[];
   props: AssetItem[];
@@ -37,6 +38,7 @@ export default function ScriptAnalysisPage() {
   const [synopsisEn, setSynopsisEn] = useState("");
   const [targetAudience, setTargetAudience] = useState("");
   const [style, setStyle] = useState("anime");
+  const [era, setEra] = useState("any");
   const [templateIds, setTemplateIds] = useState<string[]>([]);
   const [characters, setCharacters] = useState<AssetItem[]>([]);
   const [scenes, setScenes] = useState<AssetItem[]>([]);
@@ -90,6 +92,7 @@ export default function ScriptAnalysisPage() {
           setSynopsisEn(data.synopsisEn || "");
           setTargetAudience(data.targetAudience || "");
           setStyle(data.style || "anime");
+          setEra(data.era || "any");
           setCharacters(data.characters || []);
           setScenes(data.scenes || []);
           setProps(data.props || []);
@@ -152,6 +155,7 @@ export default function ScriptAnalysisPage() {
     newScript: string,
     newTargetAudience: string,
     newStyle: string,
+    newEra: string,
     newTemplateIds: string[]
   ) {
     if (!activeId) return;
@@ -171,6 +175,7 @@ export default function ScriptAnalysisPage() {
           script: newScript,
           targetAudience: newTargetAudience,
           style: newStyle,
+          era: newEra,
           templateIds: newTemplateIds,
         }),
         signal: controller.signal,
@@ -186,6 +191,7 @@ export default function ScriptAnalysisPage() {
       setSynopsisEn(newSynopsisEn || "");
       setTargetAudience(newTargetAudience);
       setStyle(newStyle);
+      setEra(newEra);
       setTemplateIds(newTemplateIds);
       setCharacters(data.characters);
       setScenes(data.scenes);
@@ -199,6 +205,7 @@ export default function ScriptAnalysisPage() {
         synopsisEn: newSynopsisEn || "",
         targetAudience: newTargetAudience,
         style: newStyle,
+        era: newEra,
         characters: data.characters,
         scenes: data.scenes,
         props: data.props,
@@ -238,7 +245,7 @@ export default function ScriptAnalysisPage() {
     else if (category === "scenes") { ns = updater(scenes); setScenes(ns); }
     else { np = updater(props); setProps(np); }
 
-    await saveProject({ id: activeId, script, synopsis, synopsisEn, targetAudience, style, characters: nc, scenes: ns, props: np });
+    await saveProject({ id: activeId, script, synopsis, synopsisEn, targetAudience, style, era, characters: nc, scenes: ns, props: np });
   }
 
   // 删除图片
@@ -252,7 +259,7 @@ export default function ScriptAnalysisPage() {
     else if (category === "scenes") { ns = updater(scenes); setScenes(ns); }
     else { np = updater(props); setProps(np); }
 
-    await saveProject({ id: activeId, script, synopsis, synopsisEn, targetAudience, style, characters: nc, scenes: ns, props: np });
+    await saveProject({ id: activeId, script, synopsis, synopsisEn, targetAudience, style, era, characters: nc, scenes: ns, props: np });
   }
 
   // 手动添加资产
@@ -274,7 +281,7 @@ export default function ScriptAnalysisPage() {
     else if (category === "scenes") { ns = [...scenes, newAsset]; setScenes(ns); }
     else { np = [...props, newAsset]; setProps(np); }
 
-    await saveProject({ id: activeId, script, synopsis, synopsisEn, targetAudience, style, characters: nc, scenes: ns, props: np });
+    await saveProject({ id: activeId, script, synopsis, synopsisEn, targetAudience, style, era, characters: nc, scenes: ns, props: np });
   }
 
   // ---- 服装操作 ----
@@ -298,7 +305,7 @@ export default function ScriptAnalysisPage() {
 
     const nc = updater(characters);
     setCharacters(nc);
-    await saveProject({ id: activeId, script, synopsis, synopsisEn, targetAudience, style, characters: nc, scenes, props });
+    await saveProject({ id: activeId, script, synopsis, synopsisEn, targetAudience, style, era, characters: nc, scenes, props });
   }
 
   // 上传服装图片
@@ -321,7 +328,7 @@ export default function ScriptAnalysisPage() {
 
     const nc = updater(characters);
     setCharacters(nc);
-    await saveProject({ id: activeId, script, synopsis, synopsisEn, targetAudience, style, characters: nc, scenes, props });
+    await saveProject({ id: activeId, script, synopsis, synopsisEn, targetAudience, style, era, characters: nc, scenes, props });
   }
 
   // 删除服装图片
@@ -338,7 +345,7 @@ export default function ScriptAnalysisPage() {
 
     const nc = updater(characters);
     setCharacters(nc);
-    await saveProject({ id: activeId, script, synopsis, synopsisEn, targetAudience, style, characters: nc, scenes, props });
+    await saveProject({ id: activeId, script, synopsis, synopsisEn, targetAudience, style, era, characters: nc, scenes, props });
   }
 
   // 更新服装提示词
@@ -359,7 +366,7 @@ export default function ScriptAnalysisPage() {
 
     const nc = updater(characters);
     setCharacters(nc);
-    await saveProject({ id: activeId, script, synopsis, synopsisEn, targetAudience, style, characters: nc, scenes, props });
+    await saveProject({ id: activeId, script, synopsis, synopsisEn, targetAudience, style, era, characters: nc, scenes, props });
   }
 
   // AI 生成服装提示词
@@ -378,6 +385,7 @@ export default function ScriptAnalysisPage() {
         assetType: "outfit",
         description: `角色：${character.name}（${character.description}）\n服装：${outfit.name}（${outfit.description}）`,
         style,
+        era,
         templateIds,
       }),
     });
@@ -400,7 +408,7 @@ export default function ScriptAnalysisPage() {
 
     const nc = updater(characters);
     setCharacters(nc);
-    await saveProject({ id: activeId, script, synopsis, synopsisEn, targetAudience, style, characters: nc, scenes, props });
+    await saveProject({ id: activeId, script, synopsis, synopsisEn, targetAudience, style, era, characters: nc, scenes, props });
   }
 
   // 删除服装
@@ -414,7 +422,7 @@ export default function ScriptAnalysisPage() {
 
     const nc = updater(characters);
     setCharacters(nc);
-    await saveProject({ id: activeId, script, synopsis, synopsisEn, targetAudience, style, characters: nc, scenes, props });
+    await saveProject({ id: activeId, script, synopsis, synopsisEn, targetAudience, style, era, characters: nc, scenes, props });
   }
 
   // 为次要资产生成提示词
@@ -433,6 +441,7 @@ export default function ScriptAnalysisPage() {
         assetType: category,
         description: asset.description,
         style,
+        era,
         templateIds,
       }),
     });
@@ -452,7 +461,7 @@ export default function ScriptAnalysisPage() {
     else if (category === "scenes") { ns = updater(scenes); setScenes(ns); }
     else { np = updater(props); setProps(np); }
 
-    await saveProject({ id: activeId, script, synopsis, synopsisEn, targetAudience, style, characters: nc, scenes: ns, props: np });
+    await saveProject({ id: activeId, script, synopsis, synopsisEn, targetAudience, style, era, characters: nc, scenes: ns, props: np });
   }
 
   // 更新提示词（来自对话修改）
@@ -470,7 +479,7 @@ export default function ScriptAnalysisPage() {
     else if (category === "scenes") { ns = updater(scenes); setScenes(ns); }
     else { np = updater(props); setProps(np); }
 
-    await saveProject({ id: activeId, script, synopsis, synopsisEn, targetAudience, style, characters: nc, scenes: ns, props: np });
+    await saveProject({ id: activeId, script, synopsis, synopsisEn, targetAudience, style, era, characters: nc, scenes: ns, props: np });
   }
 
   const hasResults = characters.length > 0 || scenes.length > 0 || props.length > 0;
@@ -543,6 +552,7 @@ export default function ScriptAnalysisPage() {
                     initialScript={script}
                     initialAudience={targetAudience}
                     initialStyle={style}
+                    initialEra={era}
                     initialTemplateIds={templateIds}
                     hasResults={hasResults}
                     onAnalyze={handleAnalyze}
