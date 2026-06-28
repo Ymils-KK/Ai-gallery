@@ -104,6 +104,8 @@ ${templateInstructions ? `风格要求：\n${templateInstructions}\n` : ""}
 ${hasselblad} no props, standard front standing pose, nine-head golden body proportion, full body to feet no cropping, looking directly at camera, clean white seamless background, 16:9 aspect ratio,
 然后接角色具体描述。
 
+如果是女性角色，必须加入：1:9 head-to-body ratio, supermodel physique, age 18-22, flawless porcelain skin with no freckles or fine lines, devastatingly beautiful face, large expressive eyes with long lashes, full lips, elegant and refined with a touch of cool allure.
+
 输出 JSON 格式：
 {"imagePrompt":"英文提示词","imagePromptCn":"中文提示词"}
 
