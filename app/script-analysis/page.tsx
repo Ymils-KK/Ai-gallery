@@ -587,19 +587,6 @@ export default function ScriptAnalysisPage() {
                       )}
                     </div>
                   )}
-                  {/* 集数分析（独立面板） */}
-                  {activeId && (
-                    <div className="flex flex-col gap-3">
-                      <button
-                        onClick={() => setShowEpisodeAnalysis(!showEpisodeAnalysis)}
-                        className="flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.04] px-5 py-2 text-sm text-white/50 hover:text-white hover:bg-white/[0.06] transition-all w-fit"
-                      >
-                        📺 集数分析 {showEpisodeAnalysis ? "▲ 收起" : "▼ 展开"}
-                      </button>
-                      {showEpisodeAnalysis && <EpisodeAnalysis projectId={activeId} />}
-                    </div>
-                  )}
-
                   <AnalysisResult
                     projectId={activeId}
                     data={{ characters, scenes, props }}
@@ -621,6 +608,19 @@ export default function ScriptAnalysisPage() {
           )}
         </div>
       </div>
+
+      {/* 集数分析（独立面板，不需要先分析剧本） */}
+      {activeId && (
+        <div className="flex flex-col gap-3">
+          <button
+            onClick={() => setShowEpisodeAnalysis(!showEpisodeAnalysis)}
+            className="flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.04] px-5 py-2 text-sm text-white/50 hover:text-white hover:bg-white/[0.06] transition-all w-fit"
+          >
+            📺 集数分析 {showEpisodeAnalysis ? "▲ 收起" : "▼ 展开"}
+          </button>
+          {showEpisodeAnalysis && <EpisodeAnalysis projectId={activeId} />}
+        </div>
+      )}
 
       {/* 抽卡面板 */}
       {activeId && (
