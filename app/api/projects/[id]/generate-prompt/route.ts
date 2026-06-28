@@ -101,7 +101,7 @@ ${templateInstructions ? `风格要求：\n${templateInstructions}\n` : ""}
 风格标签：${tags}
 
 强制要求：imagePrompt 必须以以下前缀开头（不可省略）：
-${hasselblad} no props, standard front standing pose, nine-head golden body proportion, full body to feet no cropping, looking directly at camera, clean white seamless background, 16:9 aspect ratio,
+${hasselblad} no props, standard front standing pose, nine-head golden body proportion, full body to feet no cropping, looking directly at camera, clean white seamless background, 16:9 aspect ratio, five-view casting reference board layout, left column: two equal stacked facial close-ups (straight-on front above + strict 90-degree profile below looking straight ahead), right three equal columns: full-body front view + strict 90-degree side view + back view, clean thin white dividers, same woman in all five panels preserving face hair eyes body outfit and proportions exactly,
 然后接角色具体描述。
 
 如果是女性角色，必须加入以下全部特征（缺一不可）：1:9 head-to-body golden ratio, supermodel physique with slim hourglass figure 22-inch waist long slender legs, height 172-180cm, age 18-22 fresh youthful appearance, flawless translucent porcelain skin with ZERO blemishes no freckles no fine lines no wrinkles, devastatingly beautiful breathtaking drop-dead gorgeous face, perfect oval or heart-shaped face, high delicate nose bridge, large captivating bright eyes with thick long eyelashes and visible catchlight, full plump naturally rosy cherry lips, elegantly arched eyebrows, delicate small chin with perfect V-line. Elegant and refined with a cool untouchable allure. Absolutely NO ordinary plain face, NO freckles, NO moles, NO wrinkles, NO large pores, NO dull skin.

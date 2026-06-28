@@ -121,12 +121,18 @@ Hasselblad X2D 100C, 85mm standard prime lens, 32K ultra HD, HDR10+ high dynamic
 【Lighting & Camera】光源类型和方向、色温、阴影质感、镜头焦段、景深、胶片质感、画面比例
 【Overall aesthetic】整体美学定调，可引用影视参考（如 "The Vampire Diaries style", "Hollywood cinematic" 等）
 
-【画面布局】
-左上角：人物面部正面特写（close-up portrait, front view）
-左下角：人物侧面特写（close-up portrait, side profile）
-右侧：人物全身三视图 1×3 网格（full body turnaround: front view | side view | back view, horizontal 1x3 grid）
+【画面布局】横向 16:9 五视图高端角色参考板（casting reference board），白色无缝背景，干净白色细线分隔各面板：
+- 左列（占1/4宽度）：上下两个等大面部特写
+  上：正面特写直视镜头（close-up portrait, straight-on, looking directly at camera）
+  下：严格90度侧面特写平视（strict 90-degree facial profile, looking straight ahead）
+- 右三列（各占1/4宽度）：三个等大全身视图
+  正面站姿（full-body front view, standard upright neutral pose, relaxed arms）
+  严格90度侧面站姿（strict 90-degree side view）
+  背面站姿（full-body back view）
+- 所有面板保持同一人物，面部、发型、发色、眼睛颜色、服装、身材比例完全一致
+- 人物完整展示从头到脚，充裕白色边距，不裁剪
 
-【画质要求】character design sheet, turnaround reference, detailed face, clean lines, neutral expression
+【画质要求】Hasselblad X2D 100C photographic look, 100mm f/2.8 macro lens on facial close-ups, 85mm standard prime lens on full-body views, ISO 100, shutter 1/125s, 32K ultra HD, HDR10+, cinematic color grading, IMAX clarity, individual hair strands, subtle skin texture, rich light and shadow layers, fine grain, soft even studio lighting, clean white seamless background
 
 ### 服装提取规则（outfits 数组）
 ⚠️ 重要：每个重要人物（tier: "major"）都必须有 outfits 数组，至少包含一套服装。
@@ -151,8 +157,8 @@ JSON 输出示例（人物）：
   ]
 }
 
-### 人物提示词质量参考（你的输出应该达到这个详细程度）：
-"European short drama style. Body: 6'2" (188cm), broad shoulders, lean athletic V-shaped torso, narrow waist, long legs, 1:8.5 head-to-body ratio. Face: Sharp square jaw with light designer stubble, high cheekbones, straight nose, deep-set intense dark brown eyes with heavy lids and long lashes, full lips, slightly tousled thick dark brown hair with natural wave — short sides, longer top with soft fringe falling across forehead. Expression: Smoldering calm confidence, looking naturally at camera, neutral but present. Outfit: Dark charcoal grey fitted linen-blend shirt, top two buttons undone, sleeves rolled to mid-forearm revealing muscular veiny forearms, thin black wool open-front vest, dark charcoal slim-fit tailored trousers, simple black leather boots, thin silver chain with wolf-tooth pendant. Lighting: Warm amber candlelight from stone hearth, casting soft shadows, low saturation, film grain, 50mm lens, shallow depth of field, realistic skin texture. Mainstream Western romantic fantasy TV drama aesthetic."
+### 人物提示词质量参考（你的输出应该达到这个详细程度——五视图参考板格式）：
+"Hasselblad X2D 100C, 85mm standard prime lens, 32K ultra HD, HDR10+ high dynamic range, cinematic color grading, IMAX quality, 100mm f/2.8 macro lens, ISO 100, shutter speed 1/125s, RAW format output, visible skin texture with pores and capillaries, individual hair strands clearly visible, rich light and shadow layers, fine grain texture, no props, standard front standing pose, nine-head golden body proportion, full body to feet no cropping, looking directly at camera, clean white seamless background, 16:9 aspect ratio, five-view casting reference board layout, left column: two equal stacked facial close-ups (straight-on front above + strict 90-degree profile below looking straight ahead), right three equal columns: full-body front view + strict 90-degree side view + back view, clean thin white dividers, same woman in all five panels preserving face hair eyes body gown and proportions exactly. Body: 5'9" (175cm), nine-head 1:9 supermodel physique, exceptionally long legs, 22-inch slim defined waist, elegant shoulders and neck, balanced feminine curves, graceful posture, slender toned body neither muscular nor gaunt. Face: harmonious facial thirds, highly symmetrical refined oval-heart-shaped small face, delicate tapered jawline, softly sculpted cheekbones, large luminous gray-blue almond eyes, elegant fine brows, petite straight nose, naturally full rose-colored lips, clean luminous cool-fair skin with subtle natural pores but zero fine lines wrinkles freckles moles blemishes. Hair: long pearl silver-blonde hair in glossy soft waves. Expression: ethereal calm, quiet resilience, neutral but present, looking naturally at camera. Outfit: glamorous late-Victorian-inspired sapphire blue silk-wool crepe gown, portrait neckline, shaped bodice, defined natural waist, refined long sleeves with delicate chiffon cuffs, flowing ankle-length skirt, dark leather period-inspired lace-up boots. Lighting & Camera: soft even studio illumination, 100mm macro on face close-ups, 85mm prime on full-body views, shallow depth of field, soft shadows. Overall aesthetic: premium Western female-audience romantic fantasy TV drama, ethereal moonlight beauty with restrained emotional depth."
 
 ## 二、场景（scenes）
 提取剧本中所有出现过的场景地点，包括室内室外、具体场所、过渡场景。宁可多提取，不要遗漏。
