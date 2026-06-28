@@ -29,10 +29,8 @@ interface ScriptInputFormProps {
   initialTemplateIds?: string[];
   hasResults?: boolean;
   onAnalyze: (script: string, targetAudience: string, style: string, era: string, templateIds: string[]) => Promise<void>;
-  onEpisodeAnalyze?: (script: string) => Promise<void>;
   onCancel?: () => void;
   loading: boolean;
-  episodeLoading?: boolean;
 }
 
 export default function ScriptInputForm({
@@ -43,10 +41,8 @@ export default function ScriptInputForm({
   initialTemplateIds = [],
   hasResults = false,
   onAnalyze,
-  onEpisodeAnalyze,
   onCancel,
   loading,
-  episodeLoading = false,
 }: ScriptInputFormProps) {
   const [script, setScript] = useState(initialScript);
   const [targetAudience, setTargetAudience] = useState(initialAudience);
@@ -261,39 +257,6 @@ export default function ScriptInputForm({
         onChange={setTemplateIds}
         disabled={loading}
       />
-
-      {/* 集数分析按钮 */}
-      {onEpisodeAnalyze && (
-        <div className="border-t border-white/[0.06] pt-3">
-          <button
-            type="button"
-            onClick={async () => {
-              const validationError = validate();
-              if (validationError) { setError(validationError); return; }
-              setError("");
-              try {
-                await onEpisodeAnalyze(script.trim());
-              } catch (err) {
-                setError(err instanceof Error ? err.message : "集数分析失败");
-              }
-            }}
-            disabled={episodeLoading || loading}
-            className="w-full flex items-center justify-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.04] px-8 py-3 text-base font-medium text-white/60 hover:text-white hover:bg-white/[0.08] transition-all disabled:opacity-50"
-          >
-            {episodeLoading ? (
-              <>
-                <Loader2 className="h-5 w-5 animate-spin" />
-                <span>AI 集数分析中...</span>
-              </>
-            ) : (
-              <>
-                <span>📺 集数分析</span>
-                <span className="text-xs text-white/30">识别分集 · 翻译复述 · 情绪曲线 · 桥段分级 · 资产需求</span>
-              </>
-            )}
-          </button>
-        </div>
-      )}
 
       {/* 错误提示 */}
       {error && (
