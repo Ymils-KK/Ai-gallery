@@ -240,25 +240,25 @@ export default function EpisodeAnalysis({ data }: EpisodeAnalysisProps) {
                     {(ep.assetNeeds.characters?.length ?? 0) > 0 && (
                       <div className="rounded-lg bg-white/[0.03] border border-white/[0.04] px-3 py-2">
                         <span className="text-[10px] text-white/30">👤 角色</span>
-                        <p className="text-xs text-white/50 mt-0.5">{ep.assetNeeds.characters.join("、")}</p>
+                        <p className="text-xs text-white/50 mt-0.5">{ep.assetNeeds.characters!.join("、")}</p>
                       </div>
                     )}
                     {(ep.assetNeeds.costumes?.length ?? 0) > 0 && (
                       <div className="rounded-lg bg-white/[0.03] border border-white/[0.04] px-3 py-2">
                         <span className="text-[10px] text-white/30">👗 服装</span>
-                        <p className="text-xs text-white/50 mt-0.5">{ep.assetNeeds.costumes.join("、")}</p>
+                        <p className="text-xs text-white/50 mt-0.5">{ep.assetNeeds.costumes!.join("、")}</p>
                       </div>
                     )}
                     {(ep.assetNeeds.scenes?.length ?? 0) > 0 && (
                       <div className="rounded-lg bg-white/[0.03] border border-white/[0.04] px-3 py-2">
                         <span className="text-[10px] text-white/30">🏠 场景</span>
-                        <p className="text-xs text-white/50 mt-0.5">{ep.assetNeeds.scenes.join("、")}</p>
+                        <p className="text-xs text-white/50 mt-0.5">{ep.assetNeeds.scenes!.join("、")}</p>
                       </div>
                     )}
                     {(ep.assetNeeds.props?.length ?? 0) > 0 && (
                       <div className="rounded-lg bg-white/[0.03] border border-white/[0.04] px-3 py-2">
                         <span className="text-[10px] text-white/30">🔧 道具</span>
-                        <p className="text-xs text-white/50 mt-0.5">{ep.assetNeeds.props.join("、")}</p>
+                        <p className="text-xs text-white/50 mt-0.5">{ep.assetNeeds.props!.join("、")}</p>
                       </div>
                     )}
                   </div>
