@@ -272,60 +272,85 @@ ugly villain, monster, scarred monster face, old greasy man, exaggerated evil gr
 }
 
 function buildMedievalCostumePrompt(): string {
-  return `你是一个顶尖的影视服装设计师和 AI 图像生成提示词专家。为欧美女频中世纪幻想短剧生成一个 2×2 服装展示表（costume showcase sheet）的生图提示词。
+  return `你是一个顶尖的影视服装设计师和 AI 图像生成提示词专家。为欧美女频中世纪幻想短剧生成一个 2×2 服装设计展示表（costume design showcase sheet）的生图提示词。
 
-核心原则：华丽宫廷服装——中世纪幻想、贵族宫廷、狼人/吸血鬼/王族题材、女频小说封面感。服装要华丽精致有身份感，但保持真实影视服装质感。
+核心原则：这是服装设计展示，不是人物写真。使用白色半透明无脸人体模特（white translucent faceless mannequin）展示服装。四套服装必须从轮廓（silhouette）、领口（neckline）、袖型（sleeve design）、裙摆结构（skirt structure）、披风（cape）、材质（fabric）、刺绣纹样（embroidery pattern）上明显不同，不能只是换颜色。
 
 严格按以下格式生成 imagePrompt（英文）和 imagePromptCn（中文）：
 
-布局要求：
+展示要求：
 - 横向 16:9，2×2 网格，白色细线分隔
-- 同一个角色（同脸、同身材、同发色），四格只换服装和妆容
-- 顺序：C1左上、C2右上、C3左下、C4右下
+- 白色半透明无脸人体模特（white translucent faceless mannequin），无真人面孔、无头发、无妆容
+- 顺序：D1左上、D2右上、D3左下、D4右下
 - 图内不得有文字、标签、字母、数字
-- 纯白色无缝背景，无动作无手势，正面站姿
-- 全身展示（full body），从头到脚，不裁剪
+- 纯白色无缝背景，中性站姿，全身正面展示，从头到脚不裁剪
+- 哈苏 X2D 100C，85mm 定焦，柔和影棚灯光
 
-角色要求（四格共用同一人）：
-- 18-22 岁绝美白人女性，九头身超模身材
-- 长发（silver-blonde or golden hair at waist length）
-- 面容统一：柔和心形脸，浅色眼睛，无雀斑细纹
+⚠️ 去重规则（必须严格遵守）：
+如果四套服装只是颜色不同但轮廓/领口/袖型/裙摆/披风结构相似，判定为不合格。
+每套服装至少有一个强设计记忆点（signature design element），如：
+- 超长披风（dramatic floor-length cape）
+- 不对称外裙（asymmetrical overskirt）
+- 高领宝石项圈（high jeweled collar）
+- 透明蕾丝长袖（sheer lace bishop sleeves）
+- 金属雕花束腰（metal filigree corset belt）
+- 月亮/狼纹/荆棘/星冠专属纹样刺绣
+- 多层薄纱拖尾（layered chiffon train）
 
-四套服装：
+四套服装设计（必须从结构上不同）：
 
-C1（左上）白月光王族新娘：
-- 服装名：白月光王族新娘（Ivory Royal Bride）
-- 象牙白/珍珠白宫廷长裙（ivory pearl-white court gown），蕾丝袖口（lace sleeves），珍珠头饰（pearl headpiece），轻薄头纱（sheer veil）
-- 气质：纯净、破碎、贵族感、命运感
-- 剧情用途：政治联姻、逃婚、被迫嫁给狼王/公爵、婚礼羞辱
-- 关键词：ivory royal bridal gown, pearl veil, lace sleeves, tragic princess, noble innocence, long flowing train
+D1（左上）月光圣婚礼服（Moonlight Sacrificial Bride Gown）：
+- 轮廓：高腰帝国裙（empire waist gown），长拖尾（cathedral train）
+- 领口：方领或高领蕾丝（square neckline or high lace collar）
+- 袖型：透明蕾丝长袖（sheer lace bishop sleeves），袖口微喇
+- 裙摆：多层象牙白薄纱叠层（layered ivory chiffon），轻盈飘逸
+- 材质：象牙白/珍珠白丝缎（ivory pearl silk satin），尚蒂伊蕾丝（Chantilly lace）
+- 纹样：弯月与星辰刺绣（crescent moon and star embroidery in silver thread），珍珠点缀
+- 设计记忆点：从肩部垂至地面的超长透明头纱披风（sheer floor-length veil cape）
+- 气质：神圣、纯净、被献祭的新娘感
+- 关键词：empire waist sacrificial bride gown, high lace collar, sheer bishop sleeves, moon embroidery, cathedral train, ethereal ivory silk, pearl-studded veil cape
 
-C2（右上）暗黑狼族王后：
-- 服装名：暗黑狼族王后（Dark Werewolf Queen）
-- 黑色丝绒长裙（black velvet gown），银线刺绣（silver embroidery），深色披风（dramatic dark cape），暗银项链（dark silver necklace），腰线明显
-- 气质：冷艳、神秘、压迫感、女王感
-- 剧情用途：狼族宫廷、身份觉醒、王后登场、权力对峙
-- 关键词：black velvet medieval queen gown, silver embroidery, dramatic cape, gothic luxury, werewolf queen
+D2（右上）暗黑王后披风裙（Dark Queen Cloak Gown）：
+- 轮廓：结构化束腰鱼尾裙（structured corset mermaid gown），修身臀腿，膝下展开
+- 领口：高领宝石项圈（high jeweled standing collar），银质狼纹徽章
+- 袖型：披风袖/无袖加外披（detachable floor-length cape sleeves），披风从肩部垂下
+- 裙摆：鱼尾展开带暗色衬里（mermaid flare with dark underskirt）
+- 材质：黑色丝绒（black velvet），银线锦缎（silver brocade），暗色绸缎内衬
+- 纹样：银线狼纹族徽刺绣（silver wolf crest embroidery），暗银金属腰封
+- 设计记忆点：厚重及地披风（dramatic floor-length structured cape），肩部金属狼头扣
+- 气质：权力、压迫、狼族王后、暗黑魅力
+- 关键词：black velvet mermaid gown, high jeweled standing collar, silver wolf crest embroidery, structured floor-length cape, metal corset belt, gothic queen aesthetic
 
-C3（左下）血色复仇公爵夫人：
-- 服装名：血色复仇公爵夫人（Crimson Revenge Duchess）
-- 深红/酒红色缎面长裙（burgundy satin gown），黑色蕾丝（black lace trim），宝石项链（jeweled necklace），修身束腰（fitted corset waist）
-- 气质：复仇、危险、艳丽、高贵
-- 剧情用途：复仇归来、宴会打脸、揭露身份、反派对峙
-- 关键词：burgundy duchess gown, black lace, jeweled corset, revenge heroine, noble drama, dramatic silhouette
+D3（左下）血蔷薇复仇裙（Blood Rose Revenge Gown）：
+- 轮廓：不对称美人鱼裙（asymmetrical mermaid gown），右前侧开衩至大腿
+- 领口：心形领（sweetheart neckline）覆以深V蕾丝薄纱（illusion plunge lace panel）
+- 袖型：分离式半透明蕾丝袖（detached sheer lace bell sleeves），从肘部垂落
+- 裙摆：不对称外裙（asymmetrical overskirt），左侧贴身右侧层叠荷叶边
+- 材质：酒红/深红丝缎（burgundy silk satin），黑色尚蒂伊蕾丝（black Chantilly lace）
+- 纹样：玫瑰荆棘刺绣（rose and thorn embroidery in black silk thread），红宝石胸针
+- 设计记忆点：不对称前开衩外裙，荆棘纹样从腰际盘旋至裙摆
+- 气质：危险、艳丽、复仇、高贵而不驯
+- 关键词：asymmetrical burgundy mermaid gown, sweetheart neckline with illusion lace, detached bell sleeves, rose thorn embroidery, ruby brooch, front slit, revenge heroine couture
 
-C4（右下）金色加冕公主：
-- 服装名：金色加冕公主（Golden Coronation Princess）
-- 香槟金/古金色华丽宫廷裙（champagne gold court gown），金线刺绣（gold embroidery），王冠或发饰（delicate crown or tiara），长拖尾（long train）
-- 气质：明艳、尊贵、命定女主、被众人注视
-- 剧情用途：加冕、宴会惊艳、王族身份揭露、女主逆袭
-- 关键词：champagne gold royal coronation gown, gold embroidery, tiara, radiant princess, fantasy romance heroine
+D4（右下）星冠加冕礼服（Star Crown Coronation Ball Gown）：
+- 轮廓：结构化紧身束腰大裙摆舞会裙（structured corset ball gown），超大裙撑（grand pannier silhouette）
+- 领口：露肩珠宝领（off-shoulder jeweled neckline），短披肩袖（cap sleeve with shoulder draping）
+- 袖型：蓬松短披肩袖（puffed shoulder capelet sleeves），镶珠宝肩饰
+- 裙摆：巨大多层裙摆（voluminous multi-layered ball gown skirt），长拖尾
+- 材质：香槟金丝缎（champagne gold silk satin），金线织锦（gold brocade），星芒亮片
+- 纹样：星芒与皇冠纹样金线刺绣（star burst and crown pattern in gold embroidery），肩部星形珠宝饰
+- 设计记忆点：夸张的星形肩饰（dramatic star-shaped shoulder ornaments），十一角星芒拖尾
+- 气质：明艳、尊贵、命定女王、万众瞩目
+- 关键词：structured corset ball gown, off-shoulder jeweled neckline, star burst gold embroidery, grand pannier skirt, star-shaped shoulder ornaments, cathedral train, coronation princess, radiant fantasy couture
 
 共同要求：
-- 四套服装必须像真实影视服装（premium TV drama costume design），不是游戏装备、动漫Cosplay、廉价影楼装
-- 强调材质真实感：丝绒（velvet）、缎面（satin）、蕾丝（lace）、刺绣（embroidery）、薄纱（chiffon）、珍珠、宝石
-- 同一个角色脸和身材完全一致，只换服装、饰品、妆容强度
-- 哈苏 X2D 100C，85mm 定焦，全身展示，纯白无缝背景，无动作站姿
+- 四套服装必须看起来像高预算欧美中世纪奇幻剧的真实影视戏服设计稿（premium TV costume design sketch），不是游戏皮肤、动漫Cosplay、廉价影楼装
+- 质感至上：丝绒、丝缎、蕾丝、薄纱、刺绣、金属雕花、珍珠、宝石
+- 展示在白色半透明无脸模特上（faceless translucent mannequin），无真人、无头发、无面孔
+- 柔光影棚灯光，纯白无缝背景，中性站姿
+
+Negative prompt（严禁生成）：
+real person, human face, hair, makeup, portrait, character face, anime, cosplay, game armor, fantasy NPC, cheap costume, Halloween costume, plastic fabric, low quality, same dress repeated, only color variation, modern dress, sci-fi outfit, overly revealing, bikini armor, messy design, flat design, doll face, 3d character, wig, visible head, visible skin, realistic human skin, eyebrows, eyes, lips, nose
 
 输出 JSON：
 {"imagePrompt":"英文提示词","imagePromptCn":"中文提示词"}`;
