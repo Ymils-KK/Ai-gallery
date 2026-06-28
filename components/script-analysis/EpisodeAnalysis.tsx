@@ -132,7 +132,7 @@ export default function EpisodeAnalysisPanel({ projectId }: Props) {
 
       {scanResult && (
         <div className="rounded-lg bg-white/[0.03] border border-white/[0.06] p-4">
-          <p className="text-sm text-white/70 mb-3">识别到 <span className="font-bold text-white">{scanResult.totalEpisodes}</span> 集{scanResult.warnings?.length > 0 && <span className="text-amber-400 ml-2">⚠️ {scanResult.warnings.join(" / ")}</span>}</p>
+          <p className="text-sm text-white/70 mb-3">识别到 <span className="font-bold text-white">{scanResult.totalEpisodes}</span> 集{(scanResult.warnings?.length ?? 0) > 0 && <span className="text-amber-400 ml-2">⚠️ {scanResult.warnings!.join(" / ")}</span>}</p>
           <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 gap-2 mb-3">
             {scanResult.episodes.map(ep => {
               const done = !!analyzedEps[ep.epNumber];
