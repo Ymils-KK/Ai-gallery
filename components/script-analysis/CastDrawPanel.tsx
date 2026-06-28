@@ -64,7 +64,6 @@ export default function CastDrawPanel({ projectId }: CastDrawPanelProps) {
   const [imageUrl, setImageUrl] = useState("");
   const [copied, setCopied] = useState(false);
   const [showCn, setShowCn] = useState(false);
-  const [tab, setTab] = useState<"draw" | "history">("draw");
   const [history, setHistory] = useState<DrawRecord[]>([]);
 
   useEffect(() => {
@@ -115,7 +114,6 @@ export default function CastDrawPanel({ projectId }: CastDrawPanelProps) {
     setPromptCn(record.promptCn);
     setImageUrl(record.imageUrl);
     setSelectedRole(record.roleType);
-    setTab("draw");
   }
 
   function deleteRecord(id: string) {
@@ -172,171 +170,148 @@ export default function CastDrawPanel({ projectId }: CastDrawPanelProps) {
             </button>
           </div>
 
-          {/* Tab 切换 */}
-          <div className="flex border-b border-white/[0.06]">
+          {/* 抽卡区域（始终可见） */}
+          <div className="p-4 border-b border-white/[0.06] flex flex-col gap-3">
+            {/* 角色类型选择 */}
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs text-white/40">角色类型</label>
+              <div className="grid grid-cols-2 gap-2">
+                {roleTypes.map((r) => (
+                  <button
+                    key={r.key}
+                    type="button"
+                    onClick={() => setSelectedRole(r.key)}
+                    className={`rounded-lg border px-3 py-2 text-center text-sm transition-all ${
+                      selectedRole === r.key
+                        ? "bg-white/[0.12] border-white/20 text-white"
+                        : "bg-white/[0.03] border-white/[0.06] text-white/50 hover:border-white/15 hover:text-white/80"
+                    }`}
+                  >
+                    <span className="mr-1">{r.icon}</span>
+                    {r.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* 自定义要求 */}
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs text-white/40">自定义要求（可选）</label>
+              <textarea
+                value={customReq}
+                onChange={(e) => setCustomReq(e.target.value)}
+                placeholder="例如：银白色长发、20岁、蓝眼睛..."
+                rows={2}
+                maxLength={300}
+                disabled={loading}
+                className="w-full rounded-lg bg-white/[0.04] border border-white/[0.08] px-3 py-2 text-xs text-white placeholder:text-white/15 focus:outline-none focus:border-white/20 resize-none disabled:opacity-50"
+              />
+            </div>
+
+            {/* 抽卡按钮 */}
             <button
-              onClick={() => setTab("draw")}
-              className={`flex-1 py-2.5 text-sm font-medium transition-all border-b-2 ${
-                tab === "draw"
-                  ? "border-white/30 text-white"
-                  : "border-transparent text-white/30 hover:text-white/60"
-              }`}
+              onClick={handleDraw}
+              disabled={!selectedRole || loading}
+              className="flex items-center justify-center gap-2 rounded-full bg-white/[0.10] border border-white/[0.08] px-4 py-3 text-sm font-medium text-white hover:bg-white/[0.15] disabled:opacity-30 transition-all"
             >
-              🎴 抽卡
-            </button>
-            <button
-              onClick={() => setTab("history")}
-              className={`flex-1 py-2.5 text-sm font-medium transition-all border-b-2 flex items-center justify-center gap-1.5 ${
-                tab === "history"
-                  ? "border-white/30 text-white"
-                  : "border-transparent text-white/30 hover:text-white/60"
-              }`}
-            >
-              <History className="h-4 w-4" />
-              记录
-              {history.length > 0 && (
-                <span className="rounded-full bg-white/[0.10] px-1.5 py-0.5 text-xs">{history.length}</span>
+              {loading ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span>AI 抽卡中...</span>
+                </>
+              ) : (
+                <>
+                  <Sparkles className="h-4 w-4" />
+                  <span>抽卡</span>
+                </>
               )}
             </button>
           </div>
 
-          {/* 抽卡 Tab */}
-          {tab === "draw" && (
-            <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-4">
-              {/* 角色类型选择 */}
-              <div className="flex flex-col gap-2">
-                <label className="text-xs text-white/40">角色类型</label>
-                <div className="grid grid-cols-2 gap-2">
-                  {roleTypes.map((r) => (
+          {/* 当前结果 + 提示词 */}
+          {prompt && (
+            <div className="p-4 border-b border-white/[0.06] flex flex-col gap-3">
+              <ImageUploadSlot
+                imageUrl={imageUrl}
+                onUpload={handleUpload}
+                onRemove={() => setImageUrl("")}
+              />
+              <div className="rounded-lg bg-white/[0.03] border border-white/[0.04] p-3">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs text-white/30">🪄 当前提示词</span>
+                  <div className="flex items-center gap-1">
+                    {promptCn && (
+                      <button
+                        onClick={() => setShowCn(!showCn)}
+                        className={`rounded px-1.5 py-0.5 text-[11px] ${showCn ? "bg-white/[0.10] text-white" : "text-white/30 hover:text-white"}`}
+                      >
+                        {showCn ? "中" : "EN"}
+                      </button>
+                    )}
                     <button
-                      key={r.key}
-                      type="button"
-                      onClick={() => setSelectedRole(r.key)}
-                      className={`rounded-lg border px-3 py-2.5 text-center text-sm transition-all ${
-                        selectedRole === r.key
-                          ? "bg-white/[0.12] border-white/20 text-white"
-                          : "bg-white/[0.03] border-white/[0.06] text-white/50 hover:border-white/15 hover:text-white/80"
-                      }`}
+                      onClick={handleCopy}
+                      className="flex items-center gap-1 rounded px-1.5 py-0.5 text-[11px] text-white/30 hover:text-white"
                     >
-                      <span className="mr-1">{r.icon}</span>
-                      {r.label}
+                      {copied ? <><Check className="h-3 w-3 text-green-400"/><span className="text-green-400">已复制</span></> : <><Copy className="h-3 w-3"/><span>复制</span></>}
                     </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* 自定义要求 */}
-              <div className="flex flex-col gap-1.5">
-                <label className="text-xs text-white/40">自定义要求（可选）</label>
-                <textarea
-                  value={customReq}
-                  onChange={(e) => setCustomReq(e.target.value)}
-                  placeholder="例如：银白色长发、20岁、蓝眼睛、甜美型..."
-                  rows={2}
-                  maxLength={300}
-                  disabled={loading}
-                  className="w-full rounded-lg bg-white/[0.04] border border-white/[0.08] px-3 py-2 text-xs text-white placeholder:text-white/15 focus:outline-none focus:border-white/20 resize-none disabled:opacity-50"
-                />
-              </div>
-
-              {/* 抽卡按钮 */}
-              <button
-                onClick={handleDraw}
-                disabled={!selectedRole || loading}
-                className="flex items-center justify-center gap-2 rounded-full bg-white/[0.10] border border-white/[0.08] px-4 py-3 text-sm font-medium text-white hover:bg-white/[0.15] disabled:opacity-30 transition-all"
-              >
-                {loading ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    <span>AI 抽卡中...</span>
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="h-4 w-4" />
-                    <span>抽卡</span>
-                  </>
-                )}
-              </button>
-
-              {/* 结果 */}
-              {prompt && (
-                <>
-                  <ImageUploadSlot
-                    imageUrl={imageUrl}
-                    onUpload={handleUpload}
-                    onRemove={() => setImageUrl("")}
-                  />
-
-                  <div className="rounded-lg bg-white/[0.03] border border-white/[0.04] p-3">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs text-white/30">🪄 抽卡提示词</span>
-                      <div className="flex items-center gap-1">
-                        {promptCn && (
-                          <button
-                            onClick={() => setShowCn(!showCn)}
-                            className={`rounded px-1.5 py-0.5 text-[11px] ${showCn ? "bg-white/[0.10] text-white" : "text-white/30 hover:text-white"}`}
-                          >
-                            {showCn ? "中" : "EN"}
-                          </button>
-                        )}
-                        <button
-                          onClick={handleCopy}
-                          className="flex items-center gap-1 rounded px-1.5 py-0.5 text-[11px] text-white/30 hover:text-white"
-                        >
-                          {copied ? <><Check className="h-3 w-3 text-green-400"/><span className="text-green-400">已复制</span></> : <><Copy className="h-3 w-3"/><span>复制</span></>}
-                        </button>
-                      </div>
-                    </div>
-                    <p className="text-[11px] text-white/50 leading-relaxed break-words font-mono max-h-60 overflow-y-auto">
-                      {showCn && promptCn ? promptCn : prompt}
-                    </p>
                   </div>
-                </>
-              )}
+                </div>
+                <p className="text-[11px] text-white/50 leading-relaxed break-words font-mono max-h-40 overflow-y-auto">
+                  {showCn && promptCn ? promptCn : prompt}
+                </p>
+              </div>
             </div>
           )}
 
-          {/* 历史记录 Tab */}
-          {tab === "history" && (
-            <div className="flex-1 overflow-y-auto p-4">
-              {history.length === 0 ? (
-                <div className="py-12 text-center">
-                  <p className="text-3xl mb-2">🎴</p>
-                  <p className="text-xs text-white/25">还没有抽卡记录</p>
-                </div>
-              ) : (
-                <div className="flex flex-col gap-2">
-                  {history.map((record) => (
-                    <div
-                      key={record.id}
-                      className="rounded-lg bg-white/[0.03] border border-white/[0.04] p-3 hover:bg-white/[0.05] cursor-pointer transition-all group"
-                      onClick={() => loadRecord(record)}
-                    >
-                      <div className="flex items-center justify-between mb-1.5">
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-sm">{record.roleIcon}</span>
-                          <span className="text-xs font-medium text-white/70">{record.roleLabel}</span>
-                          <span className="text-[10px] text-white/25">{record.createdAt}</span>
-                        </div>
-                        <button
-                          onClick={(e) => { e.stopPropagation(); deleteRecord(record.id); }}
-                          className="shrink-0 rounded p-0.5 text-white/15 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all"
-                        >
-                          <Trash2 className="h-3 w-3" />
-                        </button>
-                      </div>
-                      <p className="text-[10px] text-white/35 leading-relaxed break-words line-clamp-2 font-mono">
-                        {record.promptCn || record.prompt}
-                      </p>
-                      {record.imageUrl && (
-                        <div className="mt-1.5 text-[10px] text-white/25">📷 已上传图片</div>
-                      )}
-                    </div>
-                  ))}
-                </div>
+          {/* 历史记录 */}
+          <div className="flex-1 overflow-y-auto">
+            <div className="px-4 py-2 border-b border-white/[0.06] flex items-center gap-2">
+              <History className="h-3.5 w-3.5 text-white/40" />
+              <span className="text-xs font-medium text-white/40">抽卡记录</span>
+              {history.length > 0 && (
+                <span className="rounded-full bg-white/[0.10] px-1.5 py-0.5 text-[10px] text-white/50">{history.length}</span>
               )}
             </div>
-          )}
+
+            {/* 历史记录列表 */}
+            {history.length === 0 ? (
+              <div className="py-10 text-center">
+                <p className="text-3xl mb-2">🎴</p>
+                <p className="text-xs text-white/25">还没有抽卡记录</p>
+                <p className="text-[10px] text-white/15 mt-1">选择角色类型并点击抽卡后，记录会出现在这里</p>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-2 p-3">
+                {history.map((record) => (
+                  <div
+                    key={record.id}
+                    className="rounded-lg bg-white/[0.03] border border-white/[0.04] p-3 hover:bg-white/[0.05] cursor-pointer transition-all group"
+                    onClick={() => loadRecord(record)}
+                  >
+                    <div className="flex items-center justify-between mb-1.5">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-sm">{record.roleIcon}</span>
+                        <span className="text-xs font-medium text-white/70">{record.roleLabel}</span>
+                        <span className="text-[10px] text-white/25">{record.createdAt}</span>
+                      </div>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); deleteRecord(record.id); }}
+                        className="shrink-0 rounded p-0.5 text-white/15 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all"
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </button>
+                    </div>
+                    <p className="text-[10px] text-white/35 leading-relaxed break-words line-clamp-2 font-mono">
+                      {record.promptCn || record.prompt}
+                    </p>
+                    {record.imageUrl && (
+                      <div className="mt-1.5 text-[10px] text-white/25">📷 已上传图片</div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       )}
     </>
