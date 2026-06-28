@@ -5,6 +5,7 @@ import { ArrowLeft } from "lucide-react";
 import ProjectSidebar from "@/components/script-analysis/ProjectSidebar";
 import ScriptInputForm from "@/components/script-analysis/ScriptInputForm";
 import AnalysisResult from "@/components/script-analysis/AnalysisResult";
+import CastDrawPanel from "@/components/script-analysis/CastDrawPanel";
 import WallpaperBackground from "@/components/script-analysis/WallpaperBackground";
 import type { AssetItem } from "@/components/script-analysis/AssetCard";
 
@@ -500,7 +501,7 @@ export default function ScriptAnalysisPage() {
       />
 
       {/* 主内容区（左边距留给固定侧边栏） */}
-      <div className="ml-64 min-w-0 relative z-10">
+      <div className="ml-64 mr-10 min-w-0 relative z-10">
         <div className="mx-auto max-w-7xl px-8 py-10">
           {/* 顶部 */}
           <div className="flex items-center gap-4 mb-8">
@@ -605,6 +606,11 @@ export default function ScriptAnalysisPage() {
           )}
         </div>
       </div>
+
+      {/* 抽卡面板 */}
+      {activeId && (
+        <CastDrawPanel projectId={activeId} characters={characters} />
+      )}
     </div>
   );
 }
