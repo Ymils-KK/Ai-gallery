@@ -306,7 +306,14 @@ export async function POST(
     }
 
     const client = new OpenAI({ apiKey, baseURL });
-    const systemPrompt = builder() + (customRequirement ? `
+
+    // 默认年龄：女性=22岁，男性=25岁；自定义要求可覆盖
+    const isMaleType = roleType === "male_lead" || roleType === "male_villain";
+    const defaultAge = isMaleType ? "25" : "22";
+    const ageLabel = isMaleType ? "男性" : "女性";
+    const defaultAgeRule = `\n\n⚠️ 年龄要求：${ageLabel}角色默认年龄 ${defaultAge} 岁。如果用户自定义要求中指定了年龄，以用户指定为准；否则严格使用默认年龄 ${defaultAge} 岁。`;
+
+    const systemPrompt = builder() + defaultAgeRule + (customRequirement ? `
 
 用户自定义要求（必须严格遵守）：${customRequirement}` : "");
 
