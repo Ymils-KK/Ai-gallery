@@ -148,7 +148,6 @@ function buildMaleLeadPrompt(): string {
 - 四个格分别放四位男性，每人只占一格，extremely handsome adult man, age 27-35
 - 顺序：左上M1、右上M2、左下M3、右下M4
 - 图内不得有文字、标签、字母、数字
-- 画面风格：cinematic romance drama still / luxury romance poster，不是白底证件照
 - 纯白色无缝背景（clean white seamless background），不要任何场景、建筑、道具
 - 正面头肩特写，脸居中，平视，直视镜头，双唇闭合，无表情无动作无手势（standard front-facing head-and-shoulders portrait, no pose, no action, no hand gestures）
 - 哈苏 X2D 100C 摄影质感，100mm f/2.8 微距镜头，ISO 100，快门 1/125s，32K，HDR10+
@@ -168,38 +167,29 @@ M2（右上）金发贵族男主：
 - 蓝色或灰蓝眼睛（piercing blue or gray-blue eyes），精致贵族脸（aristocratic refined features），干净高级
 - 像 old money heir，气质绅士、贵气、克制，温柔但疏离，危险的温柔（dangerously tender）
 - 适合剧情：宴会、订婚、家族交易、温柔救赎
-- 服装：浅灰或深蓝高级西装，精致袖扣和领带
 
 M3（左下）野性狼人/暗黑守护者：
 - 28-36岁，深色或银灰中短发（dark or silver-gray medium-short hair），整洁有型
 - 轮廓强但依然英俊（strong yet undeniably handsome），宽肩高大
 - 眼神锐利危险但保护欲强（sharp intense eyes, dangerous yet fiercely protective）
-- 气质：野性、占有欲、禁忌恋男主魅力，不是反派大叔不是粗糙老气
-- 适合剧情：狼人题材、雨夜救人、战斗保护、禁忌恋
-- 服装：深色敞领衬衫或高级皮夹克，随性但有力量感
+- 气质：野性、占有欲、禁忌恋男主魅力
 
 M4（右下）温柔救赎型男主：
 - 27-34岁，棕色短发（rich brown short hair），浓密干净
 - 精致柔和但男性化的五官（refined soft but masculine features），清澈深情的眼睛（clear warm eyes, deep with emotion）
-- 干净成熟，温柔可靠，但必须有足够的心动感，不是普通路人
-- 像医生/律师/旧爱男主，但极帅有张力
-- 适合剧情：医院守护、法庭辩护、旧情复燃、默默守护
-- 服装：浅色衬衫或高级羊绒大衣，干净斯文
+- 干净成熟，温柔可靠，但必须有足够的心动感
 
 共同要求（必须全部满足）：
 - 每位候选人都必须是 extremely handsome adult man，第一眼心动
 - 必须像欧美女频短剧男主、浪漫小说封面男主，不是商务头像不是证件照
-- 年龄感 27-35岁，年轻成熟，不要中年感、不要沧桑大叔
-- 头发浓密、干净、有造型，不要发际线后退、不要稀少
-- 五官精致立体但真实：高鼻梁、深邃眼窝、清晰下颌线、好看唇形
-- 皮肤状态好但真实，不要油腻、粗糙、老态
-- 身材气质：宽肩、挺拔、禁欲、贵气、保护欲
-- 眼神必须有情绪张力：深情、克制、占有欲、压迫感、危险的温柔
-- 服装高级：黑色西装、白衬衫、敞领衬衫、羊绒大衣、暗色礼服
-- 四个人通过发色、气质和眼神区分，不要同一张脸换衣服
+- 年龄感 27-35岁，年轻成熟，不要中年感
+- 头发浓密干净有造型
+- 五官精致立体但真实
+- 眼神必须有情绪张力
+- 四个人通过发色、气质和眼神区分
 
 严禁生成（negative prompt）：
-average businessman, corporate headshot, passport photo, plain office portrait, middle-aged CEO, old man, tired face, rough skin, receding hairline, thin hair, heavy wrinkles, dull eyes, boring face, ordinary man, uncle vibe, greasy face, excessive stubble, heavy beard, bodybuilder, cheap suit, villain thug, criminal face, harsh ugly face, anime, game character, plastic skin, wax figure, gym model, influencer, nightclub style, feminine face, weak jaw, distorted eyes, bad hands, long hair past shoulders
+average businessman, corporate headshot, passport photo, plain office portrait, middle-aged CEO, old man, tired face, rough skin, receding hairline, thin hair, heavy wrinkles, dull eyes, ordinary man, uncle vibe, greasy face, excessive stubble, bodybuilder, cheap suit, anime, game character, plastic skin, wax figure
 
 输出 JSON：
 {"imagePrompt":"英文提示词","imagePromptCn":"中文提示词"}`;
@@ -221,49 +211,39 @@ function buildMaleVillainPrompt(): string {
 四个男反派候选人模板：
 
 A1（左上）伪善未婚夫/背叛型前任：
-- 金棕或深棕短发（golden-brown or dark brown short hair），外表干净英俊
-- 五官精致（refined handsome features），笑容温和但虚伪（warm smile that doesn't reach the eyes）
-- 表情：礼貌微笑里带冷漠和算计（polite smile with cold calculating eyes）
-- 气质：体面、虚伪、自私、会背叛女主（decent-looking, hypocritical, selfish, betrayer）
-- 适合剧情：出轨、退婚、羞辱女主、家族联姻
-- 服装：米色或浅灰高级西装
+- 金棕或深棕短发，外表干净英俊
+- 五官精致，笑容温和但虚伪
+- 表情：礼貌微笑里带冷漠和算计
+- 气质：体面、虚伪、自私、会背叛女主
 
 A2（右上）冷酷财阀反派/商业敌人：
-- 黑色短发（black short hair），深色眼睛（dark eyes），西装严整
-- 轮廓锐利（sharp jawline），眼神冷硬（cold hard stare）
-- 表情：压迫凝视、轻蔑冷笑（oppressive glare, slight contemptuous sneer）
-- 气质：权力、威胁、控制欲、利益至上（power, threat, control, profit above all）
-- 适合剧情：商业打压、逼迫交易、威胁男主女主
-- 服装：黑色西装、深色衬衫，一丝不苟
+- 黑色短发，深色眼睛，西装严整
+- 轮廓锐利，眼神冷硬
+- 表情：压迫凝视、轻蔑冷笑
+- 气质：权力、威胁、控制欲、利益至上
 
 A3（左下）危险黑帮/狼人敌对首领：
-- 深色或暗银中短发（dark or dark silver medium-short hair），强壮但不夸张
-- 眉骨重（heavy brow ridge），眼神危险带野性（dangerous wild eyes）
-- 表情：低沉、凶狠、占有欲强（intense, fierce, possessive）
-- 气质：危险、侵略性、暴力压迫、黑暗魅力（dangerous, aggressive, violent oppression, dark charisma）
-- 适合剧情：绑架、追杀、禁忌威胁、狼人势力冲突
-- 服装：深色皮夹克或黑色衬衫
+- 深色或暗银中短发，强壮但不夸张
+- 眉骨重，眼神危险带野性
+- 表情：低沉、凶狠、占有欲强
+- 气质：危险、侵略性、暴力压迫、黑暗魅力
 
 A4（右下）优雅操控者/家族长子型反派：
-- 深栗色或黑色短发（dark chestnut or black short hair），穿高级西装
-- 面容英俊成熟（handsome mature face），气质很贵（aristocratic air）
-- 表情：平静、冷淡、像在布局（calm, cold, calculating, like he's always three steps ahead）
-- 气质：阴谋、操控、阶级压迫、冷血理性（scheming, manipulating, class oppression, cold-blooded rational）
-- 适合剧情：家族夺权、继承权斗争、秘密交易、幕后操控
-- 服装：深蓝或藏青高级西装
+- 深栗色或黑色短发，穿高级西装
+- 面容英俊成熟，气质很贵
+- 表情：平静、冷淡、像在布局
+- 气质：阴谋、操控、阶级压迫、冷血理性
 
 共同要求（必须全部满足）：
 - 四个男反派都必须是 adult man，年龄感 30-45 岁
 - 都要高颜值，但帅得危险、压迫、虚伪或冷血
-- 必须像真实欧美短剧演员剧照，不要像游戏NPC或动漫角色
-- 服装：黑色西装、深色衬衫、贵族风大衣、商务权力套装
-- 表情要有戏：虚伪微笑、轻蔑冷笑、威胁凝视、冷静算计
+- 必须像真实欧美短剧演员剧照
 - 四人通过反派类型区分：背叛型、权力型、暴力型、操控型
-- 脸居中，平视，直视镜头，无表情无动作无手势（no pose, no action, no hand gestures）
-- 纯白色无缝背景（clean white seamless background），不要任何场景
+- 脸居中，平视，直视镜头，无表情无动作无手势
+- 纯白色无缝背景，不要任何场景
 
 严禁生成（negative prompt）：
-ugly villain, monster, scarred monster face, old greasy man, exaggerated evil grin, cartoon villain, anime, game character, fantasy NPC, plastic skin, wax figure, bodybuilder, huge muscles, heavy beard, dirty face, nightclub style, distorted face, crossed eyes, bad teeth, long hair, bald, eyepatch, facial scars
+ugly villain, monster, scarred monster face, old greasy man, exaggerated evil grin, cartoon villain, anime, game character, fantasy NPC, plastic skin, wax figure, bodybuilder, huge muscles, heavy beard, dirty face, nightclub style, distorted face
 
 哈苏 X2D 100C，100mm f/2.8 微距镜头，ISO 100，快门 1/125s，32K，HDR10+，正面头肩特写，白色无缝背景。
 
@@ -272,93 +252,69 @@ ugly villain, monster, scarred monster face, old greasy man, exaggerated evil gr
 }
 
 function buildMedievalCostumePrompt(): string {
-  return `你是一个顶级高定服装设计师和 AI 图像生成提示词专家。生成四套中世纪女频宫廷服装设计，像"高定秀场 + 中世纪女频宫廷剧 + 吸血鬼/狼人贵族题材"的服装设计稿。
+  return `你是一个顶级高定服装设计师和 AI 图像生成提示词专家。每次从动态设计变量池中随机组合四套中世纪女频宫廷服装，像"高定秀场 + 中世纪女频宫廷剧 + 吸血鬼/狼人贵族题材"。不是固定模板，每次都是全新设计。
 
-⚠️ 最重要规则：这是纯服装设计展示，不是人物写真。使用白色半透明无脸人体模特展示。四套必须是结构完全不同的设计，不能只是换颜色。
+⚠️ 核心：纯服装设计展示，使用白色半透明无脸模特（white translucent faceless mannequin, no human face, no hair, no real person）。
 
 展示格式：
 - 横向 16:9，2×2 网格，白色细线分隔
-- 白色半透明无脸模特（white translucent faceless mannequin, no human face, no hair, no real person）
+- 白色半透明无脸模特，纯白无缝背景，中性站姿，全身正面从头到脚
 - 顺序：D1左上、D2右上、D3左下、D4右下
 - 图内不得有任何文字、标签、数字
-- 纯白无缝背景，中性站姿，全身正面从头到脚
 - 哈苏 X2D 100C，85mm 定焦镜头，柔和影棚灯光
+- 性感方向：高贵性感、危险诱惑、宫廷欲感（elegant sensual luxury），严禁低俗暴露
 
-性感方向（elegant sensual luxury）：
-允许低胸、露肩、束腰、高开衩、贴身剪裁。目标是"高贵性感、危险诱惑、宫廷欲感"。sweetheart neckline, deep V, off-shoulder, corset bodice, lace bust detail, tight corset waist, high slit skirt, asymmetrical overskirt。
-严禁: vulgar sexy, lingerie, bikini armor, nightclub dress, fetish wear, cheap costume, pornographic.
+设计变量池（每套服装从各池中选取1项，四套之间不重复）：
 
-四套服装设计（必须结构完全不同）：
+【剧情身份池】(10选4，不重复)
+sacrificial bride / wolf queen / vampire duchess / exiled princess / fallen saint / witch inquisitor / kingdom heiress / secret mistress / revenge widow / prophesied one
 
-D1（左上）月蚀献祭婚纱（Eclipse Sacrificial Bride）:
-设计概念：圣洁新娘 + 被献祭 + 月蚀仪式
-轮廓：高腰帝国裙（empire waist gown）+ 超长教堂拖尾（cathedral train）
-领口：低胸区域覆以半透明月牙形珠宝胸饰（translucent crescent moon jeweled bust covering），锁骨全露
-袖型：大面积透明蕾丝长袖（floor-length sheer lace bell sleeves），袖口展开如月光
-腰线：珍珠链与银线交织束腰（pearl chain and silver thread corset belt）
-裙摆：多层半透明薄纱（multi-layered semi-sheer tulle），外层月相刺绣（moon phase embroidery from new to full）
-披风/拖尾：背后可拆卸超长教堂式薄纱披帛（detachable cathedral-length sheer tulle cape），边缘珍珠缀饰
-记忆点：月牙形珠宝胸饰 + 月相刺绣裙摆 + 超长薄纱披帛
-颜色：珍珠白（pearl white）、冷银（cool silver）、淡蓝月光色（moonlight pale blue）
-关键词：eclipse sacrificial bride gown, crescent moon jeweled bust piece, floor-length sheer lace bell sleeves, moon phase embroidered tulle train, detachable cathedral veil cape, pearl and silver thread corset, ethereal lunar couture
+【剧情场景池】(10选4，不重复)
+wedding / coronation / trial / masquerade ball / escape / post-war return / secret pact / ritual ceremony / court humiliation / identity reveal
 
-D2（右上）狼族黑曜王后裙（Wolf Obsidian Queen Gown）:
-设计概念：狼族王后 + 黑曜石权力 + 暗黑王座
-轮廓：结构化紧身束腰裙（structured corset gown）+ 尖肩披风 + 不对称裙摆
-领口：深 V 露肩（deep V off-shoulder），锁骨肩线全露，黑色蕾丝镶边
-肩部：尖肩披风结构（sharp shoulder cape structure），像狼耳/王冠形肩线，金属狼头扣
-袖型：无内袖，披风从肩部垂至地面（floor-length cape sleeves from shoulders）
-腰线：金属狼纹雕花腰封（metal wolf crest filigree corset belt），极度束腰蜂腰
-裙摆：前短后长不对称裙（asymmetrical high-low skirt），前露腿后重拖尾，暗色衬里展开
-披风：披风内侧银色狼群刺绣（silver wolf pack embroidery inside cape lining）
-记忆点：尖肩狼冠披风 + 金属狼纹腰封 + 前短后长不对称裙 + 狼群内衬
-颜色：黑色丝绒（black velvet）、暗银（dark silver）、冷灰宝石（cool gray gemstone）
-关键词：black velvet structured corset gown, sharp shoulder wolf-crown cape, deep V off-shoulder neckline, metal wolf crest corset belt, asymmetrical high-low skirt, silver wolf pack embroidery inside cape, obsidian queen couture
+【主轮廓池】(8选4，不重复)
+empire gown / corset gown / mermaid gown / ball gown / cloak dress / split-front gown / high-low gown / layered robe gown
 
-D3（左下）血蔷薇荆棘复仇裙（Blood Rose Thorn Revenge Gown）:
-设计概念：复仇公爵夫人 + 血蔷薇 + 危险诱惑
-轮廓：极致紧身鱼尾裙（ultra-fitted mermaid gown）+ 高开衩 + 雕塑感胸衣
-领口：深低胸用黑色透明蕾丝覆盖（deep low-cut covered with sheer black lace illusion panel），胸线勾勒明显
-身体：两侧荆棘状黑色刺绣从肋部向腰部收拢（black thorn embroidery converging from ribs to waist），视觉上极度束腰
-袖型：单侧肩部立体黑玫瑰装饰（3D black rose sculptural shoulder ornament），另一侧透明蕾丝长手套袖
-裙摆：高开衩鱼尾裙（high slit mermaid skirt），开衩边缘玫瑰花瓣层叠（rose petal layered slit edge）
-腰线：胸口到腰部红宝石链条（ruby body chain from bust to waist）
-记忆点：立体黑玫瑰肩饰 + 荆棘肋部刺绣 + 红宝石身体链 + 玫瑰花瓣开衩
-颜色：酒红丝缎（burgundy silk satin）、黑蕾丝（black lace）、红宝石（ruby）
-关键词：ultra-fitted burgundy mermaid gown, sheer black lace illusion plunge neckline, black thorn rib embroidery, 3D black rose shoulder ornament, ruby body chain, rose petal layered high slit, sculpted revenge heroine couture
+【领口池】(8选4，不重复)
+deep V / sweetheart neckline / off-shoulder / high lace collar / jeweled standing collar / square neckline / one-shoulder sculptural / sheer illusion plunge neckline
 
-D4（右下）星冠堕落加冕礼服（Fallen Star Coronation Gown）:
-设计概念：加冕女王 + 星冠 + 神圣堕落
-轮廓：结构化紧身束腰胸衣 + 半边大裙撑舞会裙 + 不对称外裙（half ball gown with asymmetrical overskirt）
-领口：露肩低胸金色束腰胸衣（off-shoulder low-cut gold corset bodice），胸前和肩部放射状星芒珠宝结构
-肩部：星芒状珠宝肩饰向外放射（radiating star burst jeweled shoulder ornaments），悬浮感皇冠式颈饰
-袖型：透明金纱短披袖（sheer gold tulle cap sleeves），从肩饰下延伸
-裙摆：不对称宫廷外裙（asymmetrical court overskirt），一侧露腿一侧大裙撑，多层透明金纱拖尾
-腰线：极度束腰蜂腰（ultra-tight wasp waist），金色雕花腰封
-记忆点：放射状星芒肩饰 + 半边大裙撑半边露腿 + 多层透明金纱拖尾 + 星芒珠宝胸衣
-颜色：香槟金（champagne gold）、古金（antique gold）、透明金纱（sheer gold tulle）
-关键词：structured corset half ball gown, off-shoulder low-cut gold bodice, radiating star burst jeweled shoulders, asymmetrical court overskirt, multi-layered sheer gold tulle train, wasp waist gold filigree corset, fallen star coronation couture
+【袖型池】(7选4，不重复)
+transparent lace sleeves / bell sleeves / cape sleeves / detached opera sleeves / puff sleeves / fitted long sleeves / sleeveless with shoulder jewelry
 
-⚠️ 硬性去重规则：
-四套必须在以下7个维度都明显不同：
-1. 轮廓（empire vs corset vs mermaid vs half ball gown）
-2. 领口（jeweled bust vs deep V off-shoulder vs sheer lace plunge vs star burst off-shoulder）
-3. 袖型（sheer bell sleeves vs cape sleeves vs 3D rose + glove vs gold tulle cap sleeves）
-4. 裙摆（cathedral train vs high-low asymmetrical vs high slit mermaid vs half ball gown）
-5. 披风/拖尾（detachable veil cape vs wolf embroidery cape vs none vs gold tulle train）
-6. 纹样（moon phase vs wolf pack vs thorn rose vs star burst）
-7. 记忆点（各不相同——见每套的记忆点描述）
-严禁只换颜色、只换材质但轮廓相似的设计。
+【裙摆结构池】(8选4，不重复)
+high front slit / asymmetric overskirt / cathedral train / layered tulle / pleated velvet skirt / petal hem / split front / heavy court train
+
+【纹样符号池】(10选4，不重复)
+moon phase / wolf crest / thorn rose / star crown / blood ruby / black swan / silver vines / sacred cross / serpent chain / raven feather
+
+【材质色彩池】(每套选1-2主色，四套覆盖至少4种不同主色调)
+ivory lace / black velvet / burgundy satin / champagne brocade / silver silk / midnight blue chiffon / emerald velvet / pearl tulle / blood red organza / smoky gray lace / deep plum silk / gold metallic brocade / shadow navy velvet / blush pink tulle / onyx black silk
+
+⚠️ 差异评分机制（必须遵守）：
+满分10分。如果任意两套在主轮廓、领口、袖型、裙摆中有3项以上相同→差异分<6→重新组合。目标差异分≥8分。
+
+⚠️ 重复惩罚机制：
+不要每次都用牺牲新娘+黑色王后+复仇公爵+加冕女王那套组合。每次从身份池和轮廓池选全新的组合，确保和上一轮不同。
+
+每套服装输出格式：
+D1（左上）：[从各池选的身份] + [场景]
+- 概念：[一句话设计概念]
+- 轮廓：[从轮廓池选]
+- 领口：[从领口池选]
+- 袖型：[从袖型池选]
+- 裙摆：[从裙摆池选]
+- 纹样：[从纹样池选]
+- 记忆点：[1个强视觉记忆点]
+- 色彩：[主色+辅色]
+- 关键词：[英文关键词串]
+
+D2-D4 同样格式，四套身份/轮廓/领口/袖型/裙摆/纹样各不同。
 
 统一风格：
-高预算欧美中世纪奇幻剧真实影视戏服设计稿，不是游戏皮肤、动漫Cosplay、廉价影楼装、万圣节服装。像 The Vampire Diaries 贵族舞会 + Game of Thrones 宫廷 + 高定秀场。
+高预算欧美中世纪奇幻剧真实影视戏服设计稿，不是游戏皮肤、动漫Cosplay、廉价影楼装。像 The Vampire Diaries 贵族舞会 + Game of Thrones 宫廷 + 高定秀场。华丽、性感、贵气、有身份感和剧情感。
 
-性感过滤:
-允许: elegant sensual gown, seductive royal dress, gothic romance luxury, luxurious low-cut corset, high-end TV costume
-禁止: lingerie, bikini armor, nightclub dress, fetish wear, latex, stripper dress, cheap Halloween costume, pornographic
-
-Negative prompt（严禁）:
-real person, human face, hair, makeup, portrait, character face, anime, cosplay, game armor, fantasy NPC, cheap costume, Halloween costume, plastic fabric, low quality, same dress repeated, only color variation, modern dress, sci-fi outfit, bikini armor, messy design, flat design, doll face, 3d character, wig, visible head, visible skin, realistic human skin, eyebrows, eyes, lips, nose, lingerie, vulgar, cheap sexy, nightclub dress, stripper outfit, fetish wear, latex, pornographic, same silhouette, only color swap, empty background without dividers, text in image, labels, watermarks
+Negative prompt:
+real person, human face, hair, makeup, portrait, character face, anime, cosplay, game armor, fantasy NPC, cheap costume, Halloween costume, plastic fabric, low quality, same dress repeated, only color variation, modern dress, sci-fi outfit, bikini armor, messy design, flat design, doll face, 3d character, wig, visible head, visible skin, realistic human skin, eyebrows, eyes, lips, nose, lingerie, vulgar, cheap sexy, nightclub dress, stripper outfit, fetish wear, latex, pornographic, same silhouette repeated, only color swap, no structure difference
 
 输出 JSON：
 {"imagePrompt":"英文提示词","imagePromptCn":"中文提示词"}`;
