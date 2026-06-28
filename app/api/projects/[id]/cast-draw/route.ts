@@ -136,31 +136,132 @@ ugly villain, monster, witch-like, old hag, masculine jaw, square jaw, harsh wri
 }
 
 function buildMaleLeadPrompt(): string {
-  return `你是一个顶尖的影视选角导演。为欧美女频短剧「男主」生成 2×2 选角联系人表。
+  return `你是一个顶尖的影视选角导演和 AI 图像生成提示词专家。为欧美女频短剧「男主」生成一个 2×2 选角联系人表（casting contact sheet）的生图提示词。
 
-男主人设：霸道总裁、狼族首领、贵族公爵、商业帝王——强势但深情，冷漠外表下有柔软内心。
+核心原则：男主不是普通帅哥，而是有权力感、保护欲、禁欲感、深情感和情绪张力的女频短剧核心男主。所有候选人都必须是 adult man（28-38岁）、高颜值、真实剧照感。
 
-四个候选人：
-B1（左上）：冷傲总裁型——深棕色短发，深邃蓝眼，方下巴，成熟稳重
-B2（右上）：邪魅狂狷型——黑色微卷发，深棕色眼睛，危险迷人微笑
-B3（左下）：温柔贵族型——浅棕色发，灰蓝色眼睛，柔和五官，儒雅深情
-B4（右下）：野性狼性型——深色长发（及肩），锐利眼神，狂野而性感
+严格按以下格式生成 imagePrompt（英文）和 imagePromptCn（中文）：
 
-共同要求：八头身、英俊、正装、哈苏 X2D 100C、头肩特写。输出 JSON。`;
+布局要求：
+- 横向 16:9，2×2 网格，白色细线分隔
+- 四个格分别放四位男性，每人只占一格，adult man, age 28-38
+- 顺序：左上M1、右上M2、左下M3、右下M4
+- 图内不得有文字、标签、字母、数字
+
+四个男主候选人模板：
+
+M1（左上）冷峻霸总/财阀继承人：
+- 深棕或黑色短发（dark brown or black short hair, clean and neat），干净利落
+- 高鼻梁（strong nose bridge），深邃眼窝（deep-set eyes），轮廓清晰但不过度粗犷
+- 深棕色或灰蓝色眼睛，眼神冷静克制有压迫感（calm restrained gaze with intensity）
+- 气质：权力感、禁欲、掌控、隐藏深情（power, self-restraint, control, hidden deep affection）
+- 适合剧情：办公室对峙、契约婚姻、豪门压迫、英雄救场
+- 服装：深色高级西装、白衬衫、精致领带，一丝不苟
+
+M2（右上）金发贵族继承人：
+- 深金或浅棕金短发/微卷发（dark golden or light brown-gold short hair, slight wave）
+- 蓝色或灰蓝眼睛（blue or gray-blue eyes），贵族感，干净精致（aristocratic, clean refined）
+- 柔和但疏离的五官，像表面优雅、内心复杂
+- 气质：old money、贵气、克制、绅士、危险的温柔（old money elegance, restrained, gentlemanly, dangerously tender）
+- 适合剧情：宴会、订婚、家族交易、温柔救赎
+- 服装：浅灰或深蓝高级西装，精致的袖扣和领带
+
+M3（左下）野性狼人/暗黑守护者：
+- 深色或银灰色中短发（dark or dark silver-gray medium-short hair），不要长发披肩
+- 眉骨强（strong brow ridge），眼神锐利（sharp intense eyes），身材高大强壮
+- 表情危险但保护欲强（dangerous yet fiercely protective）
+- 气质：野性、占有欲、守护、强张力（wild, possessive, protective, intense chemistry）
+- 适合剧情：狼人题材、雨夜救人、战斗保护、禁忌恋
+- 服装：深色衬衫或皮夹克，随性但有力量感
+
+M4（右下）温柔医生/律师/旧爱型男主：
+- 棕色短发（brown short hair），柔和干净的五官（soft clean features），成熟稳重
+- 深棕色或灰色眼睛，眼神温柔克制带一点伤感（warm restrained eyes with a hint of sadness）
+- 气质：可靠、深情、理性、隐忍（reliable, deeply affectionate, rational, enduring）
+- 适合剧情：医院、法庭、旧情复燃、默默守护
+- 服装：浅色衬衫或灰色大衣，干净斯文
+
+共同要求（必须全部满足）：
+- 四个男主都必须是 adult man，年龄感 28-38 岁
+- 都要极帅，但不是网红脸、不是男模硬照、不是游戏角色
+- 必须像真实欧美短剧演员剧照
+- 身材高大挺拔，宽肩，穿西装/衬衫/风衣/高级休闲装
+- 眼神要有情绪张力：克制、深情、压迫、保护欲
+- 四个人要通过发色、职业感、气质和眼神区分，不要只是同一张脸换衣服
+- 脸居中，平视，直视镜头，双唇闭合或微张
+
+严禁生成（negative prompt）：
+teen boy, boyish face, old man, oily face, influencer model, gym bodybuilder, exaggerated muscles, heavy beard, unkempt beard, anime, game character, fantasy NPC, plastic skin, wax figure, overly perfect symmetry, cheap nightclub style, feminine face, weak jaw, distorted eyes, bad hands, long hair past shoulders, ponytail, man bun
+
+哈苏 X2D 100C，100mm f/2.8 微距镜头，ISO 100，快门 1/125s，32K，HDR10+，正面头肩特写，白色无缝背景。
+
+输出 JSON：
+{"imagePrompt":"英文提示词","imagePromptCn":"中文提示词"}`;
 }
 
 function buildMaleVillainPrompt(): string {
-  return `你是一个顶尖的影视选角导演。为欧美女频短剧「男反派」生成 2×2 选角联系人表。
+  return `你是一个顶尖的影视选角导演和 AI 图像生成提示词专家。为欧美女频短剧「男反派」生成一个 2×2 选角联系人表（casting contact sheet）的生图提示词。
 
-男反派人设：有权势的对手，英俊但危险，不是丑陋的反派而是迷人的对手。
+核心原则：男反派不是丑角，而是"体面、危险、有控制欲、有背叛感、有压迫感"的高颜值男性角色。所有候选人都必须是 adult man（30-45岁）、高颜值、真实剧照感。
 
-四个候选人：
-B1（左上）：冷血贵族型——银灰色发，冷蓝色眼，高傲残酷
-B2（右上）：魅惑反派型——深棕发，绿眼，迷人微笑，精心策划的恶
-B3（左下）：霸道掠夺型——黑发，深色眼，强势攻击性，占有欲强
-B4（右下）：悲剧反派型——棕发，灰眼，眼神有伤痛，因爱堕落的悲剧人物
+严格按以下格式生成 imagePrompt（英文）和 imagePromptCn（中文）：
 
-共同要求：八头身、英俊危险、深色正装、哈苏 X2D 100C、头肩特写。输出 JSON。`;
+布局要求：
+- 横向 16:9，2×2 网格，白色细线分隔
+- 四个格分别放四位男性反派，每人只占一格，adult man, age 30-45
+- 顺序：左上A1、右上A2、左下A3、右下A4
+- 图内不得有文字、标签、字母、数字
+
+四个男反派候选人模板：
+
+A1（左上）伪善未婚夫/背叛型前任：
+- 金棕或深棕短发（golden-brown or dark brown short hair），外表干净英俊
+- 五官精致（refined handsome features），笑容温和但虚伪（warm smile that doesn't reach the eyes）
+- 表情：礼貌微笑里带冷漠和算计（polite smile with cold calculating eyes）
+- 气质：体面、虚伪、自私、会背叛女主（decent-looking, hypocritical, selfish, betrayer）
+- 适合剧情：出轨、退婚、羞辱女主、家族联姻
+- 服装：米色或浅灰高级西装
+
+A2（右上）冷酷财阀反派/商业敌人：
+- 黑色短发（black short hair），深色眼睛（dark eyes），西装严整
+- 轮廓锐利（sharp jawline），眼神冷硬（cold hard stare）
+- 表情：压迫凝视、轻蔑冷笑（oppressive glare, slight contemptuous sneer）
+- 气质：权力、威胁、控制欲、利益至上（power, threat, control, profit above all）
+- 适合剧情：商业打压、逼迫交易、威胁男主女主
+- 服装：黑色西装、深色衬衫，一丝不苟
+
+A3（左下）危险黑帮/狼人敌对首领：
+- 深色或暗银中短发（dark or dark silver medium-short hair），强壮但不夸张
+- 眉骨重（heavy brow ridge），眼神危险带野性（dangerous wild eyes）
+- 表情：低沉、凶狠、占有欲强（intense, fierce, possessive）
+- 气质：危险、侵略性、暴力压迫、黑暗魅力（dangerous, aggressive, violent oppression, dark charisma）
+- 适合剧情：绑架、追杀、禁忌威胁、狼人势力冲突
+- 服装：深色皮夹克或黑色衬衫
+
+A4（右下）优雅操控者/家族长子型反派：
+- 深栗色或黑色短发（dark chestnut or black short hair），穿高级西装
+- 面容英俊成熟（handsome mature face），气质很贵（aristocratic air）
+- 表情：平静、冷淡、像在布局（calm, cold, calculating, like he's always three steps ahead）
+- 气质：阴谋、操控、阶级压迫、冷血理性（scheming, manipulating, class oppression, cold-blooded rational）
+- 适合剧情：家族夺权、继承权斗争、秘密交易、幕后操控
+- 服装：深蓝或藏青高级西装
+
+共同要求（必须全部满足）：
+- 四个男反派都必须是 adult man，年龄感 30-45 岁
+- 都要高颜值，但帅得危险、压迫、虚伪或冷血
+- 必须像真实欧美短剧演员剧照，不要像游戏NPC或动漫角色
+- 服装：黑色西装、深色衬衫、贵族风大衣、商务权力套装
+- 表情要有戏：虚伪微笑、轻蔑冷笑、威胁凝视、冷静算计
+- 四人通过反派类型区分：背叛型、权力型、暴力型、操控型
+- 脸居中，平视，直视镜头
+
+严禁生成（negative prompt）：
+ugly villain, monster, scarred monster face, old greasy man, exaggerated evil grin, cartoon villain, anime, game character, fantasy NPC, plastic skin, wax figure, bodybuilder, huge muscles, heavy beard, dirty face, nightclub style, distorted face, crossed eyes, bad teeth, long hair, bald, eyepatch, facial scars
+
+哈苏 X2D 100C，100mm f/2.8 微距镜头，ISO 100，快门 1/125s，32K，HDR10+，正面头肩特写，白色无缝背景。
+
+输出 JSON：
+{"imagePrompt":"英文提示词","imagePromptCn":"中文提示词"}`;
 }
 
 const promptBuilders: Record<string, () => string> = {
