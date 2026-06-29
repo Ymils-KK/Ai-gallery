@@ -34,8 +34,10 @@ yarn-error.log*
 .env*
 
 
-# Project data
-content/projects/
+# API key config (contains secrets)
+content/api-config.json
+
+# Project data (committed for Vercel read access)
 
 # vercel
 .vercel

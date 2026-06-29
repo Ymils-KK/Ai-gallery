@@ -122,6 +122,7 @@ export default function ScriptAnalysisPage() {
 
   // 创建项目
   async function handleCreateProject(name: string) {
+    setPageError("");
     const res = await fetch("/api/projects", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -535,6 +536,12 @@ export default function ScriptAnalysisPage() {
             </div>
           )}
 
+          {pageError && (
+            <div className="rounded-lg bg-red-500/10 border border-red-500/20 px-4 py-3 mb-4 max-w-4xl mx-auto w-full">
+              <p className="text-sm text-red-400">{pageError}</p>
+            </div>
+          )}
+
           {!activeId ? (
             <div className="rounded-2xl bg-black/40 backdrop-blur-xl border border-white/[0.06] p-16 text-center">
               <p className="text-4xl mb-4">📂</p>
@@ -563,11 +570,6 @@ export default function ScriptAnalysisPage() {
                     loading={loading}
                   />
                 </div>
-                {pageError && (
-                  <div className="rounded-lg bg-red-500/10 border border-red-500/20 px-4 py-3">
-                    <p className="text-sm text-red-400">{pageError}</p>
-                  </div>
-                )}
               </div>
 
               {/* 集数分析（独立面板） */}
