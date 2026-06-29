@@ -4,10 +4,9 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Navbar from "@/components/Navbar";
 
-import Pet from "@/components/Pet";
 import MusicPlayer from "@/components/MusicPlayer";
 import VideoBg from "@/components/VideoBg";
-import PetWithNotebook from "@/components/PetWithNotebook";
+import MagicPixelPet from "@/components/MagicPixelPet";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -53,7 +52,7 @@ export default function RootLayout({
         <Navbar logo={config.navbar?.logo || "KK🐱"} />
         <main className="flex-1 pt-14">{children}</main>
         <MusicPlayer />
-        <PetWithNotebook />
+        <MagicPixelPet />
       </body>
     </html>
   );
