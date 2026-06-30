@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
-import OpenAI from "openai";
+import { deepseekChat, deepseekChatJSON } from "@/lib/deepseek";
 
 const projectsDir = path.join(process.cwd(), "content", "projects");
 
@@ -228,26 +228,9 @@ export async function POST(
       return NextResponse.json({ error: "剧本内容太少，至少需要 50 个字" }, { status: 400 });
     }
 
-    // 读取 API 配置
-    const configPath = path.join(process.cwd(), "content", "api-config.json");
-    let apiKey = "";
-    let baseURL = "https://api.deepseek.com/v1";
-    if (fs.existsSync(configPath)) {
-      const cfg = JSON.parse(fs.readFileSync(configPath, "utf-8"));
-      apiKey = cfg.apiKey || "";
-      baseURL = cfg.baseURL || baseURL;
-    }
-    if (!apiKey && process.env.DEEPSEEK_API_KEY) apiKey = process.env.DEEPSEEK_API_KEY;
-    if (!apiKey) {
-      return NextResponse.json({ error: "请先在管理后台配置 API Key" }, { status: 500 });
-    }
-
-    const client = new OpenAI({ apiKey, baseURL });
-
     // 第一步：提炼简介（中文 + 英文）
-    const synopsisCompletion = await client.chat.completions.create({
-      model: "deepseek-chat",
-      messages: [
+    const synopsisRaw = await deepseekChat(
+      [
         {
           role: "system",
           content: `你是专业的漫剧编辑。阅读完整剧本，提炼剧本简介，输出中英文两个版本。
@@ -260,11 +243,9 @@ export async function POST(
         },
         { role: "user", content: script.trim() },
       ],
-      response_format: { type: "json_object" },
-      max_tokens: 2048,
-      temperature: 0.5,
-    });
-    const synopsisRaw = synopsisCompletion.choices[0]?.message?.content?.trim() || "";
+      { maxTokens: 2048, temperature: 0.5, responseFormat: "json_object" }
+    );
+
     let synopsis = "";
     let synopsisEn = "";
     try {
@@ -272,13 +253,13 @@ export async function POST(
       synopsis = parsed.synopsisCn || "";
       synopsisEn = parsed.synopsisEn || "";
     } catch {
-      synopsis = synopsisRaw; // fallback
+      synopsis = synopsisRaw;
     }
     if (!synopsis) {
       return NextResponse.json({ error: "AI 未能提炼出剧本简介" }, { status: 500 });
     }
 
-    // 读取模板指令（支持多模板叠加）
+    // 读取模板指令
     let templateInstructions = "";
     if (Array.isArray(templateIds) && templateIds.length > 0) {
       const templatesPath = path.join(process.cwd(), "content", "prompt-templates.json");
@@ -299,18 +280,14 @@ export async function POST(
         ? `\n\n## 用户自定义风格要求（可组合叠加）\n${templateInstructions}\n\n请严格遵循以上所有风格要求生成提示词，如果有冲突以后面的为准。`
         : "");
 
-    const assetCompletion = await client.chat.completions.create({
-      model: "deepseek-chat",
-      messages: [
+    const assetContent = await deepseekChat(
+      [
         { role: "system", content: assetSystemPrompt },
         { role: "user", content: `完整剧本：\n${script.trim()}\n\n剧本简介（仅供参考）：\n${synopsis}\n\n用户分析要求：${targetAudience?.trim() || "无特殊要求"}\n\n请根据完整剧本和用户的分析要求生成虚拟资产提示词，从原文中提取所有可用的人物外貌、场景氛围、道具细节，每条提示词要有足够的信息密度。严格遵守用户的分析要求（如目标受众、风格偏好、长度限制等）。` },
       ],
-      response_format: { type: "json_object" },
-      max_tokens: 16384,
-      temperature: 0.8,
-    });
+      { maxTokens: 16384, temperature: 0.8, responseFormat: "json_object" }
+    );
 
-    const assetContent = assetCompletion.choices[0]?.message?.content;
     if (!assetContent) {
       return NextResponse.json({ error: "AI 未返回有效内容" }, { status: 500 });
     }
@@ -356,27 +333,28 @@ export async function POST(
       props: addMeta(result.props, "prop"),
     };
 
-    // 保存到项目文件
-    const projectPath = path.join(projectsDir, `${id}.json`);
-    const projectData = {
-      id,
-      script: script.trim(),
-      synopsis,
-      synopsisEn,
-      targetAudience: targetAudience?.trim() || "",
-      style: style || "anime",
-      era: era || "any",
-      ...data,
-    };
-    fs.writeFileSync(projectPath, JSON.stringify(projectData, null, 2), "utf-8");
+    // 保存到项目文件（Vercel 上写入可能失败，不影响返回结果）
+    try {
+      const projectPath = path.join(projectsDir, `${id}.json`);
+      const projectData = {
+        id,
+        script: script.trim(),
+        synopsis,
+        synopsisEn,
+        targetAudience: targetAudience?.trim() || "",
+        style: style || "anime",
+        era: era || "any",
+        ...data,
+      };
+      fs.writeFileSync(projectPath, JSON.stringify(projectData, null, 2), "utf-8");
+    } catch (saveErr) {
+      console.error("保存项目文件失败（Vercel 环境正常）:", saveErr);
+    }
 
     return NextResponse.json({ success: true, synopsis, synopsisEn, data });
   } catch (err: unknown) {
     console.error("AI 分析失败:", err);
-    if (err instanceof OpenAI.APIError) {
-      if (err.status === 401) return NextResponse.json({ error: "API Key 无效" }, { status: 500 });
-      if (err.status === 429) return NextResponse.json({ error: "调用频率过高，请稍后再试" }, { status: 500 });
-    }
-    return NextResponse.json({ error: "分析失败，请稍后重试" }, { status: 500 });
+    const message = err instanceof Error ? err.message : "分析失败，请稍后重试";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

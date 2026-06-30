@@ -1,12 +1,31 @@
 import { NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
-import OpenAI from "openai";
+import { deepseekChatJSON } from "@/lib/deepseek";
 
 export const maxDuration = 60;
 
+interface EpScanResult {
+  totalEpisodes: number;
+  episodes: { epNumber: number; title: string; approxLength: string }[];
+  warnings?: string[];
+}
+
+interface EpAnalysisResult {
+  episodes: {
+    epNumber: number;
+    summary: string;
+    oneLiner: string;
+    emotionCurve: string;
+    characterEmotions: { role: string; name: string; emotion: string }[];
+    sTier: { scene: string; reason: string }[];
+    aTier: { scene: string; reason: string }[];
+    keyShots: string[];
+    assetNeeds: { characters: string[]; costumes: string[]; scenes: string[]; props: string[] };
+    endHook: string;
+  }[];
+}
+
 // 步骤1：扫描剧本，识别分集
-async function scanEpisodes(script: string, client: OpenAI) {
+async function scanEpisodes(script: string): Promise<EpScanResult> {
   const systemPrompt = `你是一个剧本分析助手。快速扫描剧本，只输出分集信息。
 
 输出 JSON：
@@ -21,22 +40,17 @@ async function scanEpisodes(script: string, client: OpenAI) {
 如果剧本没有明确分集标记（Episode X, Chapter X, 第X集等），根据长度每800-1500字划一集。
 只输出 JSON，不要其他内容。`;
 
-  const completion = await client.chat.completions.create({
-    model: "deepseek-chat",
-    messages: [
+  return deepseekChatJSON<EpScanResult>(
+    [
       { role: "system", content: systemPrompt },
       { role: "user", content: script.slice(0, 5000) + (script.length > 5000 ? `\n\n...（完整剧本共${script.length}字）` : "") },
     ],
-    response_format: { type: "json_object" },
-    max_tokens: 2048,
-    temperature: 0.3,
-  });
-
-  return JSON.parse(completion.choices[0]?.message?.content || "{}");
+    { maxTokens: 2048, temperature: 0.3 }
+  );
 }
 
 // 步骤2：批量分析指定集数（1-3集）
-async function analyzeEpisodes(script: string, epNumbers: number[], client: OpenAI) {
+async function analyzeEpisodes(script: string, epNumbers: number[]): Promise<EpAnalysisResult> {
   const epList = epNumbers.join("、第");
 
   const systemPrompt = `你是短剧剧本分析师。分析剧本的第${epList}集。每集输出精简格式。
@@ -68,27 +82,32 @@ async function analyzeEpisodes(script: string, epNumbers: number[], client: Open
 - 不要重复输出剧本原文
 - 只输出 JSON`;
 
-  // 提取相关剧本章节
   const sections = extractEpisodeSections(script, epNumbers);
 
-  const completion = await client.chat.completions.create({
-    model: "deepseek-chat",
-    messages: [
+  return deepseekChatJSON<EpAnalysisResult>(
+    [
       { role: "system", content: systemPrompt },
       { role: "user", content: `完整剧本前2000字（了解背景）：\n${script.slice(0, 2000)}\n\n需要分析的集数章节：\n${sections}` },
     ],
-    response_format: { type: "json_object" },
-    max_tokens: 8192,
-    temperature: 0.5,
-  });
-
-  return JSON.parse(completion.choices[0]?.message?.content || "{}");
+    { maxTokens: 8192, temperature: 0.5 }
+  );
 }
 
 // 步骤3：基于已分析结果生成全剧总结
-async function generateSummary(allEpisodes: any[], client: OpenAI) {
-  const episodesSummary = allEpisodes.map((ep: any) =>
-    `第${ep.epNumber}集「${ep.title || ""}」: ${ep.oneLiner || ep.summary?.slice(0, 50) || ""}`
+async function generateSummary(allEpisodes: { epNumber: number; title?: string; oneLiner?: string; summary?: string }[]): Promise<{
+  overall: {
+    seriesTitle: string;
+    mainPlot: string;
+    coreEmotion: string;
+    characterRelationships: string;
+    mainConflicts: string[];
+    recurringScenes: string[];
+    highFrequencyAssets: string;
+    totalEpisodes: number;
+  };
+}> {
+  const episodesSummary = allEpisodes.map((ep) =>
+    `第${ep.epNumber}集「${ep.title || ""}」: ${ep.oneLiner || (ep.summary || "").slice(0, 50) || ""}`
   ).join("\n");
 
   const systemPrompt = `基于已有分集分析，总结全剧。
@@ -108,28 +127,21 @@ async function generateSummary(allEpisodes: any[], client: OpenAI) {
 }
 只输出 JSON。`;
 
-  const completion = await client.chat.completions.create({
-    model: "deepseek-chat",
-    messages: [
+  return deepseekChatJSON(
+    [
       { role: "system", content: systemPrompt },
       { role: "user", content: `已分析的各集概要：\n${episodesSummary}\n\n请总结全剧。` },
     ],
-    response_format: { type: "json_object" },
-    max_tokens: 4096,
-    temperature: 0.5,
-  });
-
-  return JSON.parse(completion.choices[0]?.message?.content || "{}");
+    { maxTokens: 4096, temperature: 0.5 }
+  );
 }
 
 // 辅助：从剧本中提取指定集数的章节
 function extractEpisodeSections(script: string, epNumbers: number[]): string {
-  // 尝试按 "Episode X" "Chapter X" "第X集" 等标记分割
   const markers = /(?:Episode|Chapter|EP|CH)\s*\d+|第\s*\d+\s*[集章节回]/gi;
   const parts = script.split(markers);
 
   if (parts.length <= 1) {
-    // 没有明确标记，按比例取
     const total = script.length;
     const perEp = Math.floor(total / Math.max(...epNumbers, 10));
     return epNumbers.map(n => {
@@ -149,28 +161,12 @@ export async function POST(
     const { id } = await params;
     const { action, script, epNumbers, allEpisodes } = await request.json();
 
-    // 读取 API 配置
-    const configPath = path.join(process.cwd(), "content", "api-config.json");
-    let apiKey = "";
-    let baseURL = "https://api.deepseek.com/v1";
-    if (fs.existsSync(configPath)) {
-      const cfg = JSON.parse(fs.readFileSync(configPath, "utf-8"));
-      apiKey = cfg.apiKey || "";
-      baseURL = cfg.baseURL || baseURL;
-    }
-    if (!apiKey && process.env.DEEPSEEK_API_KEY) apiKey = process.env.DEEPSEEK_API_KEY;
-    if (!apiKey) {
-      return NextResponse.json({ error: "请先配置 API Key" }, { status: 500 });
-    }
-
-    const client = new OpenAI({ apiKey, baseURL });
-
     // 步骤1：扫描分集
     if (action === "scan") {
       if (!script || script.trim().length < 100) {
         return NextResponse.json({ error: "剧本内容太少" }, { status: 400 });
       }
-      const result = await scanEpisodes(script.trim(), client);
+      const result = await scanEpisodes(script.trim());
       return NextResponse.json({ success: true, ...result });
     }
 
@@ -179,7 +175,7 @@ export async function POST(
       if (!epNumbers?.length || epNumbers.length > 3) {
         return NextResponse.json({ error: "请指定1-3集" }, { status: 400 });
       }
-      const result = await analyzeEpisodes(script.trim(), epNumbers, client);
+      const result = await analyzeEpisodes(script.trim(), epNumbers);
       return NextResponse.json({ success: true, ...result });
     }
 
@@ -188,17 +184,14 @@ export async function POST(
       if (!allEpisodes?.length) {
         return NextResponse.json({ error: "需要已分析的各集数据" }, { status: 400 });
       }
-      const result = await generateSummary(allEpisodes, client);
+      const result = await generateSummary(allEpisodes);
       return NextResponse.json({ success: true, ...result });
     }
 
     return NextResponse.json({ error: "未知操作" }, { status: 400 });
   } catch (err: unknown) {
     console.error("分析失败:", err);
-    if (err instanceof OpenAI.APIError) {
-      if (err.status === 401) return NextResponse.json({ error: "API Key 无效" }, { status: 500 });
-      if (err.status === 429) return NextResponse.json({ error: "调用频率过高" }, { status: 500 });
-    }
-    return NextResponse.json({ error: "分析失败，请稍后重试" }, { status: 500 });
+    const message = err instanceof Error ? err.message : "分析失败，请稍后重试";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

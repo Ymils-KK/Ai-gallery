@@ -1,7 +1,5 @@
 import { NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
-import OpenAI from "openai";
+import { deepseekChatJSON } from "@/lib/deepseek";
 
 function buildFemaleLeadPrompt(): string {
   return `你是一个顶尖的影视选角导演和 AI 图像生成提示词专家。为欧美女频短剧「女主」生成一个 2×2 选角联系人表（casting contact sheet）的生图提示词。
@@ -418,22 +416,6 @@ export async function POST(
       return NextResponse.json({ error: "未知角色类型" }, { status: 400 });
     }
 
-    // 读取 API 配置
-    const configPath = path.join(process.cwd(), "content", "api-config.json");
-    let apiKey = "";
-    let baseURL = "https://api.deepseek.com/v1";
-    if (fs.existsSync(configPath)) {
-      const cfg = JSON.parse(fs.readFileSync(configPath, "utf-8"));
-      apiKey = cfg.apiKey || "";
-      baseURL = cfg.baseURL || baseURL;
-    }
-    if (!apiKey && process.env.DEEPSEEK_API_KEY) apiKey = process.env.DEEPSEEK_API_KEY;
-    if (!apiKey) {
-      return NextResponse.json({ error: "请先配置 API Key" }, { status: 500 });
-    }
-
-    const client = new OpenAI({ apiKey, baseURL });
-
     // 默认年龄：女性=22岁，男性=25岁；自定义要求可覆盖
     const isMaleType = roleType === "male_lead" || roleType === "male_villain";
     const defaultAge = isMaleType ? "25" : "22";
@@ -444,28 +426,13 @@ export async function POST(
 
 用户自定义要求（必须严格遵守）：${customRequirement}` : "");
 
-    const completion = await client.chat.completions.create({
-      model: "deepseek-chat",
-      messages: [
+    const result = await deepseekChatJSON<{ imagePrompt: string; imagePromptCn: string }>(
+      [
         { role: "system", content: systemPrompt },
         { role: "user", content: "请生成 2×2 选角联系表提示词。" },
       ],
-      response_format: { type: "json_object" },
-      max_tokens: 4096,
-      temperature: 0.8,
-    });
-
-    const content = completion.choices[0]?.message?.content;
-    if (!content) {
-      return NextResponse.json({ error: "AI 未返回内容" }, { status: 500 });
-    }
-
-    let result: { imagePrompt: string; imagePromptCn: string };
-    try {
-      result = JSON.parse(content);
-    } catch {
-      return NextResponse.json({ error: "AI 返回格式异常" }, { status: 500 });
-    }
+      { maxTokens: 4096, temperature: 0.8 }
+    );
 
     return NextResponse.json({
       success: true,
@@ -474,10 +441,7 @@ export async function POST(
     });
   } catch (err: unknown) {
     console.error("抽卡失败:", err);
-    if (err instanceof OpenAI.APIError) {
-      if (err.status === 401) return NextResponse.json({ error: "API Key 无效" }, { status: 500 });
-      if (err.status === 429) return NextResponse.json({ error: "调用频率过高" }, { status: 500 });
-    }
-    return NextResponse.json({ error: "抽卡失败，请稍后重试" }, { status: 500 });
+    const message = err instanceof Error ? err.message : "抽卡失败，请稍后重试";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

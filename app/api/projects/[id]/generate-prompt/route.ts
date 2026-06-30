@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
-import OpenAI from "openai";
+import { deepseekChatJSON } from "@/lib/deepseek";
 
 export async function POST(
   request: Request,
@@ -13,19 +13,6 @@ export async function POST(
 
     if (!assetName || !assetType) {
       return NextResponse.json({ error: "缺少必要参数" }, { status: 400 });
-    }
-
-    // 读取 API 配置
-    const configPath = path.join(process.cwd(), "content", "api-config.json");
-    let apiKey = "";
-    let baseURL = "https://api.deepseek.com/v1";
-    if (fs.existsSync(configPath)) {
-      const cfg = JSON.parse(fs.readFileSync(configPath, "utf-8"));
-      apiKey = cfg.apiKey || "";
-      baseURL = cfg.baseURL || baseURL;
-    }
-    if (!apiKey) {
-      return NextResponse.json({ error: "请先配置 API Key" }, { status: 500 });
     }
 
     // 读取项目上下文
@@ -58,8 +45,6 @@ export async function POST(
 
     const isOutfit = assetType === "outfit";
     const typeLabel = isOutfit ? "服装" : assetType === "characters" ? "人物" : assetType === "scenes" ? "场景" : "道具";
-
-    const client = new OpenAI({ apiKey, baseURL });
 
     const hasselblad = `Hasselblad X2D 100C, 85mm standard prime lens, 32K ultra HD, HDR10+ high dynamic range, cinematic color grading, IMAX quality, 100mm f/2.8 macro lens, ISO 100, shutter speed 1/125s, RAW format output, visible skin texture with pores and capillaries, individual hair strands clearly visible, rich light and shadow layers, fine grain texture,`;
 
@@ -122,28 +107,13 @@ ${templateInstructions ? `风格要求：\n${templateInstructions}\n` : ""}
 
 提示词要求：详细、具体、视觉化，英文用于生图工具，中文与英文对应。末尾加风格标签。`;
 
-    const completion = await client.chat.completions.create({
-      model: "deepseek-chat",
-      messages: [
+    const result = await deepseekChatJSON<{ imagePrompt: string; imagePromptCn: string }>(
+      [
         { role: "system", content: systemPrompt },
         { role: "user", content: `${typeLabel}名称：${assetName}\n描述：${description || "无"}\n\n请生成提示词。` },
       ],
-      response_format: { type: "json_object" },
-      max_tokens: 2048,
-      temperature: 0.7,
-    });
-
-    const content = completion.choices[0]?.message?.content;
-    if (!content) {
-      return NextResponse.json({ error: "AI 未返回内容" }, { status: 500 });
-    }
-
-    let result: { imagePrompt: string; imagePromptCn: string };
-    try {
-      result = JSON.parse(content);
-    } catch {
-      return NextResponse.json({ error: "AI 返回格式异常" }, { status: 500 });
-    }
+      { maxTokens: 2048, temperature: 0.7 }
+    );
 
     return NextResponse.json({
       success: true,
@@ -152,6 +122,7 @@ ${templateInstructions ? `风格要求：\n${templateInstructions}\n` : ""}
     });
   } catch (err: unknown) {
     console.error("生成提示词失败:", err);
-    return NextResponse.json({ error: "生成失败" }, { status: 500 });
+    const message = err instanceof Error ? err.message : "生成失败";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
