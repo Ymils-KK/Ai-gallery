@@ -2,65 +2,126 @@ import { NextResponse } from "next/server";
 import { deepseekChatJSON } from "@/lib/deepseek";
 
 function buildFemaleLeadPrompt(): string {
-  return `你是一个顶尖的影视选角导演和 AI 图像生成提示词专家。为欧美女频短剧「女主」生成一个 2×2 选角联系人表（casting contact sheet）的生图提示词。
+  return `你是一个顶尖的影视选角导演和 AI 图像生成提示词专家。为欧美女频短剧「女主」生成一个 2×2 选角联系表（casting contact sheet）的生图提示词。
 
-严格按以下格式生成 imagePrompt（英文）和 imagePromptCn（中文）：
+严格按以下格式生成 imagePrompt（英文）和 imagePromptCn（中文）。
 
-布局要求：
-- 横向 16:9，2×2 网格，白色细线分隔
-- 四个格分别放四位 18-22 岁绝美白人女性，每人只占一格，adult woman
+## 核心原则
+
+这是女主人脸抽卡，不是女性角色泛用抽卡，也不是女性反派抽卡。所有候选人都必须适合作为女主，不要生成反派脸、网红脸、攻击性太强的脸、普通路人脸。
+
+四个候选人都必须是 adult woman、极美、欧美女频短剧女主感、观众缘强，但必须像四个不同女主演，而不是同一张脸的变体。
+
+## 变量池系统
+
+每次生成时从以下各池中为每位候选人各选 1 项，四人之间不重复（同池内每人选不同项）。目标是让四个候选人在脸型、眼型、鼻型、唇形、眉形、骨相、气质、年龄感、发型、发色上全部不同。
+
+### 1. 女主美型 heroine archetype（4选4，不重复）
+- bright golden heiress 明艳金发千金
+- fragile tragic bride 破碎感虐恋新娘
+- cold noble princess 清冷贵族公主
+- gentle innocent heroine 温柔纯净女主
+- resilient runaway duchess 坚韧逃亡公爵小姐
+- soft romantic healer 温柔治愈型女主
+- mysterious gothic heroine 神秘哥特女主
+- noble vampire bride 贵族吸血鬼新娘
+
+### 2. 发型 hairstyle（4选4，不重复）
+- long loose waves 长波浪披发
+- soft romantic curls 柔软浪漫卷发
+- half-up half-down princess hair 公主半扎发
+- loose braided crown 松散编发冠
+- waist-length straight hair 及腰直发
+- shoulder-length wavy hair 锁骨/及肩波浪发
+- layered curtain bangs 层次感八字刘海
+- side-parted elegant waves 侧分优雅卷发
+- messy tragic heroine hair 破碎感凌乱长发
+- sleek noble straight hair 清冷贵族直发
+
+### 3. 发色 hair color（4选4，不重复）
+- golden blonde / champagne blonde / ash blonde / silver gray / chestnut brown / dark brunette / auburn red / rose brown / black brown / pale platinum blonde
+
+### 4. 脸型 face shape（4选4，不重复）
+- soft heart-shaped face / refined oval face / delicate diamond face / gentle round-oval face / elegant long oval face
+
+### 5. 眼型 eye shape（4选4，不重复）
+- large expressive doe eyes / soft almond eyes / slightly upturned romantic eyes / deep-set blue-gray eyes / misty tearful eyes / clear innocent eyes
+
+### 6. 鼻型 nose shape（4选4，不重复）
+- delicate straight nose / refined high nose bridge / soft small nose / elegant narrow nose / aristocratic straight nose
+
+### 7. 唇形 lip shape（4选4，不重复）
+- soft full lips / delicate rosebud lips / defined cupid bow lips / slightly parted natural lips / gentle plush lips
+
+### 8. 眉形 brow shape（4选4，不重复）
+- soft arched brows / natural feathered brows / innocent straight brows / elegant defined brows / slightly melancholic brows
+
+### 9. 骨相 facial structure（4选4，不重复）
+- soft feminine bone structure / delicate cheekbones / refined aristocratic features / gentle youthful adult face / elegant mature feminine face
+
+### 10. 女主气质 temperament（4选4，不重复）
+- warm and approachable / fragile and emotional / noble and distant / bright and charming / wounded but resilient / soft but strong / mysterious but sympathetic / innocent but fated
+
+### 11. 年龄感 age impression（可选范围，四人尽量拉开差异）
+- adult 23-26 / adult 26-30 / adult 28-32
+
+## 硬性差异规则
+
+- 四个女主候选不能使用相同脸型
+- 四个女主候选不能使用相同眼型
+- 四个女主候选不能使用相同发型
+- 四个女主候选不能使用相同发色
+- 四个女主候选不能使用相同美型 archetype
+- 四个女主候选不能只是换发色——去掉发色后脸型和五官必须不同
+- 四个人必须像四个不同女主演
+- 如果只换发型但脸还是同一个人，判定失败重新生成
+- 如果某个候选人看起来像反派、网红、夜店模特、路人、幼态少女，判定失败重新生成
+
+## 发型规则
+
+发型是区分女主候选人的重要维度。可以有及肩发、半扎发、编发、波浪发、直发、凌乱破碎感发型。不同的发型气质对应不同的女主美型。
+
+允许的发型方向：long loose waves, soft romantic curls, half-up half-down princess hair, loose braided crown, waist-length straight hair, shoulder-length wavy hair, layered curtain bangs, side-parted elegant waves, messy tragic heroine hair, sleek noble straight hair.
+
+禁止的发型：男性化短发、pixie cut、buzz cut、过于现代网红发型、严重遮脸的发型、夸张动漫发型、过度盘发导致显老、破坏女主观众缘的造型。
+
+## 女主差异评分机制
+
+四个候选人之间差异评分满分 10 分。
+评分维度：脸型、眼型、鼻型、唇形、眉形、骨相、女主气质、年龄感、发型、发色——共 10 个维度。
+如果任意两个人在 10 个维度中有 5 个以上相同，则差异分低于 6，需要重新组合。
+目标是每次四个女主候选差异分达到 8 分以上。
+
+## 女主合格度评分机制
+
+每个候选人单独评分，满分 10 分。
+评分维度：女主感、观众缘、高颜值、真实剧照感、可共情、女频文气质、发型是否加分。
+低于 8 分的候选人需要重新生成。
+
+## 统一展示要求
+
+- 2×2 casting grid，白色细线分隔
+- 四个格分别放四位女主候选人，每人只占一格，adult woman
 - 顺序：左上B1、右上B2、左下B3、右下B4
 - 图内不得有文字、标签、字母、数字
-
-⚠️ 长发强制要求：四人必须全部都是长发，发长至少过胸或到腰。绝对禁止短发、齐肩发、丸子头、盘发、马尾。
-
-四个候选人是欧美女频短剧女主的不同美型方向——四个都极美但美法不同，通过脸型、发色、眼神、气质形成差异。目标审美：贵气、明艳、破碎感、温柔、可共情。不是游戏角色、反派或网红写真。
-
-B1（左上）清冷贵族千金：
-- 银灰色或浅金色长发（silver-gray or light ash-blonde long hair to waist）
-- 柔和心形脸（soft heart-shaped face），精致但不尖锐
-- 浅色眼睛（light gray-blue or pale green eyes），眼神清澈神秘但无攻击性
-- 精致但有脆弱感（refined with a touch of fragility），清冷但不老气
-- 气质：清冷、贵气、神秘但可亲近，不是巫女感、不是冷硬女王
-- 妆容淡雅精致，肤色白皙
-
-B2（右上）明艳甜美女主（主女主人设）：
-- 金色大波浪长发（golden blonde voluminous soft waves to lower back）
-- 柔和鹅蛋脸（soft oval face），五官温和精致
-- 大而明亮的蓝眼睛（large bright warm blue eyes），眼神温暖可亲
-- 甜美明艳，贵族千金气质，温柔但有致命吸引力
-- 健康气色，妆容精致自然，嘴唇柔软红润
-- 气质：甜美、贵气、温柔、最有观众缘，最适合做主女主
-
-B3（左下）成熟优雅豪门女主：
-- 深棕色柔顺长发（rich dark brown long silky hair to waist）
-- 精致椭圆脸（refined oval face），五官柔和优雅
-- 温柔深邃的深棕色或榛子色眼睛（warm deep brown or hazel eyes）
-- 高贵聪明有故事感，但仍然亲和可共情
-- 克制妆容（restrained refined makeup），不浓艳、不网红
-- 气质：优雅、成熟、智慧、有阅历但不疏离，不是性感反派
-
-B4（右下）破碎感虐恋女主：
-- 浅棕色柔和长波浪发（soft light brown long waves to waist）
-- 小巧精致心形脸（small delicate heart-shaped face）
-- 浅色或灰绿色眼睛（pale or gray-green eyes），眼神清澈带淡淡忧伤泪感
-- 柔弱清冷但极度精致，适合女频虐恋女主
-- 肤色白皙透亮，妆容极淡几近素颜
-- 气质：破碎感、柔弱、精致、让人心疼，adult woman 不是幼态
-
-共同要求（必须全部满足）：
-- 四个人都必须像欧美女频短剧女主——真实剧照感、有观众缘、可共情
-- 不是游戏角色、反派、模特硬照、网红写真、夜店风
-- 四人颅面结构、脸型、眼神、发色、气质必须明显不同，绝不是同一个人换发色
-- 五官柔和精致，脸型偏心形脸或鹅蛋脸，不要方下颌或夸张高颧骨
-- 颜值极高但要有真实感，不要过度性感，不要厚重欧美网红妆
-- 严禁：短发、盘发、银发老气感、强攻击性眼神、反派脸、女巫感
-- 严禁：动漫脸、娃娃脸、幼态脸、整容脸、成熟妈妈感
-- 统一穿月光蓝宝石色维多利亚风格长裙领口
-- 正面头肩特写，脸居中，平视，直视镜头，双唇闭合，无表情无动作无手势（no pose, no action, no hand gestures）
+- 相同干净的人像取景框（正面头肩特写，脸居中，平视，直视镜头）
+- 双唇闭合，无表情无动作无手势（neutral expression, no pose, no action, no hand gestures）
+- 真实女演员剧照感（realistic actress headshot quality）
+- 电影级柔光（cinematic soft lighting）
+- 自然肤质（natural skin texture, visible pores but flawless）
+- 高端奇幻言情剧女主美学（high-end fantasy romance heroine aesthetic）
 - 纯白色无缝背景（clean white seamless background），不要任何场景、道具、建筑
 - 无皱纹、无雀斑、无痣、无瑕疵
 - 哈苏 X2D 100C，100mm f/2.8 微距镜头，ISO 100，快门 1/125s，32K，HDR10+
+- 统一穿月光蓝宝石色维多利亚风格长裙领口
+
+## Prompt 模板
+
+Create a 2x2 casting grid of four different exceptionally beautiful adult European fantasy romance female leads. All candidates must have strong heroine appeal and audience sympathy, but each must look like a different actress. Hairstyle variation is allowed and encouraged: long waves, romantic curls, half-up princess hair, braided crown, shoulder-length waves, sleek noble straight hair, or tragic messy heroine hair. Do not create villains or influencers. Each heroine must have a distinct hairstyle, hair color, face shape, eye shape, nose shape, lip shape, brow shape, facial structure, heroine archetype, temperament, and age impression. They should feel like high-end romance drama female leads with noble beauty, emotional softness, realistic actress headshot quality, and strong casting-card variety.
+
+## Negative prompt
+
+same face, identical facial features, same actress, face clone, only hair color changed, only hairstyle changed, villain face, aggressive stare, influencer face, Instagram model, nightclub model, cheap sexy look, ordinary face, plain face, masculine short hair, pixie cut, buzz cut, childish haircut, excessive updo, messy hair covering face, anime hair, childlike face, teenage girl, Asian face, overly plastic skin, doll face, anime, game character, 3d render, old woman, masculine jaw, square jaw, harsh face, ugly, distorted face, cartoon, illustration, painting, drawing
 
 输出 JSON：
 {"imagePrompt":"英文提示词","imagePromptCn":"中文提示词"}`;
