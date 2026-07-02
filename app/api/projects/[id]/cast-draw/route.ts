@@ -1,137 +1,162 @@
-import { NextResponse } from "next/server";
+﻿import { NextResponse } from "next/server";
 import { deepseekChatJSON } from "@/lib/deepseek";
 
+// ====== 随机选择工具 ======
+
+function pickRandom<T>(arr: readonly T[], count: number): T[] {
+  const shuffled = [...arr].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, count);
+}
+
+// ====== 女主变量池 ======
+
+const HEROINE_ARCHETYPES = [
+  "bright golden heiress", "fragile tragic bride", "cold noble princess",
+  "gentle innocent heroine", "resilient runaway duchess", "soft romantic healer",
+  "mysterious gothic heroine", "noble vampire bride",
+] as const;
+
+const HEROINE_HAIRSTYLES = [
+  "long loose waves", "soft romantic curls", "half-up half-down princess hair",
+  "loose braided crown", "waist-length straight hair", "shoulder-length wavy hair",
+  "layered curtain bangs with flowing hair", "side-parted elegant waves",
+  "messy tragic heroine hair", "sleek noble straight hair",
+] as const;
+
+const HEROINE_HAIR_COLORS = [
+  "golden blonde", "champagne blonde", "ash blonde", "silver gray", "chestnut brown",
+  "dark brunette", "auburn red", "rose brown", "black brown", "pale platinum blonde",
+] as const;
+
+const HEROINE_FACE_SHAPES = [
+  "soft heart-shaped face", "refined oval face", "delicate diamond face",
+  "gentle round-oval face", "elegant long oval face",
+] as const;
+
+const HEROINE_EYE_SHAPES = [
+  "large expressive doe eyes", "soft almond eyes", "slightly upturned romantic eyes",
+  "deep-set blue-gray eyes", "misty tearful eyes", "clear innocent eyes",
+] as const;
+
+const HEROINE_NOSE_SHAPES = [
+  "delicate straight nose", "refined high nose bridge", "soft small nose",
+  "elegant narrow nose", "aristocratic straight nose",
+] as const;
+
+const HEROINE_LIP_SHAPES = [
+  "soft full lips", "delicate rosebud lips", "defined cupid bow lips",
+  "slightly parted natural lips", "gentle plush lips",
+] as const;
+
+const HEROINE_BROW_SHAPES = [
+  "soft arched brows", "natural feathered brows", "innocent straight brows",
+  "elegant defined brows", "slightly melancholic brows",
+] as const;
+
+const HEROINE_FACIAL_STRUCTURES = [
+  "soft feminine bone structure", "delicate cheekbones", "refined aristocratic features",
+  "gentle youthful adult face", "elegant mature feminine face",
+] as const;
+
+const HEROINE_TEMPERAMENTS = [
+  "warm and approachable", "fragile and emotional", "noble and distant",
+  "bright and charming", "wounded but resilient", "soft but strong",
+  "mysterious but sympathetic", "innocent but fated",
+] as const;
+
+const HEROINE_AGE_IMPRESSIONS = [
+  "adult woman, 23-26 appearance", "adult woman, 26-30 appearance", "adult woman, 28-32 appearance",
+] as const;
+
+const HEROINE_NECKLINES = [
+  "moon sapphire deep plunge neckline", "ivory deep V sweetheart bodice",
+  "black velvet off-shoulder low-cut neckline", "deep burgundy plunging sweetheart neckline",
+  "champagne silk deep scoop neckline", "silver embroidered deep sweetheart neckline",
+  "midnight blue plunging neckline", "soft pink deep corset bodice",
+  "dark emerald low-cut fitted bodice", "pearl white deep sweetheart corset",
+] as const;
+
+interface HeroineCandidate {
+  archetype: string; hairstyle: string; hairColor: string;
+  faceShape: string; eyeShape: string; noseShape: string;
+  lipShape: string; browShape: string; facialStructure: string;
+  temperament: string; ageImpression: string; neckline: string;
+}
+
+function drawHeroineCandidates(): HeroineCandidate[] {
+  const archetypes = pickRandom(HEROINE_ARCHETYPES, 4);
+  const hairstyles = pickRandom(HEROINE_HAIRSTYLES, 4);
+  const hairColors = pickRandom(HEROINE_HAIR_COLORS, 4);
+  const faceShapes = pickRandom(HEROINE_FACE_SHAPES, 4);
+  const eyeShapes = pickRandom(HEROINE_EYE_SHAPES, 4);
+  const noseShapes = pickRandom(HEROINE_NOSE_SHAPES, 4);
+  const lipShapes = pickRandom(HEROINE_LIP_SHAPES, 4);
+  const browShapes = pickRandom(HEROINE_BROW_SHAPES, 4);
+  const facialStructures = pickRandom(HEROINE_FACIAL_STRUCTURES, 4);
+  const temperaments = pickRandom(HEROINE_TEMPERAMENTS, 4);
+  const ageImpressions = pickRandom(HEROINE_AGE_IMPRESSIONS, 4);
+  const necklines = pickRandom(HEROINE_NECKLINES, 4);
+  return [0, 1, 2, 3].map((i) => ({
+    archetype: archetypes[i], hairstyle: hairstyles[i], hairColor: hairColors[i],
+    faceShape: faceShapes[i], eyeShape: eyeShapes[i], noseShape: noseShapes[i],
+    lipShape: lipShapes[i], browShape: browShapes[i], facialStructure: facialStructures[i],
+    temperament: temperaments[i], ageImpression: ageImpressions[i], neckline: necklines[i],
+  }));
+}
+
+
 function buildFemaleLeadPrompt(): string {
-  return `你是一个顶尖的影视选角导演和 AI 图像生成提示词专家。为欧美女频短剧「女主」生成一个 2×2 选角联系表（casting contact sheet）的生图提示词。
+  const candidates = drawHeroineCandidates();
+  const labels = ["B1 (top-left)", "B2 (top-right)", "B3 (bottom-left)", "B4 (bottom-right)"];
+  const candidateLines = candidates.map((c, i) =>
+    `${labels[i]}:
+- archetype: ${c.archetype}
+- hairstyle: ${c.hairstyle}
+- hair color: ${c.hairColor}
+- face shape: ${c.faceShape}
+- eye shape: ${c.eyeShape}
+- nose shape: ${c.noseShape}
+- lip shape: ${c.lipShape}
+- brow shape: ${c.browShape}
+- facial structure: ${c.facialStructure}
+- temperament: ${c.temperament}
+- age impression: ${c.ageImpression}
+- visible costume neckline: ${c.neckline}`
+  ).join("\n\n");
+
+  return `你是一个顶尖的影视选角导演和 AI 图像生成提示词专家。为欧美女频短剧「女主」生成一个 2×2 选角联系人表（casting contact sheet）的生图提示词。
 
 严格按以下格式生成 imagePrompt（英文）和 imagePromptCn（中文）。
 
 ## 核心原则
 
-这是女主人脸抽卡，不是女性角色泛用抽卡，也不是女性反派抽卡。所有候选人都必须适合作为女主，不要生成反派脸、网红脸、攻击性太强的脸、普通路人脸。
+这是女主人脸抽卡。四个候选人都必须是 adult European woman、极美、欧美女频短剧女主感、观众缘强、真实剧照感。不要反派脸、网红脸、路人脸、AI 娃娃脸。
 
-四个候选人都必须是 adult woman、极美、欧美女频短剧女主感、观众缘强，但必须像四个不同女主演，而不是同一张脸的变体。
+## 以下四人属性由代码随机选出，所有属性已确保不同。严格按指定属性生成提示词，禁止自行更改：
 
-## 变量池系统
-
-每次生成时从以下各池中为每位候选人各选 1 项，四人之间不重复（同池内每人选不同项）。目标是让四个候选人在脸型、眼型、鼻型、唇形、眉形、骨相、气质、年龄感、发型、发色上全部不同。
-
-### 1. 女主美型 heroine archetype（4选4，不重复）
-- bright golden heiress 明艳金发千金
-- fragile tragic bride 破碎感虐恋新娘
-- cold noble princess 清冷贵族公主
-- gentle innocent heroine 温柔纯净女主
-- resilient runaway duchess 坚韧逃亡公爵小姐
-- soft romantic healer 温柔治愈型女主
-- mysterious gothic heroine 神秘哥特女主
-- noble vampire bride 贵族吸血鬼新娘
-
-### 2. 发型 hairstyle（4选4，不重复）
-- long loose waves 长波浪披发
-- soft romantic curls 柔软浪漫卷发
-- half-up half-down princess hair 公主半扎发
-- loose braided crown 松散编发冠
-- waist-length straight hair 及腰直发
-- shoulder-length wavy hair 锁骨/及肩波浪发
-- layered curtain bangs 层次感八字刘海
-- side-parted elegant waves 侧分优雅卷发
-- messy tragic heroine hair 破碎感凌乱长发
-- sleek noble straight hair 清冷贵族直发
-
-### 3. 发色 hair color（4选4，不重复）
-- golden blonde / champagne blonde / ash blonde / silver gray / chestnut brown / dark brunette / auburn red / rose brown / black brown / pale platinum blonde
-
-### 4. 脸型 face shape（4选4，不重复）
-- soft heart-shaped face / refined oval face / delicate diamond face / gentle round-oval face / elegant long oval face
-
-### 5. 眼型 eye shape（4选4，不重复）
-- large expressive doe eyes / soft almond eyes / slightly upturned romantic eyes / deep-set blue-gray eyes / misty tearful eyes / clear innocent eyes
-
-### 6. 鼻型 nose shape（4选4，不重复）
-- delicate straight nose / refined high nose bridge / soft small nose / elegant narrow nose / aristocratic straight nose
-
-### 7. 唇形 lip shape（4选4，不重复）
-- soft full lips / delicate rosebud lips / defined cupid bow lips / slightly parted natural lips / gentle plush lips
-
-### 8. 眉形 brow shape（4选4，不重复）
-- soft arched brows / natural feathered brows / innocent straight brows / elegant defined brows / slightly melancholic brows
-
-### 9. 骨相 facial structure（4选4，不重复）
-- soft feminine bone structure / delicate cheekbones / refined aristocratic features / gentle youthful adult face / elegant mature feminine face
-
-### 10. 女主气质 temperament（4选4，不重复）
-- warm and approachable / fragile and emotional / noble and distant / bright and charming / wounded but resilient / soft but strong / mysterious but sympathetic / innocent but fated
-
-### 11. 年龄感 age impression（可选范围，四人尽量拉开差异）
-- adult 23-26 / adult 26-30 / adult 28-32
-
-## 硬性差异规则
-
-- 四个女主候选不能使用相同脸型
-- 四个女主候选不能使用相同眼型
-- 四个女主候选不能使用相同发型
-- 四个女主候选不能使用相同发色
-- 四个女主候选不能使用相同美型 archetype
-- 四个女主候选不能只是换发色——去掉发色后脸型和五官必须不同
-- 四个人必须像四个不同女主演
-- 如果只换发型但脸还是同一个人，判定失败重新生成
-- 如果某个候选人看起来像反派、网红、夜店模特、路人、幼态少女，判定失败重新生成
-
-## 发型规则
-
-发型是区分女主候选人的重要维度。可以有及肩发、半扎发、编发、波浪发、直发、凌乱破碎感发型。不同的发型气质对应不同的女主美型。
-
-允许的发型方向：long loose waves, soft romantic curls, half-up half-down princess hair, loose braided crown, waist-length straight hair, shoulder-length wavy hair, layered curtain bangs, side-parted elegant waves, messy tragic heroine hair, sleek noble straight hair.
-
-禁止的发型：男性化短发、pixie cut、buzz cut、过于现代网红发型、严重遮脸的发型、夸张动漫发型、过度盘发导致显老、破坏女主观众缘的造型。
-
-## 女主差异评分机制
-
-四个候选人之间差异评分满分 10 分。
-评分维度：脸型、眼型、鼻型、唇形、眉形、骨相、女主气质、年龄感、发型、发色——共 10 个维度。
-如果任意两个人在 10 个维度中有 5 个以上相同，则差异分低于 6，需要重新组合。
-目标是每次四个女主候选差异分达到 8 分以上。
-
-## 女主合格度评分机制
-
-每个候选人单独评分，满分 10 分。
-评分维度：女主感、观众缘、高颜值、真实剧照感、可共情、女频文气质、发型是否加分。
-低于 8 分的候选人需要重新生成。
+${candidateLines}
 
 ## 统一展示要求
 
-- 2×2 casting grid，白色细线分隔
-- 四个格分别放四位女主候选人，每人只占一格，adult woman
-- 顺序：左上B1、右上B2、左下B3、右下B4
+- 2×2 casting grid，白色细线分隔，左上B1、右上B2、左下B3、右下B4
 - 图内不得有文字、标签、字母、数字
-- 相同干净的人像取景框（正面头肩特写，脸居中，平视，直视镜头）
-- 双唇闭合，无表情无动作无手势（neutral expression, no pose, no action, no hand gestures）
+- 正面头肩特写，脸居中，平视，直视镜头，双唇闭合，无表情无动作无手势（neutral expression, no pose, no action, no hand gestures）
 - 真实女演员剧照感（realistic actress headshot quality）
-- 电影级柔光（cinematic soft lighting）
-- 自然肤质（natural skin texture, visible pores but flawless）
+- 电影级柔光（cinematic soft lighting），自然肤质（natural skin texture, visible pores but flawless）
 - 高端奇幻言情剧女主美学（high-end fantasy romance heroine aesthetic）
 - 纯白色无缝背景（clean white seamless background），不要任何场景、道具、建筑
 - 无皱纹、无雀斑、无痣、无瑕疵
 - 哈苏 X2D 100C，100mm f/2.8 微距镜头，ISO 100，快门 1/125s，32K，HDR10+
-- 统一穿低胸装，每人可见领口/服装不同，从以下池中各选 1 项不重复：moon sapphire deep plunge / ivory deep V sweetheart / black velvet off-shoulder low-cut / deep burgundy plunging sweetheart / champagne silk deep scoop / silver embroidered deep sweetheart / midnight blue plunging neckline / soft pink deep corset bodice / dark emerald low-cut fitted bodice / pearl white deep sweetheart corset
+- 统一穿低胸装（all wear low-cut deep plunging necklines），每人领口严格按上面指定的 costume neckline
 
-## 服装领口池 costume neckline pool（4选4，不重复，全部低胸）
-- moon sapphire deep plunge neckline 月光蓝宝石深V领
-- ivory deep V sweetheart bodice 象牙白深V心形胸衣
-- black velvet off-shoulder low-cut 黑色丝绒露肩低胸领
-- deep burgundy plunging sweetheart 深酒红深V心形领
-- champagne silk deep scoop neckline 香槟色丝绸深圆领
-- silver embroidered deep sweetheart 银线刺绣深心形领
-- midnight blue plunging neckline 午夜蓝深V领
-- soft pink deep corset bodice 柔粉深束腰胸衣
-- dark emerald low-cut fitted bodice 暗祖母绿低胸贴身胸衣
-- pearl white deep sweetheart corset 珍珠白深心形束腰领
+## 质量要求
 
-## Prompt 模板
+- imagePrompt 英文详细生图提示词，信息密度高
+- imagePromptCn 中文版本与英文对应
+- 四人必须像四个不同女演员，不能是同一张脸
+- 上面指定的属性必须一字不改地写进提示词
 
-Create a 2x2 casting grid of four different exceptionally beautiful adult European fantasy romance female leads. All candidates must have strong heroine appeal and audience sympathy, but each must look like a different actress. Hairstyle variation is allowed and encouraged: long waves, romantic curls, half-up princess hair, braided crown, shoulder-length waves, sleek noble straight hair, or tragic messy heroine hair. All heroines must wear LOW-CUT / DEEP PLUNGING necklines. Each heroine must wear a DIFFERENT visible low-cut costume neckline — vary the neckline color, fabric, and style per candidate. Deep V, sweetheart, off-shoulder low-cut, deep scoop, plunging corset bodice — all acceptable as long as it is low-cut. Do not create villains or influencers. Each heroine must have a distinct hairstyle, hair color, face shape, eye shape, nose shape, lip shape, brow shape, facial structure, visible costume neckline, heroine archetype, temperament, and age impression. They should feel like high-end romance drama female leads with noble beauty, emotional softness, realistic actress headshot quality, and strong casting-card variety.
-
-## Negative prompt
+## Negative prompt (必须包含在 imagePrompt 末尾)
 
 same face, identical facial features, same actress, face clone, only hair color changed, only hairstyle changed, all wearing same dress, identical outfit, same neckline color, high collar, high neckline, covered neck, turtleneck, conservative neckline, villain face, aggressive stare, influencer face, Instagram model, nightclub model, cheap sexy look, ordinary face, plain face, masculine short hair, pixie cut, buzz cut, childish haircut, excessive updo, messy hair covering face, anime hair, childlike face, teenage girl, Asian face, overly plastic skin, doll face, anime, game character, 3d render, old woman, masculine jaw, square jaw, harsh face, ugly, distorted face, cartoon, illustration, painting, drawing
 
