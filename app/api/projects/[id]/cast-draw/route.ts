@@ -198,57 +198,112 @@ ugly villain, monster, witch-like, old hag, masculine jaw, square jaw, harsh wri
 function buildMaleLeadPrompt(): string {
   return `你是一个顶尖的影视选角导演和 AI 图像生成提示词专家。为欧美女频短剧「男主」生成一个 2×2 选角联系人表（casting contact sheet）的生图提示词。
 
-核心原则：男主必须有"第一眼心动感"——不是普通商务头像，不是证件照，不是中年企业家。要像短剧封面男主、浪漫小说封面男主、豪门霸总剧男主。每位候选人都必须是 extremely handsome adult man（27-35岁），有权力感、保护欲、禁欲感、深情感。
+严格按以下格式生成 imagePrompt（英文）和 imagePromptCn（中文）。
 
-严格按以下格式生成 imagePrompt（英文）和 imagePromptCn（中文）：
+## 核心原则
 
-布局要求：
-- 横向 16:9，2×2 网格，白色细线分隔
-- 四个格分别放四位男性，每人只占一格，extremely handsome adult man, age 27-35
+这是男主抽卡，不是男性角色泛用抽卡。所有候选人都必须适合作为欧美女频短剧男主——高颜值、保护欲、权力感、深情感、真实欧美剧照感。
+
+⚠️ 年龄措辞强制规则：
+不要在提示词里使用 20-year-old、20 years old、teen、boyish、pretty boy、idol——这些词会导致生成亚洲男团脸、K-pop 偶像风格、少年感。
+如果需要年轻男主，请使用：young adult European man, 24-28 appearance, mature masculine features。
+常规男主请使用：adult European man, late 20s to mid 30s appearance, mature masculine Western facial features。
+
+四个候选人都必须是 adult European / Western man、高颜值、欧美女频短剧男主感，但必须像四个不同男演员，而不是同一个人换发色、换衣服。
+
+## 变量池系统
+
+每次生成时从以下各池中为每位候选人各选 1 项，四人之间不重复（同池内每人选不同项）。
+
+### 1. 男主美型 male lead archetype（4选4，不重复）
+- cold billionaire heir 冷峻财阀继承人
+- noble golden prince 金发贵族继承人
+- dark wolf king 暗黑狼王男主
+- gentle doctor / lawyer 温柔医生/律师男主
+- cursed duke 被诅咒公爵
+- protective knight 守护骑士
+- wounded ex-lover 破碎旧爱
+- powerful royal heir 强势王族继承人
+- forbidden vampire prince 禁忌吸血鬼王子
+- war-returned general 战后归来的将军
+
+### 2. 发型 hairstyle（4选4，不重复）
+- dark swept-back hair / short textured dark hair / soft wavy brown hair / golden wavy hair / slightly tousled noble hair / silver-gray medium-short hair / clean side-parted hair / dark curly hair / refined medium-length hair / wind-swept romantic hair
+
+### 3. 发色 hair color（4选4，不重复）
+- black / dark brown / chestnut brown / golden blonde / ash blonde / silver gray / warm brown / dirty blonde / charcoal black / dark auburn brown
+
+### 4. 脸型 face shape（4选4，不重复）
+- sharp oval face / refined square-oval face / aristocratic long face / strong angular face / balanced masculine oval face / rugged handsome face / clean noble face / sculpted romantic face
+
+### 5. 眼型 eye shape（4选4，不重复）
+- deep-set intense eyes / soft romantic eyes / piercing blue eyes / gray-green restrained eyes / dark brooding eyes / protective warm eyes / slightly narrowed dangerous eyes / wounded emotional eyes
+
+### 6. 鼻型 nose shape（4选4，不重复）
+- high straight nose bridge / aristocratic narrow nose / strong straight nose / refined masculine nose / slightly rugged Roman nose / elegant Western nose
+
+### 7. 唇形 mouth/lips（4选4，不重复）
+- firm restrained lips / soft but masculine lips / defined cupid bow lips / thin serious lips / slightly parted emotional lips / calm controlled mouth
+
+### 8. 眉形 brow shape（4选4，不重复）
+- thick defined brows / straight noble brows / slightly furrowed brows / sharp dark brows / soft masculine brows / elegant restrained brows
+
+### 9. 骨相 facial structure（4选4，不重复）
+- refined masculine bone structure / strong jawline / noble cheekbones / rugged but handsome features / elegant aristocratic features / mature masculine features / clean sculpted features
+
+### 10. 男主气质 temperament（4选4，不重复）
+- protective and restrained / cold but deeply emotional / noble and distant / dangerous but gentle / wounded but loyal / powerful and controlled / warm and reliable / forbidden romantic / dominant but tender / silent protector
+
+### 11. 年龄感 age impression（4人尽量拉开差异）
+- adult 24-28 appearance / adult 28-32 appearance / adult 32-36 appearance / adult 34-38 appearance
+
+## 硬性差异规则
+
+- 四个男主候选不能使用相同美型 archetype
+- 四个男主候选不能使用相同脸型
+- 四个男主候选不能使用相同眼型
+- 四个男主候选不能使用相同发型
+- 四个男主候选不能使用相同发色
+- 四个男主候选不能只是换衣服或换发色——去掉发色和服装后脸型和五官必须不同
+- 四个人必须像四个不同欧美男演员
+- 如果只换发型但脸还是同一个人，判定失败重新生成
+- 如果某个候选人看起来像商务头像、证件照、K-pop 偶像、少年，判定失败重新生成
+
+## 男主合格度评分机制
+
+每个候选人单独评分，满分 10 分。
+评分维度：男主心动感、高颜值、保护欲、权力感、深情感、真实欧美剧照感、女频文吸引力。
+低于 8 分需要重新生成。
+
+## 男主脸部差异评分机制
+
+四个候选之间差异评分满分 10 分。
+评分维度：美型、发型、发色、脸型、眼型、鼻型、唇形、眉形、骨相、气质、年龄感——共 11 个维度。
+如果任意两个人在 11 个维度中有 5 个以上相同，则差异分低于 6，需要重新组合。
+目标是每次四个候选差异分达到 8 分以上。
+
+## 统一展示要求
+
+- 2×2 casting grid，白色细线分隔
+- 四个格分别放四位男主候选人，每人只占一格
 - 顺序：左上M1、右上M2、左下M3、右下M4
 - 图内不得有文字、标签、字母、数字
+- 相同干净的人像取景框（正面头肩特写，脸居中，平视，直视镜头）
+- 双唇闭合，无表情无动作无手势（neutral expression, no pose, no action, no hand gestures）
+- 真实欧美男演员剧照感（realistic Western actor headshot quality）
+- 电影级柔光（cinematic soft lighting）
+- 自然肤质（natural skin texture, masculine but not rough）
+- 高端奇幻言情剧男主美学（high-end fantasy romance male lead aesthetic）
 - 纯白色无缝背景（clean white seamless background），不要任何场景、建筑、道具
-- 正面头肩特写，脸居中，平视，直视镜头，双唇闭合，无表情无动作无手势（standard front-facing head-and-shoulders portrait, no pose, no action, no hand gestures）
-- 哈苏 X2D 100C 摄影质感，100mm f/2.8 微距镜头，ISO 100，快门 1/125s，32K，HDR10+
+- 哈苏 X2D 100C，100mm f/2.8 微距镜头，ISO 100，快门 1/125s，32K，HDR10+
 
-四个男主候选人模板：
+## Prompt 模板
 
-M1（左上）顶级冷峻霸总：
-- 28-34岁，黑色或深棕短发（dark brown or black short hair），浓密整洁有造型
-- 深邃眼睛（deep-set intense eyes, dark brown or steel blue），高鼻梁（high straight nose bridge），清晰下颌线（sculpted jawline），精致唇形
-- 宽肩挺拔，黑色高定西装（black bespoke suit），白衬衫（white dress shirt），气质禁欲贵气
-- 表情冷静克制，眼神有压迫感和隐藏深情（controlled intensity, hidden depth of emotion）
-- 气质：豪门继承人/财阀掌权者，令人心动的强大吸引力
-- 适合剧情：契约婚姻、办公室对峙、霸道救场、豪门压迫
+Create a 2x2 casting grid of four different exceptionally handsome adult European fantasy romance male leads. Each candidate must look like a different Western actor, not the same face with different hair. Each male lead must have distinct hairstyle, hair color, face shape, eye shape, nose shape, mouth shape, brow shape, facial structure, archetype, temperament, and age impression. They should feel like high-end romance drama male leads with protective aura, restrained desire, power, emotional depth, and realistic Western actor headshot quality. Cinematic soft lighting, natural skin texture, luxury fantasy romance casting sheet, no repeated face, no same-face syndrome.
 
-M2（右上）金发贵族男主：
-- 27-33岁，深金或浅棕金微卷短发（dark golden or light brown-gold short hair, slight elegant wave）
-- 蓝色或灰蓝眼睛（piercing blue or gray-blue eyes），精致贵族脸（aristocratic refined features），干净高级
-- 像 old money heir，气质绅士、贵气、克制，温柔但疏离，危险的温柔（dangerously tender）
-- 适合剧情：宴会、订婚、家族交易、温柔救赎
+## Negative prompt
 
-M3（左下）野性狼人/暗黑守护者：
-- 28-36岁，深色或银灰中短发（dark or silver-gray medium-short hair），整洁有型
-- 轮廓强但依然英俊（strong yet undeniably handsome），宽肩高大
-- 眼神锐利危险但保护欲强（sharp intense eyes, dangerous yet fiercely protective）
-- 气质：野性、占有欲、禁忌恋男主魅力
-
-M4（右下）温柔救赎型男主：
-- 27-34岁，棕色短发（rich brown short hair），浓密干净
-- 精致柔和但男性化的五官（refined soft but masculine features），清澈深情的眼睛（clear warm eyes, deep with emotion）
-- 干净成熟，温柔可靠，但必须有足够的心动感
-
-共同要求（必须全部满足）：
-- 每位候选人都必须是 extremely handsome adult man，第一眼心动
-- 必须像欧美女频短剧男主、浪漫小说封面男主，不是商务头像不是证件照
-- 年龄感 27-35岁，年轻成熟，不要中年感
-- 头发浓密干净有造型
-- 五官精致立体但真实
-- 眼神必须有情绪张力
-- 四个人通过发色、气质和眼神区分
-
-严禁生成（negative prompt）：
-average businessman, corporate headshot, passport photo, plain office portrait, middle-aged CEO, old man, tired face, rough skin, receding hairline, thin hair, heavy wrinkles, dull eyes, ordinary man, uncle vibe, greasy face, excessive stubble, bodybuilder, cheap suit, anime, game character, plastic skin, wax figure
+same face, identical facial features, same actor, face clone, only hair color changed, only hairstyle changed, ordinary businessman, corporate headshot, passport photo, Asian face, East Asian, K-pop idol, Korean idol, Japanese idol, Chinese actor, teen boy, teenage, boyish face, pretty boy, soft idol face, college boy, youthful student, baby face, feminine idol look, ordinary man, boring face, old greasy man, overly plastic skin, doll face, anime, game character, 3d render, distorted face, weak jaw, receding hairline, thin hair, heavy wrinkles, tired face, cartoon, illustration, painting, drawing
 
 输出 JSON：
 {"imagePrompt":"英文提示词","imagePromptCn":"中文提示词"}`;
