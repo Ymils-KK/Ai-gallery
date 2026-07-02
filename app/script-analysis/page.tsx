@@ -77,7 +77,7 @@ export default function ScriptAnalysisPage() {
     loadProjects();
   }, [loadProjects]);
 
-  // 加载选中项目的数据
+  // 加载选中项目的数据（API 优先，localStorage 兜底）
   useEffect(() => {
     if (!activeId) {
       setScript(""); setSynopsis(""); setTargetAudience("");
@@ -89,7 +89,12 @@ export default function ScriptAnalysisPage() {
       try {
         const res = await fetch(`/api/projects/${activeId}`);
         if (res.ok) {
-          const data: ProjectData = await res.json();
+          const apiData: ProjectData = await res.json();
+          // localStorage 如有更新的缓存则优先使用（Vercel 上文件写不入，数据在浏览器里）
+          const local = getLocalCache(activeId);
+          const useLocal = local && local._cachedAt && (!apiData.synopsis || local._cachedAt > Date.now() - 86400000);
+
+          const data = useLocal ? local : apiData;
           setScript(data.script || "");
           setSynopsis(data.synopsis || "");
           setSynopsisEn(data.synopsisEn || "");
@@ -99,6 +104,20 @@ export default function ScriptAnalysisPage() {
           setCharacters(data.characters || []);
           setScenes(data.scenes || []);
           setProps(data.props || []);
+        } else {
+          // API 404 → 可能是 Vercel 上新创建的项目，从 localStorage 读
+          const local = getLocalCache(activeId);
+          if (local) {
+            setScript(local.script || "");
+            setSynopsis(local.synopsis || "");
+            setSynopsisEn(local.synopsisEn || "");
+            setTargetAudience(local.targetAudience || "");
+            setStyle(local.style || "anime");
+            setEra(local.era || "any");
+            setCharacters(local.characters || []);
+            setScenes(local.scenes || []);
+            setProps(local.props || []);
+          }
         }
       } catch {} finally {
         setPageLoading(false);
@@ -107,18 +126,37 @@ export default function ScriptAnalysisPage() {
     loadProject();
   }, [activeId]);
 
-  // 保存项目数据
+  // 保存项目数据（同时写 localStorage 兜底，Vercel 文件系统只读时刷新不丢数据）
   const saveProject = useCallback(
     async (data: ProjectData) => {
       if (!data.id) return;
-      await fetch(`/api/projects/${data.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
+      // localStorage 兜底（无论 API 是否成功都存）
+      try {
+        const cache = JSON.parse(localStorage.getItem("sa_projects") || "{}");
+        cache[data.id] = { ...data, _cachedAt: Date.now() };
+        localStorage.setItem("sa_projects", JSON.stringify(cache));
+      } catch {}
+      // 尝试写服务端文件
+      try {
+        await fetch(`/api/projects/${data.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+      } catch {}
     },
     []
   );
+
+  // 从 localStorage 读取缓存（Vercel 环境文件写不入，用浏览器存储兜底）
+  function getLocalCache(id: string): ProjectData | null {
+    try {
+      const cache = JSON.parse(localStorage.getItem("sa_projects") || "{}");
+      return cache[id] || null;
+    } catch {
+      return null;
+    }
+  }
 
   // 创建项目
   async function handleCreateProject(name: string) {
