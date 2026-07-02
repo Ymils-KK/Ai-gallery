@@ -113,15 +113,27 @@ function buildFemaleLeadPrompt(): string {
 - 纯白色无缝背景（clean white seamless background），不要任何场景、道具、建筑
 - 无皱纹、无雀斑、无痣、无瑕疵
 - 哈苏 X2D 100C，100mm f/2.8 微距镜头，ISO 100，快门 1/125s，32K，HDR10+
-- 统一穿月光蓝宝石色维多利亚风格长裙领口
+- 每人可见领口/服装不同，从以下池中各选 1 项不重复：moon sapphire Victorian neckline / ivory lace high collar / black velvet off-shoulder / deep burgundy sweetheart neckline / champagne silk portrait collar / silver embroidered square neckline / midnight blue jewel neckline / soft pink empire waist gown neckline / dark emerald fitted bodice / pearl white corset neckline
+
+## 服装领口池 costume neckline pool（4选4，不重复）
+- moon sapphire Victorian neckline 月光蓝宝石维多利亚领
+- ivory lace high collar 象牙白蕾丝高领
+- black velvet off-shoulder 黑色丝绒露肩领
+- deep burgundy sweetheart neckline 深酒红心形领
+- champagne silk portrait collar 香槟色丝绸肖像领
+- silver embroidered square neckline 银线刺绣方领
+- midnight blue jewel neckline 午夜蓝宝石领
+- soft pink empire waist neckline 柔粉帝国高腰领
+- dark emerald fitted bodice 暗祖母绿贴身胸衣
+- pearl white corset neckline 珍珠白束腰领
 
 ## Prompt 模板
 
-Create a 2x2 casting grid of four different exceptionally beautiful adult European fantasy romance female leads. All candidates must have strong heroine appeal and audience sympathy, but each must look like a different actress. Hairstyle variation is allowed and encouraged: long waves, romantic curls, half-up princess hair, braided crown, shoulder-length waves, sleek noble straight hair, or tragic messy heroine hair. Do not create villains or influencers. Each heroine must have a distinct hairstyle, hair color, face shape, eye shape, nose shape, lip shape, brow shape, facial structure, heroine archetype, temperament, and age impression. They should feel like high-end romance drama female leads with noble beauty, emotional softness, realistic actress headshot quality, and strong casting-card variety.
+Create a 2x2 casting grid of four different exceptionally beautiful adult European fantasy romance female leads. All candidates must have strong heroine appeal and audience sympathy, but each must look like a different actress. Hairstyle variation is allowed and encouraged: long waves, romantic curls, half-up princess hair, braided crown, shoulder-length waves, sleek noble straight hair, or tragic messy heroine hair. Each heroine must also wear a DIFFERENT visible costume neckline (NOT all the same dress) — vary the neckline color, fabric, and style per candidate. Do not create villains or influencers. Each heroine must have a distinct hairstyle, hair color, face shape, eye shape, nose shape, lip shape, brow shape, facial structure, visible costume neckline, heroine archetype, temperament, and age impression. They should feel like high-end romance drama female leads with noble beauty, emotional softness, realistic actress headshot quality, and strong casting-card variety.
 
 ## Negative prompt
 
-same face, identical facial features, same actress, face clone, only hair color changed, only hairstyle changed, villain face, aggressive stare, influencer face, Instagram model, nightclub model, cheap sexy look, ordinary face, plain face, masculine short hair, pixie cut, buzz cut, childish haircut, excessive updo, messy hair covering face, anime hair, childlike face, teenage girl, Asian face, overly plastic skin, doll face, anime, game character, 3d render, old woman, masculine jaw, square jaw, harsh face, ugly, distorted face, cartoon, illustration, painting, drawing
+same face, identical facial features, same actress, face clone, only hair color changed, only hairstyle changed, all wearing same dress, identical outfit, same neckline color, villain face, aggressive stare, influencer face, Instagram model, nightclub model, cheap sexy look, ordinary face, plain face, masculine short hair, pixie cut, buzz cut, childish haircut, excessive updo, messy hair covering face, anime hair, childlike face, teenage girl, Asian face, overly plastic skin, doll face, anime, game character, 3d render, old woman, masculine jaw, square jaw, harsh face, ugly, distorted face, cartoon, illustration, painting, drawing
 
 输出 JSON：
 {"imagePrompt":"英文提示词","imagePromptCn":"中文提示词"}`;
