@@ -1,0 +1,44 @@
+---
+description: 个人网站项目 — Next.js 16 + React 19 + Tailwind CSS 4，AI作品展示 + 剧本分析工具
+alwaysApply: true
+---
+
+# 个人网站项目
+
+## 技术栈
+- Next.js 16 (App Router) + React 19 + TypeScript
+- Tailwind CSS 4 (CSS-based 配置)
+- 内容管理: Markdown 文件 + gray-matter
+- AI: DeepSeek API（通过 fetch 直连，不用 openai SDK）
+- 部署: Vercel
+- 包管理: npm
+
+## 核心规则
+- 渐进式开发：一次只做一个模块，先验证再继续
+- 修改代码前确认不影响已有功能
+- 保持代码简洁，适合零基础用户理解
+- API 调用使用 `@/lib/deepseek` 共享工具（`deepseekChat` / `deepseekChatJSON`），不要用 openai SDK
+
+## 项目数据持久化
+- `content/projects/` — 多项目数据（已解除 gitignore，可部署）
+- `content/api-config.json` — DeepSeek API Key（已提交）
+- 前端有 localStorage 兜底（key: `sa_projects`），Vercel 文件系统只读时刷新不丢数据
+
+## 环境变量
+- `DEEPSEEK_API_KEY` — 在 `.env.local` 中配置
+- 获取地址: https://platform.deepseek.com/api_keys
+
+## 关键文件速查
+| 文件 | 作用 |
+|------|------|
+| `app/script-analysis/page.tsx` | 剧本分析主页面 |
+| `app/api/projects/[id]/analyze/route.ts` | AI 剧本分析 |
+| `app/api/projects/[id]/cast-draw/route.ts` | 选角抽卡（四种角色） |
+| `lib/deepseek.ts` | DeepSeek API 共享工具 |
+| `content/projects/` | 项目数据目录 |
+| `content/api-config.json` | API 密钥配置 |
+
+## 注意事项
+- 不要重新引入 openai SDK，所有 DeepSeek 调用通过 `@/lib/deepseek`
+- 不要修改 `.env.local` 的 gitignore 规则
+- 修改 cast-draw 提示词时，女主池的随机选择在 `drawHeroineCandidates()` 代码中执行
