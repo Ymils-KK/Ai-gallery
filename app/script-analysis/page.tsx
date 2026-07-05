@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { ArrowLeft } from "lucide-react";
+import { AlertTriangle, ArrowLeft, FileText, Layers3, Map, Sparkles, Users, Wrench } from "lucide-react";
+import Link from "next/link";
 import ProjectSidebar from "@/components/script-analysis/ProjectSidebar";
 import ScriptInputForm from "@/components/script-analysis/ScriptInputForm";
 import AnalysisResult from "@/components/script-analysis/AnalysisResult";
@@ -27,6 +28,7 @@ interface ProjectData {
   characters: AssetItem[];
   scenes: AssetItem[];
   props: AssetItem[];
+  _cachedAt?: number;
 }
 
 export default function ScriptAnalysisPage() {
@@ -60,6 +62,16 @@ export default function ScriptAnalysisPage() {
     if (res.ok) setProjects(await res.json());
   }, []);
 
+  // 从 localStorage 读取缓存（Vercel 环境文件写不入，用浏览器存储兜底）
+  function getLocalCache(id: string): ProjectData | null {
+    try {
+      const cache = JSON.parse(localStorage.getItem("sa_projects") || "{}");
+      return cache[id] || null;
+    } catch {
+      return null;
+    }
+  }
+
   // 检查 API 配置
   useEffect(() => {
     async function init() {
@@ -84,14 +96,16 @@ export default function ScriptAnalysisPage() {
       setStyle("anime"); setCharacters([]); setScenes([]); setProps([]);
       return;
     }
+    const projectId = activeId;
+
     async function loadProject() {
       setPageLoading(true);
       try {
-        const res = await fetch(`/api/projects/${activeId}`);
+        const res = await fetch(`/api/projects/${projectId}`);
         if (res.ok) {
           const apiData: ProjectData = await res.json();
           // localStorage 如有更新的缓存则优先使用（Vercel 上文件写不入，数据在浏览器里）
-          const local = getLocalCache(activeId);
+          const local = getLocalCache(projectId);
           const useLocal = local && local._cachedAt && (!apiData.synopsis || local._cachedAt > Date.now() - 86400000);
 
           const data = useLocal ? local : apiData;
@@ -106,7 +120,7 @@ export default function ScriptAnalysisPage() {
           setProps(data.props || []);
         } else {
           // API 404 → 可能是 Vercel 上新创建的项目，从 localStorage 读
-          const local = getLocalCache(activeId);
+          const local = getLocalCache(projectId);
           if (local) {
             setScript(local.script || "");
             setSynopsis(local.synopsis || "");
@@ -147,16 +161,6 @@ export default function ScriptAnalysisPage() {
     },
     []
   );
-
-  // 从 localStorage 读取缓存（Vercel 环境文件写不入，用浏览器存储兜底）
-  function getLocalCache(id: string): ProjectData | null {
-    try {
-      const cache = JSON.parse(localStorage.getItem("sa_projects") || "{}");
-      return cache[id] || null;
-    } catch {
-      return null;
-    }
-  }
 
   // 创建项目
   async function handleCreateProject(name: string) {
@@ -467,7 +471,7 @@ export default function ScriptAnalysisPage() {
     await saveProject({ id: activeId, script, synopsis, synopsisEn, targetAudience, style, era, characters: nc, scenes, props });
   }
 
-  // 为次要资产生成提示词
+  // 按需为单个资产生成提示词
   async function handleGeneratePrompt(category: string, assetId: string) {
     if (!activeId) return;
 
@@ -494,7 +498,7 @@ export default function ScriptAnalysisPage() {
     const updater = (items: AssetItem[]) =>
       items.map((item) =>
         item.id === assetId
-          ? { ...item, imagePrompt: result.imagePrompt, imagePromptCn: result.imagePromptCn, tier: "major" as const }
+          ? { ...item, imagePrompt: result.imagePrompt, imagePromptCn: result.imagePromptCn }
           : item
       );
 
@@ -525,9 +529,11 @@ export default function ScriptAnalysisPage() {
   }
 
   const hasResults = characters.length > 0 || scenes.length > 0 || props.length > 0;
+  const activeProject = projects.find((p) => p.id === activeId);
+  const assetCount = characters.length + scenes.length + props.length;
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-[#07120f] text-white">
       {/* 壁纸背景 */}
       <WallpaperBackground />
 
@@ -541,61 +547,100 @@ export default function ScriptAnalysisPage() {
         onRename={handleRenameProject}
       />
 
-      {/* 主内容区（左边距留给固定侧边栏） */}
-      <div className="ml-64 mr-10 min-w-0 relative z-10">
-        <div className="mx-auto max-w-7xl px-8 py-10">
+      {/* 主内容区（桌面左边距留给固定侧边栏，手机端改为上下布局） */}
+      <div className="relative z-10 min-w-0 md:ml-72">
+        <div className="mx-auto max-w-[1440px] px-4 py-5 sm:px-6 md:px-8 md:py-8">
           {/* 顶部 */}
-          <div className="flex items-center gap-4 mb-8">
-            <a
-              href="/#hero"
-              className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-base text-white/40 hover:text-white hover:bg-white/[0.06] transition-all"
-            >
-              <ArrowLeft className="h-5 w-5" />
-              <span>返回首页</span>
-            </a>
-            <h1 className="text-3xl font-bold text-white">📝 剧本分析</h1>
-            {activeId && (
-              <span className="text-base text-white/30">
-                {projects.find((p) => p.id === activeId)?.name}
-              </span>
-            )}
+          <div className="mb-5 flex flex-col gap-4 border-b border-white/[0.08] pb-5 md:mb-7 md:flex-row md:items-end md:justify-between">
+            <div className="min-w-0">
+              <Link
+                href="/#hero"
+                className="mb-3 inline-flex items-center gap-1.5 text-sm text-white/45 transition-colors hover:text-white"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                <span>返回首页</span>
+              </Link>
+              <div className="flex min-w-0 flex-wrap items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-md border border-white/[0.10] bg-white/[0.08]">
+                  <FileText className="h-5 w-5 text-white/80" />
+                </div>
+                <div className="min-w-0">
+                  <h1 className="text-2xl font-semibold tracking-normal text-white md:text-3xl">剧本分析</h1>
+                  <p className="mt-1 max-w-3xl truncate text-sm text-white/45">
+                    {activeProject ? activeProject.name : "选择或创建项目后开始分析"}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-3 gap-2 text-sm sm:flex">
+              <div className="rounded-md border border-white/[0.08] bg-white/[0.05] px-3 py-2">
+                <div className="text-[11px] text-white/35">人物</div>
+                <div className="font-semibold text-white">{characters.length}</div>
+              </div>
+              <div className="rounded-md border border-white/[0.08] bg-white/[0.05] px-3 py-2">
+                <div className="text-[11px] text-white/35">场景</div>
+                <div className="font-semibold text-white">{scenes.length}</div>
+              </div>
+              <div className="rounded-md border border-white/[0.08] bg-white/[0.05] px-3 py-2">
+                <div className="text-[11px] text-white/35">道具</div>
+                <div className="font-semibold text-white">{props.length}</div>
+              </div>
+            </div>
           </div>
 
           {!apiConfigured && (
-            <div className="mb-6 rounded-xl bg-amber-500/10 border border-amber-500/20 px-5 py-4 flex items-center gap-4">
-              <span className="text-2xl">⚠️</span>
+            <div className="mb-5 flex items-center gap-4 rounded-md border border-amber-400/25 bg-amber-400/10 px-4 py-3">
+              <AlertTriangle className="h-5 w-5 shrink-0 text-amber-300" />
               <div className="flex-1">
                 <p className="text-sm text-amber-300 font-medium">尚未配置 API Key</p>
                 <p className="text-xs text-amber-400/70 mt-0.5">请前往管理后台配置</p>
               </div>
-              <a href="/admin" className="shrink-0 rounded-full bg-amber-500/20 px-4 py-2 text-sm font-medium text-amber-300 hover:bg-amber-500/30 transition-all">
+              <Link href="/admin" className="shrink-0 rounded-md bg-amber-400/18 px-4 py-2 text-sm font-medium text-amber-200 transition-all hover:bg-amber-400/28">
                 前往配置 →
-              </a>
+              </Link>
             </div>
           )}
 
           {pageError && (
-            <div className="rounded-lg bg-red-500/10 border border-red-500/20 px-4 py-3 mb-4 max-w-4xl mx-auto w-full">
+            <div className="mb-5 rounded-md border border-red-400/25 bg-red-500/10 px-4 py-3">
               <p className="text-sm text-red-400">{pageError}</p>
             </div>
           )}
 
           {!activeId ? (
-            <div className="rounded-2xl bg-black/40 backdrop-blur-xl border border-white/[0.06] p-16 text-center">
-              <p className="text-4xl mb-4">📂</p>
-              <p className="text-white/40">在左侧创建一个项目开始分析</p>
+            <div className="flex min-h-[420px] items-center justify-center rounded-lg border border-white/[0.08] bg-[#07120f]/82 p-8 text-center shadow-2xl backdrop-blur-xl">
+              <div className="max-w-sm">
+                <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-md border border-white/[0.10] bg-white/[0.06]">
+                  <Layers3 className="h-7 w-7 text-white/70" />
+                </div>
+                <h2 className="text-xl font-semibold text-white">
+                  {projects.length > 0 ? "选择一个项目" : "先创建一个项目"}
+                </h2>
+                <p className="mt-2 text-sm leading-6 text-white/45">
+                  {projects.length > 0
+                    ? "从左侧项目列表选择一个项目，然后继续编辑或分析剧本。"
+                    : "左侧新建项目后，可以拖入 Word 剧本、选择画风和时代，并生成角色、场景和道具提示词。"}
+                </p>
+              </div>
             </div>
           ) : pageLoading ? (
-            <div className="rounded-2xl bg-black/40 backdrop-blur-xl border border-white/[0.06] p-10 text-center">
+            <div className="rounded-lg bg-[#07120f]/82 backdrop-blur-xl border border-white/[0.08] p-10 text-center">
               <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/15 border-t-transparent mx-auto mb-3" />
               <p className="text-sm text-white/30">加载中...</p>
             </div>
           ) : (
-            <div className="flex flex-col gap-8">
+            <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
               {/* 输入区域 */}
-              <div className="flex flex-col gap-5 max-w-4xl mx-auto w-full">
-                <div className="rounded-2xl bg-black/40 backdrop-blur-xl border border-white/[0.06] p-6">
-                  <h2 className="text-xl font-semibold text-white mb-5">✍️ 完整剧本</h2>
+              <div className="flex min-w-0 flex-col gap-6">
+                <div className="rounded-lg border border-white/[0.08] bg-[#07120f]/88 p-4 shadow-2xl backdrop-blur-xl sm:p-6">
+                  <div className="mb-5 flex items-center justify-between gap-3 border-b border-white/[0.07] pb-4">
+                    <div>
+                      <h2 className="text-lg font-semibold text-white">输入与分析设置</h2>
+                      <p className="mt-1 text-sm text-white/40">拖入 Word 剧本后选择画风、时代和提示词模板。</p>
+                    </div>
+                    <Sparkles className="hidden h-5 w-5 text-white/35 sm:block" />
+                  </div>
                   <ScriptInputForm
                     initialScript={script}
                     initialAudience={targetAudience}
@@ -608,28 +653,14 @@ export default function ScriptAnalysisPage() {
                     loading={loading}
                   />
                 </div>
-              </div>
 
-              {/* 集数分析（独立面板） */}
-              {activeId && (
-                <div className="flex flex-col gap-3 max-w-3xl mx-auto w-full">
-                  <button
-                    onClick={() => setShowEpisodeAnalysis(!showEpisodeAnalysis)}
-                    className="flex items-center justify-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.04] px-6 py-3 text-base font-medium text-white/60 hover:text-white hover:bg-white/[0.08] transition-all"
-                  >
-                    📺 集数分析 {showEpisodeAnalysis ? "▲ 收起" : "▼ 展开"}
-                  </button>
-                  {showEpisodeAnalysis && <EpisodeAnalysis projectId={activeId} />}
-                </div>
-              )}
-
-              {/* 结果区域 */}
-              {hasResults && (
-                <div className="flex flex-col gap-4">
+                {/* 结果区域 */}
+                {hasResults && (
+                <div className="flex flex-col gap-5">
                   {synopsis && (
-                    <div className="rounded-2xl bg-black/40 backdrop-blur-xl border border-white/[0.06] p-6">
-                      <h2 className="text-xl font-semibold text-white mb-4">🤖 AI 提炼的剧本简介</h2>
-                      <p className="text-base text-white/70 leading-relaxed whitespace-pre-wrap mb-5">{synopsis}</p>
+                    <div className="rounded-lg bg-[#07120f]/88 backdrop-blur-xl border border-white/[0.08] p-5 sm:p-6">
+                      <h2 className="text-lg font-semibold text-white mb-4">AI 提炼的剧本简介</h2>
+                      <p className="text-base text-white/74 leading-8 whitespace-pre-wrap mb-5">{synopsis}</p>
                       {synopsisEn && (
                         <>
                           <div className="border-t border-white/[0.06] pt-5 mt-1">
@@ -656,7 +687,58 @@ export default function ScriptAnalysisPage() {
                     onDeleteOutfit={handleDeleteOutfit}
                   />
                 </div>
-              )}
+                )}
+              </div>
+
+              <aside className="flex min-w-0 flex-col gap-4 xl:sticky xl:top-20 xl:self-start">
+                <div className="rounded-lg border border-white/[0.08] bg-[#07120f]/88 p-5 shadow-2xl backdrop-blur-xl">
+                  <h2 className="text-sm font-semibold text-white/80">项目概览</h2>
+                  <div className="mt-4 grid grid-cols-3 gap-2 xl:grid-cols-1">
+                    <div className="flex items-center gap-3 rounded-md border border-white/[0.07] bg-white/[0.04] px-3 py-3">
+                      <Users className="h-4 w-4 text-white/45" />
+                      <div>
+                        <p className="text-xs text-white/35">人物资产</p>
+                        <p className="text-lg font-semibold leading-tight text-white">{characters.length}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3 rounded-md border border-white/[0.07] bg-white/[0.04] px-3 py-3">
+                      <Map className="h-4 w-4 text-white/45" />
+                      <div>
+                        <p className="text-xs text-white/35">场景资产</p>
+                        <p className="text-lg font-semibold leading-tight text-white">{scenes.length}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3 rounded-md border border-white/[0.07] bg-white/[0.04] px-3 py-3">
+                      <Wrench className="h-4 w-4 text-white/45" />
+                      <div>
+                        <p className="text-xs text-white/35">道具资产</p>
+                        <p className="text-lg font-semibold leading-tight text-white">{props.length}</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mt-4 rounded-md border border-white/[0.07] bg-white/[0.035] px-3 py-3">
+                    <p className="text-xs text-white/35">当前状态</p>
+                    <p className="mt-1 text-sm text-white/70">
+                      {assetCount > 0 ? `已生成 ${assetCount} 个资产` : "等待分析结果"}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="rounded-lg border border-white/[0.08] bg-[#07120f]/88 p-5 shadow-2xl backdrop-blur-xl">
+                  <button
+                    onClick={() => setShowEpisodeAnalysis(!showEpisodeAnalysis)}
+                    className="flex w-full items-center justify-between rounded-md border border-white/[0.10] bg-white/[0.06] px-4 py-3 text-left text-sm font-semibold text-white/76 transition-all hover:border-white/[0.18] hover:bg-white/[0.10] hover:text-white"
+                  >
+                    <span>分集分析</span>
+                    <span className="text-xs text-white/40">{showEpisodeAnalysis ? "收起" : "展开"}</span>
+                  </button>
+                  {showEpisodeAnalysis && (
+                    <div className="mt-4">
+                      <EpisodeAnalysis projectId={activeId} />
+                    </div>
+                  )}
+                </div>
+              </aside>
             </div>
           )}
         </div>

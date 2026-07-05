@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import type { ReactNode } from "react";
 import { Users, Map, Wrench, ChevronDown, Plus, X } from "lucide-react";
 import AssetCard from "./AssetCard";
 import type { AssetItem } from "./AssetCard";
@@ -34,6 +35,57 @@ const sections = [
   { key: "props" as const, label: "道具", icon: <Wrench className="h-5 w-5" /> },
 ];
 
+const rankOrder = ["S", "A", "B", "C", "unranked"] as const;
+
+const rankMeta: Record<(typeof rankOrder)[number], { label: string; desc: string; className: string }> = {
+  S: { label: "S级", desc: "核心资产", className: "border-red-400/20 bg-red-500/8 text-red-300" },
+  A: { label: "A级", desc: "重要资产", className: "border-amber-400/20 bg-amber-500/8 text-amber-300" },
+  B: { label: "B级", desc: "功能资产", className: "border-sky-400/18 bg-sky-500/8 text-sky-300" },
+  C: { label: "C级", desc: "补充资产", className: "border-white/[0.08] bg-white/[0.035] text-white/45" },
+  unranked: { label: "未分级", desc: "旧数据", className: "border-white/[0.08] bg-white/[0.025] text-white/35" },
+};
+
+function includesEpisode(values: number[] | undefined, episode: number) {
+  return Array.isArray(values) && values.includes(episode);
+}
+
+function collectEpisodeNumbers(data: AnalysisData) {
+  const episodes = new Set<number>();
+  const add = (values?: number[]) => values?.forEach((n) => Number.isFinite(n) && n > 0 && episodes.add(n));
+
+  data.characters.forEach((asset) => {
+    add(asset.appearances);
+    asset.outfits?.forEach((outfit) => add(outfit.appearances));
+  });
+  data.scenes.forEach((asset) => add(asset.appearances));
+  data.props.forEach((asset) => add(asset.appearances));
+
+  return Array.from(episodes).sort((a, b) => a - b);
+}
+
+function RankPill({ rank }: { rank?: AssetItem["importanceRank"] }) {
+  if (!rank) return null;
+  const meta = rankMeta[rank];
+  return <span className={`rounded px-1.5 py-0.5 text-[10px] font-semibold ${meta.className}`}>{rank}</span>;
+}
+
+function EpisodeAssetList({
+  title,
+  empty,
+  children,
+}: {
+  title: string;
+  empty: boolean;
+  children: ReactNode;
+}) {
+  return (
+    <div className="rounded-lg border border-white/[0.06] bg-white/[0.025] p-4">
+      <h4 className="mb-3 text-sm font-semibold text-white/70">{title}</h4>
+      {empty ? <p className="text-sm text-white/25">本集暂无</p> : <div className="flex flex-col gap-2">{children}</div>}
+    </div>
+  );
+}
+
 export default function AnalysisResult({
   projectId,
   data,
@@ -60,6 +112,28 @@ export default function AnalysisResult({
   const [newTier, setNewTier] = useState<"major" | "minor">("major");
 
   const totalCount = data.characters.length + data.scenes.length + data.props.length;
+  const episodeNumbers = collectEpisodeNumbers(data);
+  const [selectedEpisode, setSelectedEpisode] = useState<number | null>(episodeNumbers[0] || null);
+  const activeEpisode = selectedEpisode && episodeNumbers.includes(selectedEpisode) ? selectedEpisode : episodeNumbers[0];
+  const episodeCharacters = activeEpisode
+    ? data.characters.filter((asset) => includesEpisode(asset.appearances, activeEpisode))
+    : [];
+  const episodeOutfits = activeEpisode
+    ? data.characters.flatMap((character) =>
+        (character.outfits || [])
+          .filter((outfit) => includesEpisode(outfit.appearances, activeEpisode))
+          .map((outfit) => ({ character, outfit }))
+      )
+    : [];
+  const episodeScenes = activeEpisode
+    ? data.scenes.filter((asset) => includesEpisode(asset.appearances, activeEpisode))
+    : [];
+  const episodeProps = activeEpisode
+    ? data.props.filter((asset) => includesEpisode(asset.appearances, activeEpisode))
+    : [];
+  const episodeAssets = [...episodeCharacters, ...episodeScenes, ...episodeProps];
+  const missingPromptCount = episodeAssets.filter((asset) => !asset.imagePrompt).length + episodeOutfits.filter(({ outfit }) => !outfit.imagePrompt).length;
+  const missingImageCount = episodeAssets.filter((asset) => !asset.imageUrl).length + episodeOutfits.filter(({ outfit }) => !outfit.imageUrl).length;
 
   if (totalCount === 0) {
     return (
@@ -88,6 +162,120 @@ export default function AnalysisResult({
 
   return (
     <div className="flex flex-col gap-5">
+      <div className="rounded-2xl border border-white/[0.06] bg-black/40 p-5 backdrop-blur-xl">
+        <div className="mb-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <h3 className="text-lg font-semibold text-white">按集制作包</h3>
+            <p className="mt-1 text-sm text-white/38">
+              选择集数后，自动过滤这一集出现的人物、服装、场景和道具。
+            </p>
+          </div>
+          {activeEpisode && (
+            <div className="grid grid-cols-2 gap-2 text-xs sm:grid-cols-4">
+              <div className="rounded-md border border-white/[0.06] bg-white/[0.035] px-3 py-2">
+                <p className="text-white/30">人物</p>
+                <p className="mt-1 text-base font-semibold text-white">{episodeCharacters.length}</p>
+              </div>
+              <div className="rounded-md border border-white/[0.06] bg-white/[0.035] px-3 py-2">
+                <p className="text-white/30">场景</p>
+                <p className="mt-1 text-base font-semibold text-white">{episodeScenes.length}</p>
+              </div>
+              <div className="rounded-md border border-white/[0.06] bg-white/[0.035] px-3 py-2">
+                <p className="text-white/30">缺提示词</p>
+                <p className="mt-1 text-base font-semibold text-amber-200">{missingPromptCount}</p>
+              </div>
+              <div className="rounded-md border border-white/[0.06] bg-white/[0.035] px-3 py-2">
+                <p className="text-white/30">缺图片</p>
+                <p className="mt-1 text-base font-semibold text-white">{missingImageCount}</p>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {episodeNumbers.length === 0 ? (
+          <div className="rounded-lg border border-white/[0.06] bg-white/[0.025] px-4 py-5">
+            <p className="text-sm text-white/35">
+              当前资产还没有集数字段。重新分析后，系统会按每集自动生成制作包。
+            </p>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-5">
+            <div className="flex gap-2 overflow-x-auto pb-1">
+              {episodeNumbers.map((episode) => (
+                <button
+                  key={episode}
+                  type="button"
+                  onClick={() => setSelectedEpisode(episode)}
+                  className={`shrink-0 rounded-md border px-4 py-2 text-sm transition-all ${
+                    activeEpisode === episode
+                      ? "border-white/24 bg-white/[0.14] text-white"
+                      : "border-white/[0.08] bg-white/[0.035] text-white/45 hover:border-white/18 hover:text-white/75"
+                  }`}
+                >
+                  第 {episode} 集
+                </button>
+              ))}
+            </div>
+
+            {activeEpisode && (
+              <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
+                <EpisodeAssetList title="本集人物" empty={episodeCharacters.length === 0}>
+                  {episodeCharacters.map((asset) => (
+                    <div key={asset.id} className="rounded-md bg-black/20 px-3 py-2">
+                      <div className="flex items-center gap-2">
+                        <RankPill rank={asset.importanceRank} />
+                        <span className="text-sm font-medium text-white/78">{asset.name}</span>
+                        {!asset.imagePrompt && <span className="ml-auto text-xs text-amber-200/70">缺提示词</span>}
+                      </div>
+                      {asset.description && <p className="mt-1 line-clamp-2 text-xs leading-5 text-white/40">{asset.description}</p>}
+                    </div>
+                  ))}
+                </EpisodeAssetList>
+
+                <EpisodeAssetList title="本集服装" empty={episodeOutfits.length === 0}>
+                  {episodeOutfits.map(({ character, outfit }) => (
+                    <div key={`${character.id}_${outfit.id}`} className="rounded-md bg-black/20 px-3 py-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-medium text-white/78">{outfit.name}</span>
+                        <span className="text-xs text-white/28">/ {character.name}</span>
+                        {!outfit.imagePrompt && <span className="ml-auto text-xs text-amber-200/70">缺提示词</span>}
+                      </div>
+                      {outfit.description && <p className="mt-1 line-clamp-2 text-xs leading-5 text-white/40">{outfit.description}</p>}
+                    </div>
+                  ))}
+                </EpisodeAssetList>
+
+                <EpisodeAssetList title="本集场景" empty={episodeScenes.length === 0}>
+                  {episodeScenes.map((asset) => (
+                    <div key={asset.id} className="rounded-md bg-black/20 px-3 py-2">
+                      <div className="flex items-center gap-2">
+                        <RankPill rank={asset.importanceRank} />
+                        <span className="text-sm font-medium text-white/78">{asset.name}</span>
+                        {!asset.imagePrompt && <span className="ml-auto text-xs text-amber-200/70">缺提示词</span>}
+                      </div>
+                      {asset.description && <p className="mt-1 line-clamp-2 text-xs leading-5 text-white/40">{asset.description}</p>}
+                    </div>
+                  ))}
+                </EpisodeAssetList>
+
+                <EpisodeAssetList title="本集道具" empty={episodeProps.length === 0}>
+                  {episodeProps.map((asset) => (
+                    <div key={asset.id} className="rounded-md bg-black/20 px-3 py-2">
+                      <div className="flex items-center gap-2">
+                        <RankPill rank={asset.importanceRank} />
+                        <span className="text-sm font-medium text-white/78">{asset.name}</span>
+                        {!asset.imagePrompt && <span className="ml-auto text-xs text-amber-200/70">缺提示词</span>}
+                      </div>
+                      {asset.description && <p className="mt-1 line-clamp-2 text-xs leading-5 text-white/40">{asset.description}</p>}
+                    </div>
+                  ))}
+                </EpisodeAssetList>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
       {sections.map((section) => {
         const isOpen = openSection === section.key;
         const assets = data[section.key] || [];
@@ -177,25 +365,47 @@ export default function AnalysisResult({
                     <p className="text-base text-white/30">该类别暂无内容</p>
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
-                    {assets.map((asset) => (
-                      <AssetCard
-                        key={asset.id}
-                        asset={asset}
-                        projectId={projectId}
-                        category={section.key}
-                        onImageUpload={(assetId, file) => onImageUpload(section.key, assetId, file)}
-                        onImageRemove={(assetId) => onImageRemove(section.key, assetId)}
-                        onPromptUpdate={(assetId, newPrompt, newPromptCn) => onPromptUpdate(section.key, assetId, newPrompt, newPromptCn)}
-                        onGeneratePrompt={(assetId) => onGeneratePrompt(section.key, assetId)}
-                        onAddOutfit={onAddOutfit}
-                        onOutfitImageUpload={onOutfitImageUpload}
-                        onOutfitImageRemove={onOutfitImageRemove}
-                        onOutfitPromptUpdate={onOutfitPromptUpdate}
-                        onGenerateOutfitPrompt={onGenerateOutfitPrompt}
-                        onDeleteOutfit={onDeleteOutfit}
-                      />
-                    ))}
+                  <div className="flex flex-col gap-7">
+                    {rankOrder.map((rank) => {
+                      const groupedAssets = assets.filter((asset) =>
+                        rank === "unranked" ? !asset.importanceRank : asset.importanceRank === rank
+                      );
+                      if (groupedAssets.length === 0) return null;
+                      const meta = rankMeta[rank];
+
+                      return (
+                        <div key={rank} className="flex flex-col gap-3">
+                          <div className="flex items-center gap-3">
+                            <span className={`rounded-md border px-2.5 py-1 text-xs font-semibold ${meta.className}`}>
+                              {meta.label}
+                            </span>
+                            <span className="text-sm text-white/35">{meta.desc}</span>
+                            <span className="h-px flex-1 bg-white/[0.06]" />
+                            <span className="text-xs text-white/30">{groupedAssets.length}</span>
+                          </div>
+                          <div className="grid grid-cols-1 gap-4 xl:grid-cols-2 2xl:grid-cols-3">
+                            {groupedAssets.map((asset) => (
+                              <AssetCard
+                                key={asset.id}
+                                asset={asset}
+                                projectId={projectId}
+                                category={section.key}
+                                onImageUpload={(assetId, file) => onImageUpload(section.key, assetId, file)}
+                                onImageRemove={(assetId) => onImageRemove(section.key, assetId)}
+                                onPromptUpdate={(assetId, newPrompt, newPromptCn) => onPromptUpdate(section.key, assetId, newPrompt, newPromptCn)}
+                                onGeneratePrompt={(assetId) => onGeneratePrompt(section.key, assetId)}
+                                onAddOutfit={onAddOutfit}
+                                onOutfitImageUpload={onOutfitImageUpload}
+                                onOutfitImageRemove={onOutfitImageRemove}
+                                onOutfitPromptUpdate={onOutfitPromptUpdate}
+                                onGenerateOutfitPrompt={onGenerateOutfitPrompt}
+                                onDeleteOutfit={onDeleteOutfit}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
               </div>

@@ -1,17 +1,33 @@
 import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
-import { deepseekChat, deepseekChatJSON } from "@/lib/deepseek";
+import { deepseekChat } from "@/lib/deepseek";
 
 const projectsDir = path.join(process.cwd(), "content", "projects");
+
+type ImportanceRank = "S" | "A" | "B" | "C";
+
+interface OutfitItem {
+  id?: string;
+  name: string;
+  description: string;
+  imagePrompt: string;
+  imagePromptCn?: string;
+  imageUrl?: string;
+  appearances?: number[];
+}
 
 interface AssetItem {
   id: string;
   name: string;
   description: string;
   imagePrompt: string;
+  imagePromptCn?: string;
   imageUrl: string;
   tier?: "major" | "minor";
+  importanceRank?: ImportanceRank;
+  appearances?: number[];
+  outfits?: OutfitItem[];
 }
 
 const styleMap: Record<string, { name: string; tags: string }> = {
@@ -45,94 +61,56 @@ function buildAssetPrompt(style: string, era: string): string {
 ${eraDesc ? `时代约束：${eraDesc}` : "无特定时代约束，请根据剧本自行判断时代背景。"}
 风格标签：${tags}
 
-## 核心原则
-1. 信息密度要高：每条提示词至少 300 词（英文），不允许笼统概括
-2. 具体具体再具体：不要"handsome"而写"sharp square jaw, high cheekbones, deep-set intense eyes with heavy lids and long lashes"
-3. 从剧本原文中提取一切可用细节：角色外貌描写、服装、场景氛围、道具特征
-4. 如果剧本没有某方面描写，根据角色身份/时代背景/场景类型合理推断并具体化
-
 ## 输出规则
-每条资产需要提供 imagePrompt（英文）和 imagePromptCn（中文）两个版本的提示词。
-重要资产（tier: "major"）：必须同时生成 imagePrompt 和 imagePromptCn，内容详尽
-次要资产（tier: "minor"）：imagePrompt 和 imagePromptCn 都留空字符串 ""
+这一步只做“资产清单分析”，不要生成生图提示词。
+所有人物、场景、道具的 imagePrompt 和 imagePromptCn 必须都输出为空字符串 ""。
+后续用户会在页面里对单个资产手动点击“生成提示词”，那时再单独生成。
+
+## 命名、中文介绍和 S/A/B/C 分级规则（必须严格执行）
+1. 所有 description 必须是纯中文，不允许整段英文说明；英文只能出现在 imagePrompt 字段里。
+2. 人物必须同时输出英文名和中文译名：
+   - nameEn: 英文角色名，例如 "Eric Wolf"
+   - nameCn: 中文译名，例如 "埃里克·沃尔夫"
+   - name: 必须写成 "Eric Wolf（埃里克·沃尔夫）"；如果剧本里没有英文名，也要给出适合欧美短剧的英文名和中文译名。
+3. 道具和场景也可以使用 "英文名（中文名）" 格式，但 description 一律中文。
+4. 人物、场景、道具都必须输出 importanceRank: "S" | "A" | "B" | "C"。
+   - S：核心主角/核心反派/全剧最高频核心场景/贯穿全剧的关键道具
+   - A：关键配角/强剧情推动场景/多次出现的重要道具
+   - B：普通配角/功能性场景/单集或少量出现但有用的道具
+   - C：背景人物/过渡场景/氛围或一次性道具
+5. tier 仍然保留：S、A 用 tier: "major"；B、C 用 tier: "minor"。
+6. 人物、服装、场景、道具都必须输出 appearances: number[]，表示这个资产出现在第几章/第几集。必须从剧本章节标题或 Episode/Chapter/第X章/第X集标记中提取；如果没有明确章节，按剧情顺序合理估算。示例：[1,7,8,9,10]。
 
 ## 一、人物（characters）
 提取剧本中所有人物角色，包括有名字的、有台词的、被提及的、作为背景出现的。宁可多提取，不要遗漏。
 
 分级标准：
-- 重要人物（tier: "major"）：主角、反派、关键配角、推动剧情发展的角色
-- 次要人物（tier: "minor"）：龙套、背景角色、仅提及名字、一次性出场
+- S级人物：男女主、核心反派、贯穿全剧且决定主线的人物
+- A级人物：关键配角、强推动剧情的人物、频繁出场的人物
+- B级人物：普通配角、阶段性出场、有明确功能的人物
+- C级人物：背景角色、龙套、仅提及名字或一次性出场的人物
 
 如无法判断重要性，默认标为 major，优先保证提取数量。
 
 字段：
-- name: 角色名
+- name: 英文名（中文译名），例如 "Layla（莱拉）"
+- nameEn: 英文名
+- nameCn: 中文译名
+- importanceRank: "S" | "A" | "B" | "C"
+- appearances: 出现章节/集数数组，例如 [1,2,7]
 - tier: "major" 或 "minor"
-- description: 详细的中文角色概述，包含外貌特征、气质、服装风格、角色定位（不要限制字数，写出所有可用信息）
-- imagePrompt: 英文生图提示词（仅 major）
-- imagePromptCn: 中文生图提示词（仅 major，与英文内容对应）
+- description: 纯中文角色概述，包含角色身份、剧情作用、人物关系、外貌特征、气质、服装风格。不要输出英文介绍。
+- imagePrompt: 固定输出 ""
+- imagePromptCn: 固定输出 ""
 - outfits: 服装列表数组（仅 important 人物需要，minor 人物留空数组 []）。每件服装包含：
   - name: 服装场景标签（如"日常""宴会""战斗""睡衣""外出"等）
   - description: 1-2句中文服装描述
+  - appearances: 这套服装出现的章节/集数数组，例如 [3,4]
   - imagePrompt: 英文服装生图提示词（留空 ""，后续由单独 API 生成）
   - imagePromptCn: 中文服装生图提示词（留空 ""，后续由单独 API 生成）
 
-注意：imagePrompt 是角色基础形象（面部+三视图），不要包含具体服装。服装的提示词放在 outfits 数组里。
-
-### 重要人物的 imagePrompt 必须强制以以下前缀开头，不可省略：
-Hasselblad X2D 100C, 85mm standard prime lens, 32K ultra HD, HDR10+ high dynamic range, cinematic color grading, IMAX quality, 100mm f/2.8 macro lens, ISO 100, shutter speed 1/125s, RAW format output, visible skin texture with pores and capillaries, individual hair strands clearly visible, rich light and shadow layers, fine grain texture, no props, standard front standing pose, nine-head golden body proportion, full body to feet no cropping, looking directly at camera, clean white seamless background, 16:9 aspect ratio,
-然后接角色具体描述（必须保留上述全部前缀）
-
 ### ⚠️ 女性角色强制要求（所有女性人物必须遵守，缺一不可）
-女性角色必须是「让人看一眼就心动的绝色美女」，这是最高优先级要求：
-
-身材要求：
-- 九头身黄金比例（1:9 head-to-body ratio），绝对禁止普通头身比
-- 超模身材（supermodel physique: slim hourglass figure, 22-inch waist, long slender legs, delicate collarbones, graceful neck）
-- 身高 172-180cm（5'8"-5'11"）
-- 体重 48-55kg，体脂率极低但曲线明显
-- 年龄 18-22 岁（fresh youthful appearance, age 18-22, no signs of aging）
-
-面容要求（必须全部满足）：
-- 绝美容颜（devastatingly beautiful, drop-dead gorgeous, breathtaking face that makes people stare）
-- 无瑕瓷白肌肤（flawless porcelain skin, translucent and luminous, zero blemishes, no freckles, no fine lines, no wrinkles, no pores visible）
-- 标准鹅蛋脸或瓜子脸（perfect oval or heart-shaped face）
-- 高挺精致的鼻梁（high delicate nose bridge, refined nose tip）
-- 大而有神的双眼（large captivating eyes, bright and clear, visible catchlight, thick long eyelashes）
-- 含情脉脉的眼神（eyes that sparkle with emotion and depth）
-- 丰润饱满的樱桃唇（full plump cherry lips, naturally rosy, cupid's bow definition）
-- 柳叶弯眉（elegantly arched eyebrows, soft and natural）
-- 精致小巧的下巴（delicate small chin, perfect V-line）
-- 气质：高贵优雅中带冷艳，清冷拒人千里又让人忍不住想靠近（elegant and refined with a cool, untouchable allure that draws people in）
-
-禁止项：
-- 严禁普通路人长相
-- 严禁有雀斑、痣、皱纹、法令纹、鱼尾纹
-- 严禁粗犷或男性化面部特征
-- 严禁皮肤暗沉、毛孔粗大
-
-然后覆盖以下全部维度（逐项写，不可省略）：
-
-【Body】精确的身高（英尺+厘米）、体型（瘦削/健壮/丰满等）、肩宽、腰身、腿长、头身比（如 1:8.5）、肤色、体态特征。女性角色必须写 1:9 头身比、超模身材。
-【Face】脸型（方下巴/瓜子脸/圆脸等）、颧骨高低、鼻型、眉形、眼睛（颜色、形状、眼窝深浅、睫毛、眼睑）、嘴唇（厚薄、形状、颜色）、皮肤质感（毛孔/雀斑/光滑等）、下颌线条。女性角色必须写绝美容颜、无雀斑细纹、无瑕瓷肌。
-【Hair】发型、发色、长度、发质（直/卷/波浪）、光泽度、具体造型描述
-【Expression】表情——必须是中性的：放松自然，平静看向镜头，不微笑不皱眉不愤怒，但眼神有存在感
-【Outfit】至少2-3句详细描述。包括：上衣（款式/颜色/材质/穿法如挽袖/解扣）、下装、鞋子、配饰（项链/手表/耳环/戒指等）。如果有不同场景的服装变化也写出。⚠️ 服装必须严格符合时代背景，绝对禁止不符合时代的服装（如中世纪角色穿西装、古代角色穿高跟鞋）。
-【Lighting & Camera】光源类型和方向、色温、阴影质感、镜头焦段、景深、胶片质感、画面比例
-【Overall aesthetic】整体美学定调，可引用影视参考（如 "The Vampire Diaries style", "Hollywood cinematic" 等）
-
-【画面布局】横向 16:9 五视图高端角色参考板（casting reference board），白色无缝背景，干净白色细线分隔各面板：
-- 左列（占1/4宽度）：上下两个等大面部特写
-  上：正面特写直视镜头（close-up portrait, straight-on, looking directly at camera）
-  下：严格90度侧面特写平视（strict 90-degree facial profile, looking straight ahead）
-- 右三列（各占1/4宽度）：三个等大全身视图
-  正面站姿（full-body front view, standard upright neutral pose, relaxed arms）
-  严格90度侧面站姿（strict 90-degree side view）
-  背面站姿（full-body back view）
-- 所有面板保持同一人物，面部、发型、发色、眼睛颜色、服装、身材比例完全一致
-- 人物完整展示从头到脚，充裕白色边距，不裁剪
-
-【画质要求】Hasselblad X2D 100C photographic look, 100mm f/2.8 macro lens on facial close-ups, 85mm standard prime lens on full-body views, ISO 100, shutter 1/125s, 32K ultra HD, HDR10+, cinematic color grading, IMAX clarity, individual hair strands, subtle skin texture, rich light and shadow layers, fine grain, soft even studio lighting, clean white seamless background
+女性角色介绍里要保留对外貌、气质、身材、服装风格的中文制作信息，但不要写成长篇英文提示词。
 
 ### 服装提取规则（outfits 数组）
 ⚠️ 重要：每个重要人物（tier: "major"）都必须有 outfits 数组，至少包含一套服装。
@@ -146,43 +124,40 @@ Hasselblad X2D 100C, 85mm standard prime lens, 32K ultra HD, HDR10+ high dynamic
 
 JSON 输出示例（人物）：
 {
-  "name": "角色名",
+  "name": "Eric Wolf（埃里克·沃尔夫）",
+  "nameEn": "Eric Wolf",
+  "nameCn": "埃里克·沃尔夫",
+  "importanceRank": "S",
+  "appearances": [1, 2, 7],
   "tier": "major",
-  "description": "角色概述...",
-  "imagePrompt": "Hasselblad X2D 100C...角色具体描述...",
-  "imagePromptCn": "中文提示词...",
+  "description": "纯中文角色概述...",
+  "imagePrompt": "",
+  "imagePromptCn": "",
   "outfits": [
-    { "name": "日常", "description": "深灰衬衫配黑马甲", "imagePrompt": "", "imagePromptCn": "" },
-    { "name": "宴会", "description": "黑色天鹅绒礼服", "imagePrompt": "", "imagePromptCn": "" }
+    { "name": "日常", "description": "深灰衬衫配黑马甲", "appearances": [1, 2], "imagePrompt": "", "imagePromptCn": "" },
+    { "name": "宴会", "description": "黑色天鹅绒礼服", "appearances": [7], "imagePrompt": "", "imagePromptCn": "" }
   ]
 }
-
-### 人物提示词质量参考（你的输出应该达到这个详细程度——五视图参考板格式）：
-"Hasselblad X2D 100C, 85mm standard prime lens, 32K ultra HD, HDR10+ high dynamic range, cinematic color grading, IMAX quality, 100mm f/2.8 macro lens, ISO 100, shutter speed 1/125s, RAW format output, visible skin texture with pores and capillaries, individual hair strands clearly visible, rich light and shadow layers, fine grain texture, no props, standard front standing pose, nine-head golden body proportion, full body to feet no cropping, looking directly at camera, clean white seamless background, 16:9 aspect ratio, five-view casting reference board layout, left column: two equal stacked facial close-ups (straight-on front above + strict 90-degree profile below looking straight ahead), right three equal columns: full-body front view + strict 90-degree side view + back view, clean thin white dividers, same woman in all five panels preserving face hair eyes body gown and proportions exactly. Body: 5'9" (175cm), nine-head 1:9 supermodel physique, exceptionally long legs, 22-inch slim defined waist, elegant shoulders and neck, balanced feminine curves, graceful posture, slender toned body neither muscular nor gaunt. Face: harmonious facial thirds, highly symmetrical refined oval-heart-shaped small face, delicate tapered jawline, softly sculpted cheekbones, large luminous gray-blue almond eyes, elegant fine brows, petite straight nose, naturally full rose-colored lips, clean luminous cool-fair skin with subtle natural pores but zero fine lines wrinkles freckles moles blemishes. Hair: long pearl silver-blonde hair in glossy soft waves. Expression: ethereal calm, quiet resilience, neutral but present, looking naturally at camera. Outfit: glamorous late-Victorian-inspired sapphire blue silk-wool crepe gown, portrait neckline, shaped bodice, defined natural waist, refined long sleeves with delicate chiffon cuffs, flowing ankle-length skirt, dark leather period-inspired lace-up boots. Lighting & Camera: soft even studio illumination, 100mm macro on face close-ups, 85mm prime on full-body views, shallow depth of field, soft shadows. Overall aesthetic: premium Western female-audience romantic fantasy TV drama, ethereal moonlight beauty with restrained emotional depth."
 
 ## 二、场景（scenes）
 提取剧本中所有出现过的场景地点，包括室内室外、具体场所、过渡场景。宁可多提取，不要遗漏。
 
 分级标准：
-- 重要场景（tier: "major"）：故事核心地点，反复出现、推动剧情、或关键事件发生地
-- 次要场景（tier: "minor"）：过渡性地点、仅短暂出现、或仅提及的场景
+- S级场景：全剧核心地点、最高频出现、承载主线冲突或最终爆点
+- A级场景：多次出现、承载关键剧情或重要关系变化
+- B级场景：功能性场景、阶段性出现、推动某一段剧情
+- C级场景：过渡场景、短暂出现、仅提及或氛围场景
 
 如无法判断重要性，默认标为 major，优先保证提取数量。
 
 字段：
-- name: 场景名
+- name: 场景名，建议使用 "英文名（中文名）" 或清晰中文名
+- importanceRank: "S" | "A" | "B" | "C"
+- appearances: 出现章节/集数数组，例如 [1,7,8,9,10]
 - tier: "major" 或 "minor"
-- description: 详细的中文场景描述，包含空间结构、氛围、时间、天气（不要限制字数）
-- imagePrompt: 英文生图提示词（仅 major）
-- imagePromptCn: 中文生图提示词（仅 major）
-
-### 重要场景的 imagePrompt 必须覆盖：
-【Architecture & Space】建筑风格、空间大小、材质（石/木/玻璃/金属）、结构细节、家具陈设
-【Atmosphere & Mood】整体氛围、时间（晨/午/夜）、季节、天气
-【Lighting】光源（自然光/烛光/灯光/月光）、色温、阴影、体积光
-【Camera】镜头焦段、景深、构图（广角/特写/中景）、画面比例
-【Color Palette】主色调、饱和度、对比度
-【Details】至少3个具体的视觉细节（墙上的裂缝/桌上的物品/窗外的景色等）
+- description: 纯中文场景描述，包含空间结构、氛围、时间、天气、剧情用途。不要输出英文介绍。
+- imagePrompt: 固定输出 ""
+- imagePromptCn: 固定输出 ""
 
 ## 三、道具（props）
 提取剧本中所有被角色使用、持有、提及或对剧情有意义的道具物品。包括武器、饰品、工具、衣物、书信、药品、法器、交通工具、日常用品等。宁可多提取，不要遗漏。
@@ -195,24 +170,19 @@ JSON 输出示例（人物）：
 
 字段：
 - name: 道具名
+- importanceRank: "S" | "A" | "B" | "C"
+- appearances: 出现章节/集数数组，例如 [2,8]
 - tier: "major" 或 "minor"
-- description: 详细的中文道具描述，外观、材质、尺寸、用途、故事意义（不要限制字数）
-- imagePrompt: 英文生图提示词（仅 major）
-- imagePromptCn: 中文生图提示词（仅 major）
-
-### 重要道具的 imagePrompt 必须覆盖：
-【Appearance】形状、颜色、尺寸比例
-【Material & Texture】材质（金属/木/布/宝石/皮革等）、表面纹理、磨损/新旧程度、光泽度
-【Details】雕刻/纹饰/铭文/镶嵌等装饰细节
-【Lighting & Camera】光源设置、镜头类型（微距/产品摄影）、景深、背景
-【Context】（可选）如果道具在特定场景中出现，可简要提及环境氛围
+- description: 纯中文道具描述，外观、材质、尺寸、用途、故事意义。不要输出英文介绍。
+- imagePrompt: 固定输出 ""
+- imagePromptCn: 固定输出 ""
 
 ## 通用规则
 - 禁止使用模糊词汇：handsome/beautiful/nice/atmospheric 这类词不能单独出现，必须跟具体描述
 - 中国风/东方玄幻题材额外加入 "eastern fantasy art"
 - 西方/欧美题材加入对应的美学参考
-- 所有 imagePrompt 和 imagePromptCn 末尾统一加风格标签
 - ⚠️ 所有重要人物（tier: "major"）必须有 outfits 数组，至少包含 1 套服装。次要人物 outfits 留空数组 []
+- 再次强调：本次分析不得生成任何生图提示词，所有 imagePrompt 和 imagePromptCn 必须为 ""
 - 严格 JSON 格式输出，不要任何其他内容`;
 }
 
@@ -292,10 +262,28 @@ export async function POST(
       return NextResponse.json({ error: "AI 未返回有效内容" }, { status: 500 });
     }
 
+    type GeneratedOutfit = {
+      name?: string;
+      description?: string;
+      imagePrompt?: string;
+      imagePromptCn?: string;
+      appearances?: number[];
+    };
+
+    type GeneratedAsset = Omit<AssetItem, "id" | "imageUrl"> & {
+      nameEn?: string;
+      nameCn?: string;
+      tier?: string;
+      importanceRank?: string;
+      appearances?: number[];
+      imagePromptCn?: string;
+      outfits?: GeneratedOutfit[];
+    };
+
     let result: {
-      characters?: (Omit<AssetItem, "id" | "imageUrl"> & { tier?: string; imagePromptCn?: string; outfits?: { name: string; description: string; imagePrompt?: string; imagePromptCn?: string }[] })[];
-      scenes?: (Omit<AssetItem, "id" | "imageUrl"> & { tier?: string; imagePromptCn?: string })[];
-      props?: (Omit<AssetItem, "id" | "imageUrl"> & { tier?: string; imagePromptCn?: string })[];
+      characters?: GeneratedAsset[];
+      scenes?: GeneratedAsset[];
+      props?: GeneratedAsset[];
     };
 
     try {
@@ -304,27 +292,61 @@ export async function POST(
       return NextResponse.json({ error: "AI 返回格式异常" }, { status: 500 });
     }
 
-    const addMeta = (items: any[] | undefined, prefix: string): AssetItem[] => {
+    const normalizeRank = (rank?: string, tier?: string): ImportanceRank | undefined => {
+      const upper = rank?.toUpperCase();
+      if (upper === "S" || upper === "A" || upper === "B" || upper === "C") return upper;
+      if (tier === "major") return "A";
+      if (tier === "minor") return "C";
+      return undefined;
+    };
+
+    const normalizeTier = (tier?: string, rank?: ImportanceRank): "major" | "minor" | undefined => {
+      if (tier === "major" || tier === "minor") return tier;
+      if (rank === "S" || rank === "A") return "major";
+      if (rank === "B" || rank === "C") return "minor";
+      return undefined;
+    };
+
+    const formatName = (item: GeneratedAsset) => {
+      if (item.name) return item.name;
+      if (item.nameEn && item.nameCn) return `${item.nameEn}（${item.nameCn}）`;
+      return item.nameEn || item.nameCn || "未命名";
+    };
+
+    const normalizeAppearances = (values?: number[]) =>
+      Array.isArray(values)
+        ? [...new Set(values.map(Number).filter((n) => Number.isFinite(n) && n > 0))].sort((a, b) => a - b)
+        : undefined;
+
+    const addMeta = (items: GeneratedAsset[] | undefined, prefix: string): AssetItem[] => {
       if (!Array.isArray(items)) return [];
-      return items.map((item, i) => ({
-        id: `${prefix}_${i + 1}`,
-        name: item.name || "未命名",
-        description: item.description || "",
-        imagePrompt: item.imagePrompt || "",
-        imagePromptCn: item.imagePromptCn || "",
-        imageUrl: "",
-        tier: item.tier || undefined,
-        outfits: Array.isArray(item.outfits)
-          ? item.outfits.map((o: any, j: number) => ({
-              id: `${prefix}_${i + 1}_outfit_${j + 1}`,
-              name: o.name || "未命名",
-              description: o.description || "",
-              imagePrompt: o.imagePrompt || "",
-              imagePromptCn: o.imagePromptCn || "",
-              imageUrl: "",
-            }))
-          : undefined,
-      }));
+      return items.map((item, i) => {
+        const importanceRank = normalizeRank(item.importanceRank, item.tier);
+        const tier = normalizeTier(item.tier, importanceRank);
+
+        return {
+          id: `${prefix}_${i + 1}`,
+          name: formatName(item),
+          description: item.description || "",
+          imagePrompt: "",
+          imagePromptCn: "",
+          imageUrl: "",
+          tier,
+          importanceRank,
+          appearances: normalizeAppearances(item.appearances),
+          outfits: Array.isArray(item.outfits)
+            ? item.outfits.map((o, j) => ({
+                id: `${prefix}_${i + 1}_outfit_${j + 1}`,
+                name: o.name || "未命名",
+                description: o.description || "",
+                imagePrompt: o.imagePrompt || "",
+                imagePromptCn: o.imagePromptCn || "",
+                imageUrl: "",
+                appearances: normalizeAppearances(o.appearances),
+              }))
+            : undefined,
+        };
+      });
     };
 
     const data = {

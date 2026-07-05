@@ -12,6 +12,7 @@ export interface Outfit {
   imagePrompt: string;
   imagePromptCn: string;
   imageUrl: string;
+  appearances?: number[];
 }
 
 export interface AssetItem {
@@ -22,6 +23,8 @@ export interface AssetItem {
   imagePromptCn: string;
   imageUrl: string;
   tier?: "major" | "minor";
+  importanceRank?: "S" | "A" | "B" | "C";
+  appearances?: number[];
   outfits?: Outfit[];
 }
 
@@ -82,35 +85,52 @@ export default function AssetCard({
 
   const displayPrompt = showCn && asset.imagePromptCn ? asset.imagePromptCn : asset.imagePrompt;
 
-  const isMinor = asset.tier === "minor";
+  const hasPrompt = !!asset.imagePrompt;
   const categoryLabel = category === "characters" ? "人物" : category === "scenes" ? "场景" : "道具";
+  const rankClass = {
+    S: "bg-red-500/18 text-red-300 border-red-400/25",
+    A: "bg-amber-500/18 text-amber-300 border-amber-400/25",
+    B: "bg-sky-500/16 text-sky-300 border-sky-400/20",
+    C: "bg-white/[0.06] text-white/45 border-white/[0.08]",
+  }[asset.importanceRank || "C"];
+  const appearancesText = asset.appearances?.length
+    ? `第 ${asset.appearances.join("、")} 章`
+    : "";
 
   return (
-    <div className="rounded-2xl bg-black/40 backdrop-blur-xl border border-white/[0.06] p-6 flex flex-col gap-5 transition-all hover:border-white/[0.10]">
+    <div className="rounded-xl bg-black/35 backdrop-blur-xl border border-white/[0.06] p-5 flex flex-col gap-4 transition-all hover:border-white/[0.10]">
       {/* 名称、分级、描述 */}
-      <div>
-        <div className="flex items-center gap-2">
-          <h4 className="text-lg font-semibold text-white">{asset.name}</h4>
-          {asset.tier === "major" && (
-            <span className="rounded-full bg-amber-500/20 px-2.5 py-0.5 text-xs font-medium text-amber-400">
+      <div className="flex flex-col gap-2.5">
+        <div className="flex flex-wrap items-start justify-between gap-2">
+          <h4 className="min-w-0 flex-1 text-base font-semibold leading-6 text-white">{asset.name}</h4>
+          {asset.importanceRank ? (
+            <span className={`shrink-0 rounded-md border px-2 py-1 text-xs font-semibold ${rankClass}`}>
+              {asset.importanceRank}级{categoryLabel}
+            </span>
+          ) : asset.tier === "major" ? (
+            <span className="shrink-0 rounded-md bg-amber-500/20 px-2 py-1 text-xs font-medium text-amber-400">
               重要{categoryLabel}
             </span>
-          )}
-          {isMinor && (
-            <span className="rounded-full bg-white/[0.06] px-2.5 py-0.5 text-xs text-white/40">
+          ) : asset.tier === "minor" ? (
+            <span className="shrink-0 rounded-md bg-white/[0.06] px-2 py-1 text-xs text-white/40">
               次要{categoryLabel}
             </span>
-          )}
+          ) : null}
         </div>
+        {category === "scenes" && appearancesText && (
+          <div className="rounded-md border border-white/[0.06] bg-white/[0.035] px-3 py-2 text-xs leading-5 text-white/45">
+            出现章节：{appearancesText}
+          </div>
+        )}
         {asset.description && (
-          <p className="text-base text-white/50 mt-1.5 leading-relaxed">
+          <p className="text-sm text-white/55 leading-7">
             {asset.description}
           </p>
         )}
       </div>
 
-      {/* 图片上传区域（仅重要人物或有提示词的才显示） */}
-      {!isMinor && (
+      {/* 图片上传区域 */}
+      {asset.tier !== "minor" && (
         <ImageUploadSlot
           imageUrl={asset.imageUrl}
           onUpload={(file) => onImageUpload(asset.id, file)}
@@ -118,10 +138,10 @@ export default function AssetCard({
         />
       )}
 
-      {/* 次要资产：显示生成按钮 */}
-      {isMinor && (
-        <div className="rounded-lg bg-white/[0.02] border border-white/[0.03] p-4 flex items-center justify-between">
-          <p className="text-sm text-white/25">次要{categoryLabel}，暂无提示词</p>
+      {/* 按需生成提示词 */}
+      {!hasPrompt && (
+        <div className="rounded-lg bg-white/[0.02] border border-white/[0.04] p-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm text-white/35">暂未生成生图提示词，可按需单独生成。</p>
           <button
             type="button"
             onClick={async () => {
@@ -133,7 +153,7 @@ export default function AssetCard({
               }
             }}
             disabled={generating}
-            className="flex items-center gap-1.5 rounded-full bg-white/[0.06] border border-white/[0.08] px-4 py-1.5 text-sm text-white/50 hover:text-white hover:bg-white/[0.10] transition-all disabled:opacity-50"
+            className="flex items-center justify-center gap-1.5 rounded-md bg-white/[0.06] border border-white/[0.08] px-4 py-2 text-sm text-white/55 hover:text-white hover:bg-white/[0.10] transition-all disabled:opacity-50"
           >
             {generating ? (
               <>
@@ -151,7 +171,7 @@ export default function AssetCard({
       )}
 
       {/* 重要人物/场景/道具的提示词 */}
-      {!isMinor && asset.imagePrompt && (
+      {hasPrompt && (
         <div className="rounded-lg bg-white/[0.03] border border-white/[0.04] p-4">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm text-white/30 font-medium">🪄 生图提示词</span>
@@ -244,7 +264,7 @@ export default function AssetCard({
       )}
 
       {/* ===== 服装列表（仅重要人物） ===== */}
-      {category === "characters" && !isMinor && (
+      {category === "characters" && asset.tier !== "minor" && (
         <div className="border-t border-white/[0.06] pt-4">
           {/* 折叠头部 */}
           <button
