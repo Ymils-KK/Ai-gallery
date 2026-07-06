@@ -1,0 +1,36 @@
+[
+  {
+    "id": "asset_seed_character",
+    "name": "男主001",
+    "category": "character",
+    "gender": "male",
+    "roleType": "lead",
+    "imageUrl": "",
+    "description": "",
+    "prompt": "cinematic portrait, sharp facial features, reserved expression, premium drama character reference",
+    "tags": [
+      "男主",
+      "悬疑"
+    ],
+    "favorite": false,
+    "used": false,
+    "usages": [],
+    "createdAt": "2026-07-05T00:00:00.000Z"
+  },
+  {
+    "id": "asset_seed_scene",
+    "name": "场景001",
+    "category": "scene",
+    "imageUrl": "",
+    "description": "",
+    "prompt": "rainy neon alley, reflective pavement, cinematic lighting, moody atmosphere, high detail",
+    "tags": [
+      "雨夜",
+      "都市"
+    ],
+    "favorite": false,
+    "used": false,
+    "usages": [],
+    "createdAt": "2026-07-05T00:00:00.000Z"
+  }
+]

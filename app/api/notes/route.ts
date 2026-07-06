@@ -1,6 +1,14 @@
 import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
+import {
+  createCloudNote,
+  deleteCloudNote,
+  getCloudNotes,
+  isSupabaseConfigured,
+  updateCloudNote,
+  type CloudNote,
+} from "@/lib/supabase-rest";
 
 const dataPath = path.join(process.cwd(), "content", "notes.json");
 
@@ -21,11 +29,39 @@ function readNotes(): Note[] {
 }
 
 function writeNotes(notes: Note[]) {
+  const dir = path.dirname(dataPath);
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
   fs.writeFileSync(dataPath, JSON.stringify(notes, null, 2), "utf-8");
 }
 
+function formatDate(): string {
+  return new Date().toLocaleDateString("zh-CN", {
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+function normalizeCloudNote(note: CloudNote): Note {
+  return {
+    id: note.id,
+    text: note.text,
+    done: note.done,
+    createdAt: note.createdAt,
+  };
+}
+
 export async function GET() {
-  return NextResponse.json(readNotes());
+  try {
+    if (isSupabaseConfigured()) {
+      const notes = await getCloudNotes();
+      return NextResponse.json(notes.map(normalizeCloudNote));
+    }
+    return NextResponse.json(readNotes());
+  } catch {
+    return NextResponse.json(readNotes());
+  }
 }
 
 export async function POST(request: Request) {
@@ -35,22 +71,22 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "内容不能为空" }, { status: 400 });
     }
 
+    if (isSupabaseConfigured()) {
+      const note = await createCloudNote(text.trim());
+      return NextResponse.json({ success: true, note: normalizeCloudNote(note), storage: "supabase" });
+    }
+
     const notes = readNotes();
     const note: Note = {
-      id: "note_" + Date.now().toString(36),
+      id: `note_${Date.now().toString(36)}`,
       text: text.trim(),
       done: false,
-      createdAt: new Date().toLocaleDateString("zh-CN", {
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
+      createdAt: formatDate(),
     };
     notes.unshift(note);
     writeNotes(notes);
 
-    return NextResponse.json({ success: true, note });
+    return NextResponse.json({ success: true, note, storage: "file" });
   } catch {
     return NextResponse.json({ error: "保存失败" }, { status: 500 });
   }
@@ -63,8 +99,13 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ error: "缺少 ID" }, { status: 400 });
     }
 
+    if (isSupabaseConfigured()) {
+      const note = await updateCloudNote(id, { text, done });
+      return NextResponse.json({ success: true, note: normalizeCloudNote(note), storage: "supabase" });
+    }
+
     const notes = readNotes();
-    const note = notes.find((n) => n.id === id);
+    const note = notes.find((item) => item.id === id);
     if (!note) {
       return NextResponse.json({ error: "记录不存在" }, { status: 404 });
     }
@@ -73,7 +114,7 @@ export async function PATCH(request: Request) {
     if (typeof done === "boolean") note.done = done;
     writeNotes(notes);
 
-    return NextResponse.json({ success: true, note });
+    return NextResponse.json({ success: true, note, storage: "file" });
   } catch {
     return NextResponse.json({ error: "更新失败" }, { status: 500 });
   }
@@ -87,11 +128,15 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: "缺少 ID" }, { status: 400 });
     }
 
-    let notes = readNotes();
-    notes = notes.filter((n) => n.id !== id);
+    if (isSupabaseConfigured()) {
+      await deleteCloudNote(id);
+      return NextResponse.json({ success: true, storage: "supabase" });
+    }
+
+    const notes = readNotes().filter((note) => note.id !== id);
     writeNotes(notes);
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, storage: "file" });
   } catch {
     return NextResponse.json({ error: "删除失败" }, { status: 500 });
   }
