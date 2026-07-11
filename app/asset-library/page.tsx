@@ -308,17 +308,18 @@ export default function AssetLibraryPage() {
     const batchId = makeId("batch");
     const imported: LibraryAsset[] = [];
     let failed = files.length - imageFiles.length;
+    let lastError = "";
 
     for (const file of imageFiles) {
       try {
         if (file.size > MAX_UPLOAD_SIZE) {
-          throw new Error("file too large");
+          throw new Error("图片太大，请先压缩到 4MB 以内");
         }
         const formData = new FormData();
         formData.append("file", file);
         const res = await fetch("/api/upload", { method: "POST", body: formData });
         const result = await res.json();
-        if (!result.success) throw new Error(result.error || "上传失败");
+        if (!res.ok || !result.success) throw new Error(result.detail || result.error || "上传失败");
 
         const base: LibraryAsset = {
           id: makeId(),
@@ -338,7 +339,8 @@ export default function AssetLibraryPage() {
           batchId,
         };
         imported.push({ ...base, name: nextNameFor(base, [...assets, ...imported]) });
-      } catch {
+      } catch (error) {
+        lastError = error instanceof Error ? error.message : "上传失败";
         failed += 1;
       }
     }
@@ -346,7 +348,7 @@ export default function AssetLibraryPage() {
     if (imported.length > 0) {
       await persist([...imported, ...assets]);
     }
-    return { ok: imported.length, failed };
+    return { ok: imported.length, failed, error: lastError };
   }
 
   return (
@@ -482,7 +484,7 @@ export default function AssetLibraryPage() {
   );
 }
 
-function BatchImportPanel({ onImport }: { onImport: (files: File[], meta: BatchMeta) => Promise<{ ok: number; failed: number } | undefined> }) {
+function BatchImportPanel({ onImport }: { onImport: (files: File[], meta: BatchMeta) => Promise<{ ok: number; failed: number; error?: string } | undefined> }) {
   const [meta, setMeta] = useState<BatchMeta>({ category: "character", gender: "male", roleType: "lead", era: "modern" });
   const [dragOver, setDragOver] = useState(false);
   const [importing, setImporting] = useState(false);
@@ -496,7 +498,9 @@ function BatchImportPanel({ onImport }: { onImport: (files: File[], meta: BatchM
     setResult("");
     try {
       const next = await onImport(files, meta);
-      if (next) setResult(`已导入 ${next.ok} 张${next.failed ? `，失败 ${next.failed} 张` : ""}`);
+      if (next) {
+        setResult(`已导入 ${next.ok} 张${next.failed ? `，失败 ${next.failed} 张${next.error ? `：${next.error}` : ""}` : ""}`);
+      }
     } finally {
       setImporting(false);
     }
