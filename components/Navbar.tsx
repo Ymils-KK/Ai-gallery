@@ -25,7 +25,7 @@ export default function Navbar({ logo = "KK" }: { logo?: string }) {
   const [activeSection, setActiveSection] = useState("");
   const [passphrase, setPassphrase] = useState("");
   const [error, setError] = useState("");
-  const links = unlocked ? [...publicLinks, ...privateLinks] : publicLinks;
+  const links = unlocked ? [...publicLinks, ...privateLinks] : [...publicLinks, { href: "/script-analysis", label: "私人入口" }];
 
   useEffect(() => {
     if (pathname !== "/") {

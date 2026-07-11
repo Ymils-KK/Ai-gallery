@@ -47,11 +47,11 @@ export default function RootLayout({
 
   return (
     <html lang="zh-CN" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
-      <body className="flex min-h-full flex-col bg-black text-white">
+      <body className="relative isolate flex min-h-full flex-col bg-black text-white">
         <VideoBg />
         <PrivateModeProvider>
           <Navbar logo={config.navbar?.logo || "KK"} />
-          <main className="flex-1 pt-14">
+          <main className="relative z-10 flex-1 pt-14">
             <PrivateRouteGate>{children}</PrivateRouteGate>
           </main>
           <MusicPlayer />
