@@ -348,7 +348,7 @@ export default function AssetLibraryPage() {
     if (imported.length > 0) {
       await persist([...imported, ...assets]);
     }
-    return { ok: imported.length, failed, error: lastError };
+    return { ok: imported.length, failed, error: failed ? lastError || "上传接口没有返回具体原因，请改用“单张新增”上传一次查看错误。" : "" };
   }
 
   return (
