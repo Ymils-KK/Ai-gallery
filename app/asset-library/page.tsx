@@ -63,6 +63,8 @@ interface BatchMeta {
   era: OutfitEra;
 }
 
+const MAX_UPLOAD_SIZE = 4 * 1024 * 1024;
+
 const categoryLabels: Record<AssetCategory, string> = {
   character: "人物",
   scene: "场景",
@@ -309,6 +311,9 @@ export default function AssetLibraryPage() {
 
     for (const file of imageFiles) {
       try {
+        if (file.size > MAX_UPLOAD_SIZE) {
+          throw new Error("file too large");
+        }
         const formData = new FormData();
         formData.append("file", file);
         const res = await fetch("/api/upload", { method: "POST", body: formData });
@@ -689,16 +694,28 @@ function AssetEditor({ asset, onClose, onSave }: { asset: LibraryAsset; onClose:
   const [draft, setDraft] = useState(asset);
   const [tagText, setTagText] = useState(asset.tags.join(" "));
   const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
   async function upload(file: File) {
+    setUploadError("");
+    if (file.size > MAX_UPLOAD_SIZE) {
+      setUploadError("图片太大，请先压缩到 4MB 以内。");
+      return;
+    }
+
     setUploading(true);
     try {
       const formData = new FormData();
       formData.append("file", file);
       const res = await fetch("/api/upload", { method: "POST", body: formData });
       const result = await res.json();
-      if (result.success) setDraft((value) => ({ ...value, imageUrl: result.path }));
+      if (!res.ok || !result.success) {
+        throw new Error(result.detail || result.error || "上传失败");
+      }
+      setDraft((value) => ({ ...value, imageUrl: result.path }));
+    } catch (error) {
+      setUploadError(error instanceof Error ? error.message : "上传失败");
     } finally {
       setUploading(false);
     }
@@ -729,6 +746,7 @@ function AssetEditor({ asset, onClose, onSave }: { asset: LibraryAsset; onClose:
               {draft.imageUrl ? <img src={draft.imageUrl} alt="" className="h-full w-full object-cover" /> : uploading ? <span className="text-sm">上传中...</span> : <><UploadCloud className="mb-2 h-6 w-6" /><span className="text-sm">上传图片</span></>}
             </button>
             <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={(event) => event.target.files?.[0] && upload(event.target.files[0])} />
+            {uploadError && <p className="mt-2 rounded-md border border-red-400/25 bg-red-500/10 px-3 py-2 text-xs text-red-100">{uploadError}</p>}
             <input
               value={draft.imageUrl}
               onChange={(event) => setDraft({ ...draft, imageUrl: event.target.value })}

@@ -128,6 +128,13 @@ function safeObjectName(name: string) {
 }
 
 async function ensureStorageBucket() {
+  const existing = await requestSupabaseRaw(`/storage/v1/bucket/${storageBucket}`);
+  if (existing.ok) return;
+  if (existing.status !== 404) {
+    const detail = await existing.text().catch(() => "");
+    throw new Error(`Supabase bucket check failed ${existing.status}: ${detail.slice(0, 200)}`);
+  }
+
   const response = await requestSupabaseRaw("/storage/v1/bucket", {
     method: "POST",
     body: JSON.stringify({
@@ -137,7 +144,7 @@ async function ensureStorageBucket() {
     }),
   });
 
-  if (response.ok || response.status === 409 || response.status === 400) return;
+  if (response.ok || response.status === 409) return;
 
   const detail = await response.text().catch(() => "");
   throw new Error(`Failed to create Supabase bucket ${response.status}: ${detail.slice(0, 200)}`);
