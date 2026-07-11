@@ -130,9 +130,10 @@ function safeObjectName(name: string) {
 async function ensureStorageBucket() {
   const existing = await requestSupabaseRaw(`/storage/v1/bucket/${storageBucket}`);
   if (existing.ok) return;
-  if (existing.status !== 404) {
-    const detail = await existing.text().catch(() => "");
-    throw new Error(`Supabase bucket check failed ${existing.status}: ${detail.slice(0, 200)}`);
+  const existingDetail = await existing.text().catch(() => "");
+  const bucketMissing = existing.status === 404 || /bucket not found/i.test(existingDetail);
+  if (!bucketMissing) {
+    throw new Error(`Supabase bucket check failed ${existing.status}: ${existingDetail.slice(0, 200)}`);
   }
 
   const response = await requestSupabaseRaw("/storage/v1/bucket", {
