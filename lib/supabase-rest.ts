@@ -1,5 +1,6 @@
-const supabaseUrl = process.env.SUPABASE_URL?.replace(/\/$/, "");
+const supabaseUrl = process.env.SUPABASE_URL?.replace(/\/rest\/v1\/?$/, "").replace(/\/$/, "");
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const storageBucket = process.env.SUPABASE_STORAGE_BUCKET || "asset-images";
 
 type NoteRow = {
   id: string;
@@ -44,6 +45,15 @@ async function requestSupabase<T>(path: string, init: RequestInit = {}): Promise
 
   if (response.status === 204) return undefined as T;
   return response.json() as Promise<T>;
+}
+
+async function requestSupabaseRaw(path: string, init: RequestInit = {}) {
+  if (!supabaseUrl) throw new Error("Missing SUPABASE_URL");
+  return fetch(`${supabaseUrl}${path}`, {
+    ...init,
+    headers: getHeaders(init.headers),
+    cache: "no-store",
+  });
 }
 
 function toNote(row: NoteRow): CloudNote {
@@ -109,4 +119,51 @@ export async function saveCloudAssetLibrary<T>(assets: T[]): Promise<void> {
       updated_at: new Date().toISOString(),
     }),
   });
+}
+
+function safeObjectName(name: string) {
+  const ext = name.includes(".") ? name.slice(name.lastIndexOf(".")).toLowerCase() : "";
+  const base = name.replace(/\.[^.]+$/, "").replace(/[^a-zA-Z0-9_-]+/g, "-").replace(/^-+|-+$/g, "");
+  return `${base || "upload"}-${Date.now().toString(36)}${ext}`;
+}
+
+async function ensureStorageBucket() {
+  const response = await requestSupabaseRaw("/storage/v1/bucket", {
+    method: "POST",
+    body: JSON.stringify({
+      id: storageBucket,
+      name: storageBucket,
+      public: true,
+    }),
+  });
+
+  if (response.ok || response.status === 409 || response.status === 400) return;
+
+  const detail = await response.text().catch(() => "");
+  throw new Error(`Failed to create Supabase bucket ${response.status}: ${detail.slice(0, 200)}`);
+}
+
+export async function uploadCloudFile(file: File) {
+  await ensureStorageBucket();
+
+  const objectName = safeObjectName(file.name);
+  const objectPath = `uploads/${objectName}`;
+  const response = await requestSupabaseRaw(`/storage/v1/object/${storageBucket}/${objectPath}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": file.type || "application/octet-stream",
+      "x-upsert": "false",
+    },
+    body: Buffer.from(await file.arrayBuffer()),
+  });
+
+  if (!response.ok) {
+    const detail = await response.text().catch(() => "");
+    throw new Error(`Supabase upload failed ${response.status}: ${detail.slice(0, 200)}`);
+  }
+
+  return {
+    filename: objectName,
+    path: `${supabaseUrl}/storage/v1/object/public/${storageBucket}/${objectPath}`,
+  };
 }
