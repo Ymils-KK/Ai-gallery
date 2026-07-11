@@ -1,6 +1,7 @@
 const supabaseUrl = process.env.SUPABASE_URL?.replace(/\/rest\/v1\/?$/, "").replace(/\/$/, "");
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const storageBucket = process.env.SUPABASE_STORAGE_BUCKET || "asset-images";
+const storageSetupHint = `Supabase 存储桶 ${storageBucket} 不存在，且当前 Key 无权自动创建。请在 Supabase Storage 新建 Public bucket，Bucket ID 必须是 ${storageBucket}；或者在 Vercel 把 SUPABASE_SERVICE_ROLE_KEY 换成 Supabase 的 Secret key。`;
 
 type NoteRow = {
   id: string;
@@ -148,6 +149,9 @@ async function ensureStorageBucket() {
   if (response.ok || response.status === 409) return;
 
   const detail = await response.text().catch(() => "");
+  if (response.status === 401 || response.status === 403 || /unauthorized|row-level security/i.test(detail)) {
+    throw new Error(storageSetupHint);
+  }
   throw new Error(`Failed to create Supabase bucket ${response.status}: ${detail.slice(0, 200)}`);
 }
 
