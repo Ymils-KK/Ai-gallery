@@ -78,7 +78,7 @@ export default async function HomePage() {
       {/* ===== 第2页: 作品 ===== */}
       <div id="gallery" className="h-full overflow-y-auto relative">
         <div className="relative z-10 mx-auto max-w-6xl px-6 py-16 sm:py-20">
-          <div className="rounded-2xl bg-black/40 backdrop-blur-xl border border-white/[0.06] p-6 sm:p-8">
+          <div className="rounded-2xl border border-white/[0.10] bg-[var(--color-site-surface)] p-6 shadow-2xl shadow-black/15 backdrop-blur-xl sm:p-8">
           <h2 className="section-heading mb-3">{config.gallery.heading}</h2>
           <p className="mb-10 text-center text-[15px] text-white/60">{config.gallery.subheading}</p>
           <Gallery works={soloWorks} collections={collections} allWorks={works} />
@@ -89,7 +89,7 @@ export default async function HomePage() {
       {/* ===== 第3页: 关于我 ===== */}
       <div id="about" className="h-full overflow-y-auto relative">
         <div className="relative z-10 mx-auto max-w-3xl px-6 py-16 sm:py-20">
-          <div className="rounded-2xl bg-black/40 backdrop-blur-xl border border-white/[0.06] p-6 sm:p-10">
+          <div className="rounded-2xl border border-white/[0.10] bg-[var(--color-site-surface)] p-6 shadow-2xl shadow-black/15 backdrop-blur-xl sm:p-8">
           <h2 className="section-heading mb-12">{config.about.heading}</h2>
 
           <div className="flex flex-col items-center text-center sm:flex-row sm:text-left sm:gap-8">
@@ -122,7 +122,7 @@ export default async function HomePage() {
             <div className="mt-3 flex flex-wrap gap-2">
               {profile.socialLinks.map((link) => (
                 <a key={link.label} href={link.href} target="_blank" rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-border/30 bg-white/50 backdrop-blur-sm px-3 py-2 text-xs text-foreground/60 transition-all hover:text-foreground hover:border-black/20">
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-white/[0.10] bg-white/[0.04] px-3 py-2 text-xs text-foreground/60 backdrop-blur-sm transition-all hover:border-white/20 hover:bg-white/[0.08] hover:text-foreground">
                   {iconMap[link.icon]}{link.label}
                 </a>
               ))}
@@ -135,7 +135,8 @@ export default async function HomePage() {
       {/* ===== 第4页: 博客 ===== */}
       <div id="blog" className="h-full overflow-y-auto relative">
         <div className="relative z-10 mx-auto max-w-3xl px-6 py-16 sm:py-20">
-          <h2 className="section-heading mb-3 text-foreground/80">{config.blog.heading}</h2>
+          <div className="rounded-2xl border border-white/[0.10] bg-[var(--color-site-surface)] p-6 shadow-2xl shadow-black/15 backdrop-blur-xl sm:p-8">
+          <h2 className="section-heading mb-3">{config.blog.heading}</h2>
           <p className="mb-10 text-center text-[15px] text-muted/70">{config.blog.subheading}</p>
 
           {recentPosts.length === 0 ? (
@@ -155,6 +156,7 @@ export default async function HomePage() {
               </Link>
             </div>
           )}
+          </div>
         </div>
       </div>
     </PageSlider>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { ChevronLeft, ChevronRight, Sparkles, Copy, Check, Loader2, History, Trash2 } from "lucide-react";
+import { Sparkles, Copy, Check, Loader2, History, Trash2, PanelRight, X, Crown, ShieldAlert, UserRound, Skull, Shirt } from "lucide-react";
 import ImageUploadSlot from "./ImageUploadSlot";
 
 interface CastDrawPanelProps {
@@ -27,6 +27,20 @@ const roleTypes = [
   { key: "medieval_costume", label: "中世纪女装", icon: "👗" },
   { key: "medieval_male_costume", label: "中世纪男装", icon: "⚔️" },
 ] as const;
+
+const roleIconMap = {
+  female_lead: Crown,
+  female_villain: ShieldAlert,
+  male_lead: UserRound,
+  male_villain: Skull,
+  medieval_costume: Shirt,
+  medieval_male_costume: Shirt,
+} as const;
+
+function RoleTypeIcon({ roleType }: { roleType: keyof typeof roleIconMap }) {
+  const Icon = roleIconMap[roleType];
+  return <Icon className="size-4 shrink-0 text-white/65" aria-hidden="true" />;
+}
 
 const STORAGE_KEY = "kk_cast_draw_history";
 
@@ -67,6 +81,7 @@ export default function CastDrawPanel({ projectId }: CastDrawPanelProps) {
   const [copied, setCopied] = useState(false);
   const [showCn, setShowCn] = useState(false);
   const [history, setHistory] = useState<DrawRecord[]>([]);
+  const [panelView, setPanelView] = useState<"draw" | "history">("draw");
 
   useEffect(() => {
     if (open) setHistory(loadHistory(projectId));
@@ -112,6 +127,7 @@ export default function CastDrawPanel({ projectId }: CastDrawPanelProps) {
   }
 
   function loadRecord(record: DrawRecord) {
+    setPanelView("draw");
     setPrompt(record.prompt);
     setPromptCn(record.promptCn);
     setImageUrl(record.imageUrl);
@@ -154,26 +170,40 @@ export default function CastDrawPanel({ projectId }: CastDrawPanelProps) {
       {/* 折叠标签 */}
       <button
         onClick={() => setOpen(!open)}
-        className="fixed right-0 top-1/2 -translate-y-1/2 z-40 flex items-center gap-1 rounded-l-xl bg-black/80 backdrop-blur-xl border border-white/[0.12] border-r-0 px-2.5 py-4 text-sm text-white/60 hover:text-white hover:bg-black/90 transition-all shadow-lg"
-        style={{ writingMode: "vertical-rl" }}
+        className="fixed bottom-4 right-4 z-40 inline-flex size-11 items-center justify-center rounded-full border border-white/[0.14] bg-[#151817]/95 text-[0] text-white/75 shadow-2xl backdrop-blur-xl transition-all hover:bg-[#1d201f] hover:text-white md:bottom-auto md:right-0 md:top-1/2 md:-translate-y-1/2 md:rounded-r-none md:rounded-l-xl md:shadow-xl"
+        aria-label="打开角色抽卡面板"
       >
-        <span>🎴 抽卡</span>
-        {open ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+        <span className="sr-only">角色抽卡</span>
+        <PanelRight className="size-4" />
       </button>
 
       {/* 展开面板 */}
       {open && (
-        <div className="fixed right-0 top-14 bottom-0 w-80 z-40 bg-black/85 backdrop-blur-xl border-l border-white/[0.12] shadow-2xl flex flex-col overflow-hidden">
+        <>
+          <button type="button" className="fixed inset-0 top-14 z-40 bg-black/45 backdrop-blur-[2px] md:hidden" onClick={() => setOpen(false)} aria-label="关闭角色抽卡面板" />
+        <div className="draw-panel-enter fixed inset-x-0 bottom-0 top-auto z-50 flex max-h-[88dvh] w-full flex-col overflow-hidden rounded-t-2xl border-t border-white/[0.14] bg-[#151817]/[0.98] shadow-2xl backdrop-blur-xl md:inset-x-auto md:right-0 md:top-14 md:bottom-0 md:max-h-none md:w-[22rem] md:rounded-none md:rounded-l-2xl md:border-l md:border-t-0">
           {/* 头部 */}
-          <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.08]">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.08] [&>h3]:sr-only">
             <h3 className="text-sm font-semibold text-white">🎴 角色抽卡</h3>
+            <span className="text-sm font-semibold text-white">角色抽卡</span>
             <button onClick={() => setOpen(false)} className="rounded p-1 text-white/30 hover:text-white">
-              <ChevronRight className="h-4 w-4" />
+              <X className="size-4" />
+            </button>
+          </div>
+          <div className="grid grid-cols-2 gap-1 border-b border-white/[0.06] bg-black/10 p-1.5">
+            <button type="button" onClick={() => setPanelView("draw")} className={`rounded-lg px-3 py-2 text-xs font-medium transition-colors ${panelView === "draw" ? "bg-white/[0.12] text-white" : "text-white/40 hover:bg-white/[0.06] hover:text-white/75"}`}>
+              <Sparkles className="mr-1.5 inline-block size-3.5" />开始抽卡
+            </button>
+            <button type="button" onClick={() => setPanelView("history")} className={`rounded-lg px-3 py-2 text-xs font-medium transition-colors ${panelView === "history" ? "bg-white/[0.12] text-white" : "text-white/40 hover:bg-white/[0.06] hover:text-white/75"}`}>
+              <History className="mr-1.5 inline-block size-3.5" />历史记录
+              {history.length > 0 && <span className="ml-1 rounded-full bg-white/[0.10] px-1.5 py-0.5 text-[10px]">{history.length}</span>}
             </button>
           </div>
 
           {/* 抽卡区域（始终可见） */}
-          <div className="p-4 border-b border-white/[0.06] flex flex-col gap-3">
+          {panelView === "draw" && (
+          <>
+          <div className="draw-result-enter p-4 border-b border-white/[0.06] flex flex-col gap-3">
             {/* 角色类型选择 */}
             <div className="flex flex-col gap-1.5">
               <label className="text-xs text-white/40">角色类型</label>
@@ -183,13 +213,15 @@ export default function CastDrawPanel({ projectId }: CastDrawPanelProps) {
                     key={r.key}
                     type="button"
                     onClick={() => setSelectedRole(r.key)}
-                    className={`rounded-lg border px-3 py-2 text-center text-sm transition-all ${
+                    className={`role-choice-card flex min-h-14 items-center gap-2 rounded-xl border px-3 py-2 text-left text-sm ${
                       selectedRole === r.key
-                        ? "bg-white/[0.12] border-white/20 text-white"
-                        : "bg-white/[0.03] border-white/[0.06] text-white/50 hover:border-white/15 hover:text-white/80"
+                        ? "bg-white/[0.13] border-white/25 text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.06)]"
+                        : "bg-white/[0.035] border-white/[0.08] text-white/55 hover:border-white/18 hover:bg-white/[0.07] hover:text-white/85"
                     }`}
                   >
-                    <span className="mr-1">{r.icon}</span>
+                    <span className="flex size-8 shrink-0 items-center justify-center rounded-lg border border-white/[0.10] bg-white/[0.06]">
+                      <RoleTypeIcon roleType={r.key} />
+                    </span>
                     {r.label}
                   </button>
                 ))}
@@ -214,7 +246,7 @@ export default function CastDrawPanel({ projectId }: CastDrawPanelProps) {
             <button
               onClick={handleDraw}
               disabled={!selectedRole || loading}
-              className="flex items-center justify-center gap-2 rounded-full bg-white/[0.10] border border-white/[0.08] px-4 py-3 text-sm font-medium text-white hover:bg-white/[0.15] disabled:opacity-30 transition-all"
+              className="flex min-h-12 items-center justify-center gap-2 rounded-xl border border-white/[0.14] bg-white/[0.12] px-4 py-3 text-sm font-semibold text-white transition-all hover:bg-white/[0.18] disabled:cursor-not-allowed disabled:opacity-30"
             >
               {loading ? (
                 <>
@@ -232,7 +264,7 @@ export default function CastDrawPanel({ projectId }: CastDrawPanelProps) {
 
           {/* 当前结果 + 提示词 */}
           {prompt && (
-            <div className="p-4 border-b border-white/[0.06] flex flex-col gap-3">
+            <div className="draw-card-flip-in p-4 border-b border-white/[0.06] flex flex-col gap-3">
               <ImageUploadSlot
                 imageUrl={imageUrl}
                 onUpload={handleUpload}
@@ -266,7 +298,10 @@ export default function CastDrawPanel({ projectId }: CastDrawPanelProps) {
           )}
 
           {/* 历史记录 */}
-          <div className="flex-1 overflow-y-auto">
+          </>
+          )}
+          {panelView === "history" && (
+          <div className="draw-result-enter flex-1 overflow-y-auto">
             <div className="px-4 py-2 border-b border-white/[0.06] flex items-center gap-2">
               <History className="h-3.5 w-3.5 text-white/40" />
               <span className="text-xs font-medium text-white/40">抽卡记录</span>
@@ -292,7 +327,7 @@ export default function CastDrawPanel({ projectId }: CastDrawPanelProps) {
                   >
                     <div className="flex items-center justify-between mb-1.5">
                       <div className="flex items-center gap-1.5">
-                        <span className="text-sm">{record.roleIcon}</span>
+                        <RoleTypeIcon roleType={record.roleType as keyof typeof roleIconMap} />
                         <span className="text-xs font-medium text-white/70">{record.roleLabel}</span>
                         <span className="text-[10px] text-white/25">{record.createdAt}</span>
                       </div>
@@ -314,7 +349,9 @@ export default function CastDrawPanel({ projectId }: CastDrawPanelProps) {
               </div>
             )}
           </div>
+          )}
         </div>
+        </>
       )}
     </>
   );

@@ -35,6 +35,10 @@ interface OverallData {
 
 interface Props { projectId: string; }
 
+function getErrorMessage(error: unknown, fallback: string) {
+  return error instanceof Error ? error.message : fallback;
+}
+
 export default function EpisodeAnalysisPanel({ projectId }: Props) {
   const [script, setScript] = useState("");
   const [scanResult, setScanResult] = useState<ScanResult | null>(null);
@@ -58,8 +62,8 @@ export default function EpisodeAnalysisPanel({ projectId }: Props) {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
       setScanResult(data);
-    } catch (e: any) {
-      setError(e.message || "扫描失败");
+    } catch (e: unknown) {
+      setError(getErrorMessage(e, "扫描失败"));
     } finally { setScanning(false); }
   }
 
@@ -88,7 +92,7 @@ export default function EpisodeAnalysisPanel({ projectId }: Props) {
       setAnalyzedEps(newEps);
       setSelectedEps(new Set());
       setExpandedEps(prev => { const next = new Set(prev); eps.forEach(e => next.add(e)); return next; });
-    } catch (e: any) { setError(e.message || "分析失败"); }
+    } catch (e: unknown) { setError(getErrorMessage(e, "分析失败")); }
     finally { setAnalyzing(false); }
   }
 
@@ -104,7 +108,7 @@ export default function EpisodeAnalysisPanel({ projectId }: Props) {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
       setOverall(data.overall);
-    } catch (e: any) { setError(e.message || "总结失败"); }
+    } catch (e: unknown) { setError(getErrorMessage(e, "总结失败")); }
     finally { setSummarizing(false); }
   }
 

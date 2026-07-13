@@ -533,7 +533,7 @@ export default function ScriptAnalysisPage() {
   const assetCount = characters.length + scenes.length + props.length;
 
   return (
-    <div className="min-h-screen bg-[#07120f] text-white">
+    <div className="min-h-screen bg-[var(--color-workspace)] text-white selection:bg-white/20">
       {/* 壁纸背景 */}
       <WallpaperBackground />
 
@@ -551,7 +551,7 @@ export default function ScriptAnalysisPage() {
       <div className="relative z-10 min-w-0 md:ml-72">
         <div className="mx-auto max-w-[1440px] px-4 py-5 sm:px-6 md:px-8 md:py-8">
           {/* 顶部 */}
-          <div className="mb-5 flex flex-col gap-4 border-b border-white/[0.08] pb-5 md:mb-7 md:flex-row md:items-end md:justify-between">
+          <div className="mb-5 flex flex-col gap-4 border-b border-white/[0.08] pb-5 md:mb-6 md:flex-row md:items-end md:justify-between">
             <div className="min-w-0">
               <Link
                 href="/#hero"
@@ -561,7 +561,7 @@ export default function ScriptAnalysisPage() {
                 <span>返回首页</span>
               </Link>
               <div className="flex min-w-0 flex-wrap items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-md border border-white/[0.10] bg-white/[0.08]">
+                <div className="flex size-10 items-center justify-center rounded-xl border border-white/[0.12] bg-white/[0.08] shadow-lg shadow-black/10">
                   <FileText className="h-5 w-5 text-white/80" />
                 </div>
                 <div className="min-w-0">
@@ -574,19 +574,35 @@ export default function ScriptAnalysisPage() {
             </div>
 
             <div className="grid grid-cols-3 gap-2 text-sm sm:flex">
-              <div className="rounded-md border border-white/[0.08] bg-white/[0.05] px-3 py-2">
+              <div className="min-w-16 rounded-xl border border-white/[0.10] bg-white/[0.06] px-3 py-2">
                 <div className="text-[11px] text-white/35">人物</div>
                 <div className="font-semibold text-white">{characters.length}</div>
               </div>
-              <div className="rounded-md border border-white/[0.08] bg-white/[0.05] px-3 py-2">
+              <div className="min-w-16 rounded-xl border border-white/[0.10] bg-white/[0.06] px-3 py-2">
                 <div className="text-[11px] text-white/35">场景</div>
                 <div className="font-semibold text-white">{scenes.length}</div>
               </div>
-              <div className="rounded-md border border-white/[0.08] bg-white/[0.05] px-3 py-2">
+              <div className="min-w-16 rounded-xl border border-white/[0.10] bg-white/[0.06] px-3 py-2">
                 <div className="text-[11px] text-white/35">道具</div>
                 <div className="font-semibold text-white">{props.length}</div>
               </div>
             </div>
+          </div>
+
+          <div className="mb-5 grid grid-cols-3 gap-2 rounded-2xl border border-white/[0.08] bg-black/20 p-2 backdrop-blur-xl sm:gap-3 sm:p-3">
+            {[
+              { label: "选择项目", detail: activeId ? "已选择" : "先选择一个项目", active: Boolean(activeId) },
+              { label: "输入剧本", detail: script ? "已准备内容" : "上传或粘贴 Word", active: Boolean(script) },
+              { label: "生成资产", detail: assetCount ? `${assetCount} 个资产` : "等待分析结果", active: assetCount > 0 },
+            ].map((step, index) => (
+              <div key={step.label} className={`min-w-0 rounded-xl px-3 py-2.5 sm:px-4 ${step.active ? "bg-white/[0.10]" : "bg-white/[0.035]"}`}>
+                <div className="flex items-center gap-2">
+                  <span className={`flex size-5 shrink-0 items-center justify-center rounded-full text-[10px] font-semibold ${step.active ? "bg-white text-[#111313]" : "border border-white/[0.16] text-white/45"}`}>{index + 1}</span>
+                  <span className={`truncate text-xs font-semibold sm:text-sm ${step.active ? "text-white" : "text-white/55"}`}>{step.label}</span>
+                </div>
+                <p className="mt-1 truncate pl-7 text-[10px] text-white/35 sm:text-xs">{step.detail}</p>
+              </div>
+            ))}
           </div>
 
           {!apiConfigured && (
@@ -603,13 +619,13 @@ export default function ScriptAnalysisPage() {
           )}
 
           {pageError && (
-            <div className="mb-5 rounded-md border border-red-400/25 bg-red-500/10 px-4 py-3">
+            <div role="alert" aria-live="assertive" className="mb-5 rounded-md border border-red-400/25 bg-red-500/10 px-4 py-3">
               <p className="text-sm text-red-400">{pageError}</p>
             </div>
           )}
 
           {!activeId ? (
-            <div className="flex min-h-[420px] items-center justify-center rounded-lg border border-white/[0.08] bg-[#07120f]/82 p-8 text-center shadow-2xl backdrop-blur-xl">
+            <div className="flex min-h-[420px] items-center justify-center rounded-lg border border-white/[0.08] bg-[var(--color-workspace-surface-strong)] p-8 text-center shadow-2xl backdrop-blur-xl">
               <div className="max-w-sm">
                 <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-md border border-white/[0.10] bg-white/[0.06]">
                   <Layers3 className="h-7 w-7 text-white/70" />
@@ -625,15 +641,15 @@ export default function ScriptAnalysisPage() {
               </div>
             </div>
           ) : pageLoading ? (
-            <div className="rounded-lg bg-[#07120f]/82 backdrop-blur-xl border border-white/[0.08] p-10 text-center">
+            <div role="status" aria-live="polite" className="rounded-lg bg-[var(--color-workspace-surface-strong)] backdrop-blur-xl border border-white/[0.08] p-10 text-center">
               <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/15 border-t-transparent mx-auto mb-3" />
               <p className="text-sm text-white/30">加载中...</p>
             </div>
           ) : (
-            <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
+            <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_320px] xl:gap-6">
               {/* 输入区域 */}
               <div className="flex min-w-0 flex-col gap-6">
-                <div className="rounded-lg border border-white/[0.08] bg-[#07120f]/88 p-4 shadow-2xl backdrop-blur-xl sm:p-6">
+                <div className="rounded-2xl border border-white/[0.10] bg-[var(--color-workspace-surface)] p-4 shadow-2xl shadow-black/20 backdrop-blur-xl sm:p-6">
                   <div className="mb-5 flex items-center justify-between gap-3 border-b border-white/[0.07] pb-4">
                     <div>
                       <h2 className="text-lg font-semibold text-white">输入与分析设置</h2>
@@ -658,7 +674,7 @@ export default function ScriptAnalysisPage() {
                 {hasResults && (
                 <div className="flex flex-col gap-5">
                   {synopsis && (
-                    <div className="rounded-lg bg-[#07120f]/88 backdrop-blur-xl border border-white/[0.08] p-5 sm:p-6">
+                    <div className="rounded-2xl bg-[var(--color-workspace-surface)] backdrop-blur-xl border border-white/[0.10] p-5 shadow-xl shadow-black/15 sm:p-6">
                       <h2 className="text-lg font-semibold text-white mb-4">AI 提炼的剧本简介</h2>
                       <p className="text-base text-white/74 leading-8 whitespace-pre-wrap mb-5">{synopsis}</p>
                       {synopsisEn && (
@@ -691,7 +707,7 @@ export default function ScriptAnalysisPage() {
               </div>
 
               <aside className="flex min-w-0 flex-col gap-4 xl:sticky xl:top-20 xl:self-start">
-                <div className="rounded-lg border border-white/[0.08] bg-[#07120f]/88 p-5 shadow-2xl backdrop-blur-xl">
+                <div className="rounded-2xl border border-white/[0.10] bg-[var(--color-workspace-surface)] p-5 shadow-2xl shadow-black/20 backdrop-blur-xl">
                   <h2 className="text-sm font-semibold text-white/80">项目概览</h2>
                   <div className="mt-4 grid grid-cols-3 gap-2 xl:grid-cols-1">
                     <div className="flex items-center gap-3 rounded-md border border-white/[0.07] bg-white/[0.04] px-3 py-3">
@@ -724,7 +740,7 @@ export default function ScriptAnalysisPage() {
                   </div>
                 </div>
 
-                <div className="rounded-lg border border-white/[0.08] bg-[#07120f]/88 p-5 shadow-2xl backdrop-blur-xl">
+                <div className="rounded-2xl border border-white/[0.10] bg-[var(--color-workspace-surface)] p-5 shadow-2xl shadow-black/20 backdrop-blur-xl">
                   <button
                     onClick={() => setShowEpisodeAnalysis(!showEpisodeAnalysis)}
                     className="flex w-full items-center justify-between rounded-md border border-white/[0.10] bg-white/[0.06] px-4 py-3 text-left text-sm font-semibold text-white/76 transition-all hover:border-white/[0.18] hover:bg-white/[0.10] hover:text-white"

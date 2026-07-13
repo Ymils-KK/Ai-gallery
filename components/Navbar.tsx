@@ -81,7 +81,8 @@ export default function Navbar({ logo = "KK" }: { logo?: string }) {
           key={link.href}
           href={link.href}
           onClick={(event) => handleClick(event, link.href)}
-          className={`rounded-lg px-4 py-2 text-sm font-medium transition-all duration-150 ${
+          aria-current={isActive ? "page" : undefined}
+          className={`rounded-lg px-3.5 py-2 text-sm font-medium transition-all duration-150 ${
             isActive ? "bg-white/[0.12] text-white" : "text-white/60 hover:bg-white/[0.08] hover:text-white"
           }`}
         >
@@ -92,8 +93,8 @@ export default function Navbar({ logo = "KK" }: { logo?: string }) {
   }
 
   return (
-    <header className="fixed left-0 right-0 top-0 z-50 h-14 bg-black/20 backdrop-blur-2xl">
-      <nav className="mx-auto flex h-full max-w-6xl items-center justify-between px-6">
+    <header className="fixed left-0 right-0 top-0 z-50 h-14 border-b border-white/[0.06] bg-black/30 backdrop-blur-2xl">
+      <nav className="mx-auto flex h-full max-w-7xl items-center justify-between px-4 sm:px-6">
         <Link href="/#hero" onClick={(event) => handleClick(event, "/#hero")} className="flex items-center gap-2 text-lg font-bold">
           <Sparkles className="h-5 w-5 text-white/80" />
           <span className="text-gradient">{logo}</span>
@@ -132,14 +133,14 @@ export default function Navbar({ logo = "KK" }: { logo?: string }) {
           )}
         </div>
 
-        <button className="rounded-lg p-2 text-white/60 hover:bg-white/[0.1] hover:text-white md:hidden" onClick={() => setOpen(!open)} aria-label="切换菜单">
+        <button className="rounded-lg p-2.5 text-white/60 transition-colors hover:bg-white/[0.1] hover:text-white md:hidden" onClick={() => setOpen(!open)} aria-label="切换菜单" aria-expanded={open}>
           {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
       </nav>
 
       {open && (
-        <div className="border-b border-white/[0.06] bg-black/55 backdrop-blur-xl md:hidden">
-          <div className="mx-auto flex max-w-6xl flex-col gap-1 px-6 py-4">
+        <div className="border-b border-white/[0.08] bg-black/70 shadow-2xl backdrop-blur-xl md:hidden">
+          <div className="mx-auto flex max-w-7xl flex-col gap-1 px-4 py-4 sm:px-6">
             {renderLinks()}
             {ready && !unlocked && (
               <form onSubmit={submitPassphrase} className="mt-2 flex gap-2">

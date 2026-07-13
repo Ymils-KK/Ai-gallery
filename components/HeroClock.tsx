@@ -94,23 +94,23 @@ export default function HeroClock({ name }: { name?: string }) {
       {/* 时间 + 温度 */}
       <button
         onClick={() => setShowPicker(true)}
-        className="group flex items-baseline gap-5 cursor-pointer"
+        className="group flex cursor-pointer flex-col items-center gap-2 sm:flex-row sm:items-baseline sm:gap-5"
       >
         <h1
           className="text-white font-thin tracking-[2px] leading-none group-hover:text-white/80 transition-colors"
           style={{
-            fontSize: "clamp(80px, 14vw, 170px)",
+            fontSize: "clamp(58px, 16vw, 170px)",
             fontWeight: 200,
             letterSpacing: "3px",
           }}
         >
           {time || "--:--"}
         </h1>
-        <span className="text-white/20 text-[clamp(24px,4vw,48px)] font-thin">·</span>
+        <span className="hidden text-white/20 text-[clamp(24px,4vw,48px)] font-thin sm:inline">·</span>
         <span
           className="text-white font-thin tracking-[2px] leading-none group-hover:text-white/80 transition-colors"
           style={{
-            fontSize: "clamp(80px, 14vw, 170px)",
+            fontSize: "clamp(52px, 15vw, 170px)",
             fontWeight: 200,
           }}
         >

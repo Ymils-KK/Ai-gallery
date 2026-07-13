@@ -2,8 +2,6 @@ import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
 
-// 本地桌面壁纸文件夹（仅开发环境存在）
-const localDir = "C:\\Users\\Administrator\\Desktop\\壁纸";
 // 项目内置壁纸文件夹（本地和 Vercel 都可用）
 const publicDir = path.join(process.cwd(), "public", "wallpapers");
 
@@ -20,10 +18,6 @@ function findFile(name: string): string | null {
   // 优先从 public/wallpapers 读取
   const publicPath = path.join(publicDir, name);
   if (fs.existsSync(publicPath)) return publicPath;
-
-  // 其次从桌面壁纸文件夹读取
-  const localPath = path.join(localDir, name);
-  if (fs.existsSync(localPath)) return localPath;
 
   return null;
 }

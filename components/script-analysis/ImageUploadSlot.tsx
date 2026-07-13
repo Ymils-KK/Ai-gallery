@@ -86,6 +86,13 @@ export default function ImageUploadSlot({
       }}
       onDragLeave={() => setDragOver(false)}
       onClick={() => inputRef.current?.click()}
+      role="button"
+      tabIndex={0}
+      aria-label="上传参考图片"
+      aria-busy={uploading}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") inputRef.current?.click();
+      }}
       className={`relative flex flex-col items-center justify-center rounded-lg border-2 border-dashed p-4 transition-all cursor-pointer min-h-[80px] ${
         dragOver
           ? "border-white/30 bg-white/[0.06]"

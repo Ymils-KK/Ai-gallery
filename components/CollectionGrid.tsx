@@ -78,6 +78,8 @@ export default function CollectionGrid({ collections, works }: Props) {
                     <img
                       src={previews[2]}
                       alt=""
+                      loading="lazy"
+                      decoding="async"
                       className="h-full w-full rounded-xl object-cover"
                     />
                   </div>
@@ -96,6 +98,8 @@ export default function CollectionGrid({ collections, works }: Props) {
                     <img
                       src={previews[1]}
                       alt=""
+                      loading="lazy"
+                      decoding="async"
                       className="h-full w-full rounded-xl object-cover"
                     />
                   </div>
@@ -106,6 +110,8 @@ export default function CollectionGrid({ collections, works }: Props) {
                   <img
                     src={cover}
                     alt={col.title}
+                    loading="lazy"
+                    decoding="async"
                     className="h-full w-full rounded-xl object-cover shadow-lg"
                   />
                 </div>
@@ -188,6 +194,8 @@ export default function CollectionGrid({ collections, works }: Props) {
                             <img
                               src={work.src}
                               alt={work.title}
+                              loading="lazy"
+                              decoding="async"
                               className="h-full w-full object-cover transition-transform duration-500 group-hover/work:scale-105"
                             />
                           )}

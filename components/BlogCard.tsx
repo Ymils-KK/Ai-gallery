@@ -6,7 +6,7 @@ export default function BlogCard({ post }: { post: BlogPost }) {
   return (
     <Link
       href={`/blog/${post.slug}`}
-      className="group block rounded-xl border border-border bg-card p-6 transition-all duration-300 card-glow"
+      className="group gallery-card-enter block rounded-xl border border-white/[0.08] bg-white/[0.045] p-6 transition-all duration-300 card-glow hover:border-white/[0.16]"
     >
       <div className="flex items-center gap-3 text-sm text-muted">
         <Calendar className="h-4 w-4" />

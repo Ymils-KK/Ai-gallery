@@ -101,7 +101,7 @@ export default function PageSlider({ children }: PageSliderProps) {
     <div
       ref={containerRef}
       className="relative overflow-hidden"
-      style={{ height: "calc(100vh - 56px)" }}
+      style={{ height: "calc(100svh - 56px)" }}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
@@ -116,7 +116,7 @@ export default function PageSlider({ children }: PageSliderProps) {
         {children.map((child, i) => (
           <div
             key={i}
-            className="h-full overflow-y-auto"
+            className={`h-full overflow-y-auto ${i === page ? "page-panel-active" : ""}`}
             style={{ width: "100vw" }}
           >
             {child}
@@ -127,7 +127,8 @@ export default function PageSlider({ children }: PageSliderProps) {
       {/* 左箭头 */}
       <button
         onClick={() => goTo(page - 1)}
-        className="fixed left-6 top-1/2 z-40 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 backdrop-blur-md shadow-lg border border-white/10 text-white/60 hover:text-white hover:bg-white/20 transition-all"
+        type="button"
+        className="fixed left-6 top-1/2 z-40 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-white/10 text-white/60 shadow-lg backdrop-blur-md transition-all hover:bg-white/20 hover:text-white sm:flex"
         aria-label="上一页"
       >
         <ChevronLeft className="h-5 w-5" />
@@ -136,7 +137,8 @@ export default function PageSlider({ children }: PageSliderProps) {
       {/* 右箭头 */}
       <button
         onClick={() => goTo(page + 1)}
-        className="fixed right-6 top-1/2 z-40 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 backdrop-blur-md shadow-lg border border-white/10 text-white/60 hover:text-white hover:bg-white/20 transition-all"
+        type="button"
+        className="fixed right-6 top-1/2 z-40 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-white/10 text-white/60 shadow-lg backdrop-blur-md transition-all hover:bg-white/20 hover:text-white sm:flex"
         aria-label="下一页"
       >
         <ChevronRight className="h-5 w-5" />
@@ -148,6 +150,8 @@ export default function PageSlider({ children }: PageSliderProps) {
           <button
             key={i}
             onClick={() => goTo(i)}
+            type="button"
+            aria-current={i === page ? "page" : undefined}
             className={`rounded-full transition-all duration-300 ${
               i === page
                 ? "h-2 w-6 bg-white"

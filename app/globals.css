@@ -6,6 +6,13 @@
   --color-muted: #999;
   --color-card: rgba(255, 255, 255, 0.06);
   --color-border: rgba(255, 255, 255, 0.08);
+  --color-surface: rgba(21, 24, 23, 0.94);
+  --color-surface-muted: rgba(255, 255, 255, 0.05);
+  --color-ring: rgba(255, 255, 255, 0.5);
+  --color-workspace: #111313;
+  --color-workspace-surface: rgba(21, 24, 23, 0.94);
+  --color-workspace-surface-strong: rgba(17, 19, 19, 0.97);
+  --color-site-surface: rgba(17, 19, 19, 0.78);
   --color-accent: #ffffff;
   --color-accent-blue: #e0e0e0;
   --color-accent-cyan: #c0c0c0;
@@ -23,8 +30,21 @@ body {
   color: var(--color-foreground);
   font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
-  letter-spacing: -0.01em;
+  letter-spacing: 0;
   line-height: 1.6;
+}
+
+button,
+a,
+input,
+textarea,
+select {
+  -webkit-tap-highlight-color: transparent;
+}
+
+:where(button, a, input, textarea, select):focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 3px;
 }
 
 /* 渐变文字 */
@@ -83,3 +103,60 @@ body {
 }
 .animate-fade-in  { animation: fade-in 0.25s ease-out both; }
 .animate-float-up { animation: float-up 0.7s ease-out both; }
+
+@keyframes draw-panel-in {
+  from { opacity: 0; transform: translateX(24px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes draw-result-in {
+  from { opacity: 0; transform: translateY(12px) scale(0.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes draw-card-flip-in {
+  from { opacity: 0; transform: perspective(900px) rotateY(-72deg) translateY(8px); }
+  to { opacity: 1; transform: perspective(900px) rotateY(0) translateY(0); }
+}
+
+@keyframes draw-sheet-in {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes music-breathe {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.08); }
+  50% { box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.02); }
+}
+
+@keyframes page-panel-enter {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes gallery-card-enter {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.draw-panel-enter { animation: draw-panel-in 0.24s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.draw-result-enter { animation: draw-result-in 0.32s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.draw-card-flip-in { animation: draw-card-flip-in 0.48s cubic-bezier(0.22, 1, 0.36, 1) both; transform-origin: left center; backface-visibility: hidden; }
+.role-choice-card { transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease; }
+.role-choice-card:hover { transform: translateY(-2px); }
+.music-playing { animation: music-breathe 2.2s ease-in-out infinite; }
+.page-panel-active { animation: page-panel-enter 0.45s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.gallery-card-enter { animation: gallery-card-enter 0.45s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+@media (max-width: 767px) {
+  .draw-panel-enter { animation-name: draw-sheet-in; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .draw-panel-enter,
+  .draw-result-enter,
+  .draw-card-flip-in,
+  .music-playing,
+  .page-panel-active,
+  .gallery-card-enter { animation: none; }
+}

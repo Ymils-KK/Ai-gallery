@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Play, Pause, SkipBack, SkipForward, Music, ChevronUp, ChevronDown, Volume2, Disc3 } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { getAudioUrl } from "@/lib/audio-url";
 
 interface Song {
@@ -15,6 +16,7 @@ interface Song {
 }
 
 export default function MusicPlayer() {
+  const pathname = usePathname();
   const [songs, setSongs] = useState<Song[]>([]);
   const [currentIdx, setCurrentIdx] = useState(0);
   const [playing, setPlaying] = useState(false);
@@ -89,7 +91,7 @@ export default function MusicPlayer() {
     };
   }, [dragging, dragStart]);
 
-  if (songs.length === 0) return null;
+  if (pathname.startsWith("/script-analysis") || songs.length === 0) return null;
 
   return (
     <div
@@ -107,7 +109,7 @@ export default function MusicPlayer() {
 
       {/* 展开面板 */}
       {expanded && (
-        <div className="w-64 animate-fade-in rounded-2xl border border-border bg-card/95 backdrop-blur-2xl p-4 shadow-lg">
+        <div className="w-[min(16rem,calc(100vw-2rem))] animate-fade-in rounded-2xl border border-white/[0.10] bg-[var(--color-site-surface)] p-4 shadow-2xl backdrop-blur-2xl">
           {/* 顶部：歌曲信息 */}
           <div className="flex items-center gap-3 mb-4">
             <div className="h-12 w-12 shrink-0 rounded-xl bg-gradient-to-br from-accent via-accent-blue to-accent-cyan flex items-center justify-center">
@@ -136,6 +138,7 @@ export default function MusicPlayer() {
               max={duration || 1}
               value={currentTime}
               onChange={handleSeek}
+              aria-label="播放进度"
               className="w-full h-1 rounded-full appearance-none bg-black/[0.08] accent-accent cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white/10"
             />
             <div className="flex justify-between text-[10px] text-muted mt-1">
@@ -146,16 +149,18 @@ export default function MusicPlayer() {
 
           {/* 控制按钮 */}
           <div className="flex items-center justify-center gap-4">
-            <button onClick={prev} className="p-1.5 text-muted hover:text-foreground transition-colors">
+            <button onClick={prev} className="rounded-lg p-2 text-muted transition-colors hover:bg-white/[0.06] hover:text-foreground" aria-label="上一首" type="button">
               <SkipBack className="h-4 w-4" />
             </button>
             <button
               onClick={togglePlay}
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-foreground text-background hover:scale-105 transition-transform"
+              className={`flex h-9 w-9 items-center justify-center rounded-full bg-foreground text-background transition-transform hover:scale-105 ${playing ? "music-playing" : ""}`}
+              aria-label={playing ? "暂停播放" : "开始播放"}
+              type="button"
             >
               {playing ? <Pause className="h-4 w-4 fill-current" /> : <Play className="h-4 w-4 ml-0.5 fill-current" />}
             </button>
-            <button onClick={next} className="p-1.5 text-muted hover:text-foreground transition-colors">
+            <button onClick={next} className="rounded-lg p-2 text-muted transition-colors hover:bg-white/[0.06] hover:text-foreground" aria-label="下一首" type="button">
               <SkipForward className="h-4 w-4" />
             </button>
           </div>
@@ -174,6 +179,7 @@ export default function MusicPlayer() {
                 setVolume(v);
                 if (audioRef.current) audioRef.current.volume = v;
               }}
+              aria-label="音量"
               className="w-full h-1 rounded-full appearance-none bg-black/[0.08] accent-accent cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white/10"
             />
           </div>
@@ -216,6 +222,8 @@ export default function MusicPlayer() {
             ? "bg-white/10 text-white"
             : "bg-card border border-border text-muted hover:text-foreground hover:scale-105"
         }`}
+        aria-label={expanded ? "收起音乐播放器" : "打开音乐播放器"}
+        type="button"
         title="音乐播放器"
       >
         {expanded ? (

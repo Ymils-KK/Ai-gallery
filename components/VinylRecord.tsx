@@ -24,6 +24,12 @@ export default function VinylRecord({ song, isPlaying, isCurrent, onPlay }: Prop
       className="group relative cursor-pointer"
       style={{ perspective: "1000px" }}
       onClick={onPlay}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") onPlay();
+      }}
+      role="button"
+      tabIndex={0}
+      aria-label={`${isPlaying ? "暂停" : "播放"} ${song.title}`}
     >
       {/* 唱片槽 — 凹陷的槽位 */}
       <div className="relative rounded-xl bg-gradient-to-b from-black/[0.04] to-black/[0.02] p-2 pb-4 shadow-[inset_0_2px_6px_rgba(0,0,0,0.06),inset_0_-1px_3px_rgba(0,0,0,0.03)]">
@@ -52,6 +58,8 @@ export default function VinylRecord({ song, isPlaying, isCurrent, onPlay }: Prop
                 <img
                   src={song.cover}
                   alt={song.title}
+                  loading="lazy"
+                  decoding="async"
                   className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-103"
                 />
               ) : (

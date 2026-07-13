@@ -33,7 +33,7 @@ export default function HeroPlayer({ src = "/maybe.mp3", title, artist }: Props)
   const VolIcon = volume === 0 ? VolumeX : volume < 0.5 ? Volume1 : Volume2;
 
   return (
-    <div className="flex items-center gap-3 rounded-full bg-white/5 backdrop-blur-xl border border-white/[0.06] pl-4 pr-2 py-2 select-none transition-all hover:bg-white/[0.08]">
+    <div className={`flex items-center gap-3 rounded-full bg-white/5 backdrop-blur-xl border border-white/[0.06] pl-4 pr-2 py-2 select-none transition-all hover:bg-white/[0.08] ${playing ? "music-playing" : ""}`}>
       <audio
         ref={audioRef}
         src={src}
@@ -45,6 +45,8 @@ export default function HeroPlayer({ src = "/maybe.mp3", title, artist }: Props)
       <button
         onClick={toggle}
         className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white/15 hover:bg-white/25 transition-all"
+        aria-label={playing ? "暂停背景音乐" : "播放背景音乐"}
+        type="button"
       >
         {playing ? (
           <Pause className="h-3 w-3 text-white fill-white" />
@@ -66,6 +68,8 @@ export default function HeroPlayer({ src = "/maybe.mp3", title, artist }: Props)
         <button
           onClick={() => setVolume((v) => (v === 0 ? 0.5 : 0))}
           className="p-1 text-white/50 hover:text-white/80 transition-colors"
+          aria-label={volume === 0 ? "打开音量" : "静音"}
+          type="button"
         >
           <VolIcon className="h-3.5 w-3.5" />
         </button>
@@ -76,6 +80,7 @@ export default function HeroPlayer({ src = "/maybe.mp3", title, artist }: Props)
           step={0.05}
           value={volume}
           onChange={(e) => setVolume(Number(e.target.value))}
+          aria-label="背景音乐音量"
           className={`transition-all duration-200 ${
             showVol ? "w-16 opacity-100 ml-1" : "w-0 opacity-0"
           } h-1 rounded-full appearance-none bg-white/20 accent-white cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white`}

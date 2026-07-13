@@ -162,10 +162,17 @@ export default function ScriptInputForm({
             setDragActive(false);
           }}
           onDrop={handleDrop}
+          role="button"
+          tabIndex={0}
+          aria-label="上传 Word 剧本"
+          aria-busy={docxUploading}
+          onKeyDown={(e) => {
+            if ((e.key === "Enter" || e.key === " ") && !loading && !docxUploading) fileInputRef.current?.click();
+          }}
           className={`flex min-h-[220px] cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed px-6 py-8 text-center transition-all ${
             dragActive
               ? "border-white/35 bg-white/[0.10]"
-              : "border-white/[0.12] bg-[#07120f]/80 hover:border-white/25 hover:bg-white/[0.06]"
+              : "border-white/[0.12] bg-[var(--color-workspace-surface-strong)] hover:border-white/25 hover:bg-white/[0.06]"
           } ${loading || docxUploading ? "pointer-events-none opacity-60" : ""}`}
         >
           <input
@@ -262,7 +269,7 @@ export default function ScriptInputForm({
 
       {/* 错误提示 */}
       {error && (
-        <div className="rounded-lg bg-red-500/10 border border-red-500/20 px-5 py-3.5">
+        <div role="alert" aria-live="assertive" className="rounded-lg bg-red-500/10 border border-red-500/20 px-5 py-3.5">
           <p className="text-sm text-red-300">{error}</p>
         </div>
       )}

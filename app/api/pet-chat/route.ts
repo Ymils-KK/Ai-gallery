@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+import fs from "fs";
+import path from "path";
 
 type PetChatMessage = {
   role: "user" | "assistant";
@@ -13,8 +15,6 @@ function getApiConfig() {
   // 如果环境变量是占位符，用本地配置文件兜底（仅开发环境）
   if ((!apiKey || apiKey.includes("你的DeepSeek") || apiKey.toLowerCase().includes("your_")) && typeof process !== "undefined") {
     try {
-      const fs = require("fs");
-      const path = require("path");
       const configPath = path.join(process.cwd(), "content", "api-config.json");
       if (fs.existsSync(configPath)) {
         const cfg = JSON.parse(fs.readFileSync(configPath, "utf-8"));

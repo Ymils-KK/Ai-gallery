@@ -53,7 +53,7 @@ export default function WallpaperBackground() {
 
   if (wallpapers.length === 0) {
     return (
-      <div className="fixed inset-0 z-0 bg-[#1a2a22]" aria-hidden="true" />
+      <div className="fixed inset-0 z-0 bg-[#171918]" aria-hidden="true" />
     );
   }
 
@@ -67,6 +67,8 @@ export default function WallpaperBackground() {
         <img
           src={`/api/wallpapers/${currentImg}`}
           alt=""
+          loading="eager"
+          decoding="async"
           className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-[1200ms] ${
             fading ? "opacity-0" : "opacity-100"
           }`}
@@ -78,15 +80,17 @@ export default function WallpaperBackground() {
         <img
           src={`/api/wallpapers/${nextImg}`}
           alt=""
+          loading="lazy"
+          decoding="async"
           className="absolute inset-0 w-full h-full object-cover opacity-100"
         />
       )}
 
       {/* 暗色叠加层，保证文字可读 */}
-      <div className="absolute inset-0 bg-black/55" />
+      <div className="absolute inset-0 bg-black/72" />
 
       {/* 渐变遮罩：顶部和底部更暗 */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/40" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.10),transparent_34%),linear-gradient(180deg,rgba(10,10,10,0.35),rgba(10,10,10,0.92))]" />
     </div>
   );
 }

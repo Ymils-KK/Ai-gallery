@@ -102,7 +102,7 @@ export default function MusicPage() {
             <p className="mt-1 text-sm">在 content/music.json 中添加歌曲</p>
           </div>
         ) : (
-          <div className="rounded-3xl border border-white/[0.06] bg-black/40 backdrop-blur-xl p-8">
+          <div className="rounded-3xl border border-white/[0.10] bg-[var(--color-site-surface)] p-6 shadow-2xl shadow-black/15 backdrop-blur-xl sm:p-8">
             {Array.from({ length: Math.ceil(songs.length / 5) }).map(
               (_, rowIdx) => (
                 <div key={rowIdx} className="mb-6 last:mb-0">

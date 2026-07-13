@@ -76,15 +76,17 @@ export default function Gallery({ works, collections, allWorks }: GalleryProps) 
   return (
     <>
       {/* 筛选按钮 */}
-      <div className="flex gap-2 mb-8">
+      <div className="mb-8 flex w-fit max-w-full flex-wrap gap-1 rounded-xl border border-white/[0.08] bg-black/20 p-1">
         {filters.map((f) => (
           <button
             key={f}
             onClick={() => setFilter(f)}
-            className={`rounded-full px-5 py-2 text-sm font-medium transition-all duration-200 ${
+            type="button"
+            aria-pressed={filter === f}
+            className={`rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200 ${
               filter === f
-                ? "bg-white/15 text-white"
-                : "text-muted border border-border hover:text-foreground hover:border-white/15"
+                ? "bg-white/[0.14] text-white shadow-sm"
+                : "text-muted hover:bg-white/[0.06] hover:text-foreground"
             }`}
           >
             {f}
@@ -95,7 +97,7 @@ export default function Gallery({ works, collections, allWorks }: GalleryProps) 
       {/* 作品网格 — 合集卡片 + 独立作品混合 */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {/* ====== 合集卡片 ====== */}
-        {displayList.collections.map((col) => {
+        {displayList.collections.map((col, colIdx) => {
           const previews = getColPreviews(col);
           const cover = getColCover(col);
           const isExpanded = expandedColId === col.id;
@@ -105,7 +107,14 @@ export default function Gallery({ works, collections, allWorks }: GalleryProps) 
             <div key={`col-${col.id}`} className="contents">
               <div
                 onClick={() => setExpandedColId(isExpanded ? null : col.id)}
-                className={`group relative cursor-pointer overflow-hidden rounded-xl border transition-all duration-300 ${
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") setExpandedColId(isExpanded ? null : col.id);
+                }}
+                role="button"
+                tabIndex={0}
+                aria-label={`打开合集 ${col.title}`}
+                style={{ animationDelay: `${colIdx * 60}ms` }}
+                className={`gallery-card-enter group relative cursor-pointer overflow-hidden rounded-xl border transition-all duration-300 ${
                   isExpanded
                     ? "border-white/15 shadow-lg "
                     : "border-border bg-card card-glow"
@@ -123,7 +132,7 @@ export default function Gallery({ works, collections, allWorks }: GalleryProps) 
                         opacity: 0.35,
                       }}
                     >
-                      <img src={previews[2]} alt="" className="h-full w-full rounded-xl object-cover" />
+                      <img src={previews[2]} alt="" loading="lazy" decoding="async" className="h-full w-full rounded-xl object-cover" />
                     </div>
                   )}
                   {/* 中层 */}
@@ -136,12 +145,12 @@ export default function Gallery({ works, collections, allWorks }: GalleryProps) 
                         opacity: 0.5,
                       }}
                     >
-                      <img src={previews[1]} alt="" className="h-full w-full rounded-xl object-cover" />
+                      <img src={previews[1]} alt="" loading="lazy" decoding="async" className="h-full w-full rounded-xl object-cover" />
                     </div>
                   )}
                   {/* 顶层 */}
                   <div className="absolute inset-0 z-10">
-                    <img src={cover} alt={col.title} className="h-full w-full rounded-xl object-cover shadow-lg" />
+                    <img src={cover} alt={col.title} loading="lazy" decoding="async" className="h-full w-full rounded-xl object-cover shadow-lg" />
                   </div>
 
                   {/* 合集标签 */}
@@ -189,7 +198,14 @@ export default function Gallery({ works, collections, allWorks }: GalleryProps) 
           <div
             key={work.id}
             onClick={() => openLightbox(displayList.works, displayList.works.indexOf(work))}
-            className="group relative cursor-pointer overflow-hidden rounded-xl border border-border bg-card card-glow transition-all duration-300"
+            onKeyDown={(event) => {
+              if (event.key === "Enter" || event.key === " ") openLightbox(displayList.works, displayList.works.indexOf(work));
+            }}
+            role="button"
+            tabIndex={0}
+            aria-label={`查看作品 ${work.title}`}
+            style={{ animationDelay: `${(idx + displayList.collections.length) * 60}ms` }}
+            className="gallery-card-enter group relative cursor-pointer overflow-hidden rounded-xl border border-white/[0.08] bg-white/[0.045] card-glow transition-all duration-300 hover:border-white/[0.16]"
           >
             <div className="aspect-[4/3] overflow-hidden">
               {work.type === "video" ? (
@@ -197,6 +213,8 @@ export default function Gallery({ works, collections, allWorks }: GalleryProps) 
                   <img
                     src={work.thumbnail || work.src}
                     alt={work.title}
+                    loading="lazy"
+                    decoding="async"
                     className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 flex items-center justify-center bg-black/30">
@@ -204,11 +222,16 @@ export default function Gallery({ works, collections, allWorks }: GalleryProps) 
                       <Play className="ml-1 h-5 w-5 fill-white text-white" />
                     </div>
                   </div>
+                  <div className="absolute inset-x-3 bottom-3 z-10 translate-y-2 rounded-lg border border-white/10 bg-black/55 px-3 py-2 text-xs text-white/80 opacity-0 backdrop-blur-md transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+                    播放视频
+                  </div>
                 </div>
               ) : (
                 <img
                   src={work.src}
                   alt={work.title}
+                  loading="lazy"
+                  decoding="async"
                   className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
               )}
@@ -289,7 +312,7 @@ export default function Gallery({ works, collections, allWorks }: GalleryProps) 
                           {w.type === "video" ? (
                             <video src={w.src} controls className="h-full w-full object-cover" poster={w.thumbnail} />
                           ) : (
-                            <img src={w.src} alt={w.title} className="h-full w-full object-cover transition-transform duration-500 group-hover/item:scale-105" />
+                            <img src={w.src} alt={w.title} loading="lazy" decoding="async" className="h-full w-full object-cover transition-transform duration-500 group-hover/item:scale-105" />
                           )}
                         </div>
                         <div className="p-4">
