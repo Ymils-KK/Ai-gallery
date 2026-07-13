@@ -10,6 +10,7 @@ import {
   Check,
   CheckCircle2,
   Copy,
+  Download,
   Edit3,
   Heart,
   ImagePlus,
@@ -621,6 +622,21 @@ function AssetTile({
   onToggleFavorite: () => void;
   onToggleUsed: () => void;
 }) {
+  async function downloadAsset() {
+    if (!asset.imageUrl) return;
+    const response = await fetch(`/api/download?url=${encodeURIComponent(asset.imageUrl)}&name=${encodeURIComponent(asset.name)}`);
+    if (!response.ok) return;
+    const blob = await response.blob();
+    const objectUrl = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = objectUrl;
+    link.download = asset.name || "asset";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(objectUrl);
+  }
+
   return (
     <article className="group relative aspect-[3/4] overflow-hidden rounded-md border border-white/[0.08] bg-white/[0.035] shadow-lg transition-all hover:border-white/[0.20]">
       {asset.imageUrl ? (
@@ -665,6 +681,16 @@ function AssetTile({
         </div>
 
         <div>
+          {asset.imageUrl && (
+            <button
+              type="button"
+              onClick={downloadAsset}
+              className="mb-2 inline-flex items-center gap-1.5 rounded-md border border-white/[0.14] bg-white/[0.12] px-2 py-1.5 text-xs text-white/80 transition-all hover:bg-white/[0.18] hover:text-white"
+            >
+              <Download className="h-3.5 w-3.5" />
+              下载原图
+            </button>
+          )}
           <div className="truncate text-sm font-semibold text-white">{asset.name}</div>
           <button
             type="button"
